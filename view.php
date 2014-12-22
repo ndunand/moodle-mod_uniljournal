@@ -74,11 +74,6 @@ $PAGE->set_context($context);
 // Output starts here.
 echo $OUTPUT->header();
 
-// Conditions to show the intro can change to look for own settings or whatever.
-if ($uniljournal->intro) {
-    echo $OUTPUT->box(format_module_intro('uniljournal', $uniljournal, $cm->id), 'generalbox mod_introbox', 'uniljournalintro');
-}
-
 // Replace the following lines with you own code.
 echo $OUTPUT->heading('Yay! It works!');
 

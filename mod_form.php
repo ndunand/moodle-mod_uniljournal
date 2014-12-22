@@ -55,9 +55,6 @@ class mod_uniljournal_mod_form extends moodleform_mod {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'uniljournalname', 'uniljournal');
 
-        // Adding the standard "intro" and "introformat" fields.
-        $this->add_intro_editor();
-
         // Adding the rest of uniljournal settings, spreeading all them into this fieldset
         // ... or adding more fieldsets ('header' elements) if needed for better logic.
         $mform->addElement('static', 'label1', 'uniljournalsetting1', 'Your uniljournal fields go here. Replace me!');
