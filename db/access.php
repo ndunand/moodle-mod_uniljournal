@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Capability definitions for the newmodule module
+ * Capability definitions for the uniljournal module
  *
  * The capabilities are loaded into the database table when the module is
  * installed or updated. Whenever the capability definitions are updated,
@@ -39,8 +39,8 @@
  *
  * The variable name for the capability definitions array is $capabilities
  *
- * @package    mod_newmodule
- * @copyright  2011 Your Name
+ * @package    mod_uniljournal
+ * @copyright  2014 Liip AG {@link http://www.liip.ch/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -48,7 +48,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // Modify capabilities as needed and remove this comment.
 $capabilities = array(
-    'mod/newmodule:addinstance' => array(
+    'mod/uniljournal:addinstance' => array(
         'riskbitmask' => RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
@@ -59,7 +59,7 @@ $capabilities = array(
         'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
 
-    'mod/newmodule:view' => array(
+    'mod/uniljournal:view' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'legacy' => array(
@@ -71,7 +71,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/newmodule:submit' => array(
+    'mod/uniljournal:submit' => array(
         'riskbitmask' => RISK_SPAM,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,

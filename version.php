@@ -16,13 +16,13 @@
 
 
 /**
- * Defines the version of newmodule
+ * Defines the version of uniljournal
  *
  * This code fragment is called by moodle_needs_upgrading() and
  * /admin/index.php
  *
- * @package    mod_newmodule
- * @copyright  2011 Your Name
+ * @package    mod_uniljournal
+ * @copyright  2014 Liip AG {@link http://www.liip.ch/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,4 +32,4 @@ $plugin->version   = 0;               // The current module version (Date: YYYYM
                                       // If version == 0 then module will not be installed.
 $plugin->requires  = 2010031900;      // Requires this Moodle version.
 $plugin->cron      = 0;               // Period for cron to check this module (secs).
-$plugin->component = 'mod_newmodule'; // To check on upgrade, that module sits in correct place.
+$plugin->component = 'mod_uniljournal'; // To check on upgrade, that module sits in correct place.

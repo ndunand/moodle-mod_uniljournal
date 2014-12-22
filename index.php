@@ -20,12 +20,12 @@
  * You can have a rather longer description of the file as well,
  * if you like, and it can span multiple lines.
  *
- * @package    mod_newmodule
- * @copyright  2011 Your Name
+ * @package    mod_uniljournal
+ * @copyright  2014 Liip AG {@link http://www.liip.ch/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Replace newmodule with the name of your module and remove this line.
+// Replace uniljournal with the name of your module and remove this line.
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
@@ -36,19 +36,19 @@ $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 
 require_course_login($course);
 
-add_to_log($course->id, 'newmodule', 'view all', 'index.php?id='.$course->id, '');
+add_to_log($course->id, 'uniljournal', 'view all', 'index.php?id='.$course->id, '');
 
 $coursecontext = context_course::instance($course->id);
 
-$PAGE->set_url('/mod/newmodule/index.php', array('id' => $id));
+$PAGE->set_url('/mod/uniljournal/index.php', array('id' => $id));
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($coursecontext);
 
 echo $OUTPUT->header();
 
-if (! $newmodules = get_all_instances_in_course('newmodule', $course)) {
-    notice(get_string('nonewmodules', 'newmodule'), new moodle_url('/course/view.php', array('id' => $course->id)));
+if (! $uniljournals = get_all_instances_in_course('uniljournal', $course)) {
+    notice(get_string('nouniljournals', 'uniljournal'), new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
 $table = new html_table();
@@ -63,25 +63,25 @@ if ($course->format == 'weeks') {
     $table->align = array('left', 'left', 'left');
 }
 
-foreach ($newmodules as $newmodule) {
-    if (!$newmodule->visible) {
+foreach ($uniljournals as $uniljournal) {
+    if (!$uniljournal->visible) {
         $link = html_writer::link(
-            new moodle_url('/mod/newmodule.php', array('id' => $newmodule->coursemodule)),
-            format_string($newmodule->name, true),
+            new moodle_url('/mod/uniljournal.php', array('id' => $uniljournal->coursemodule)),
+            format_string($uniljournal->name, true),
             array('class' => 'dimmed'));
     } else {
         $link = html_writer::link(
-            new moodle_url('/mod/newmodule.php', array('id' => $newmodule->coursemodule)),
-            format_string($newmodule->name, true));
+            new moodle_url('/mod/uniljournal.php', array('id' => $uniljournal->coursemodule)),
+            format_string($uniljournal->name, true));
     }
 
     if ($course->format == 'weeks' or $course->format == 'topics') {
-        $table->data[] = array($newmodule->section, $link);
+        $table->data[] = array($uniljournal->section, $link);
     } else {
         $table->data[] = array($link);
     }
 }
 
-echo $OUTPUT->heading(get_string('modulenameplural', 'newmodule'), 2);
+echo $OUTPUT->heading(get_string('modulenameplural', 'uniljournal'), 2);
 echo html_writer::table($table);
 echo $OUTPUT->footer();

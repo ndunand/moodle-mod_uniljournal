@@ -16,24 +16,24 @@
 
 
 /**
- * English strings for newmodule
+ * English strings for uniljournal
  *
  * You can have a rather longer description of the file as well,
  * if you like, and it can span multiple lines.
  *
- * @package    mod_newmodule
- * @copyright  2011 Your Name
+ * @package    mod_uniljournal
+ * @copyright  2014 Liip AG {@link http://www.liip.ch/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'newmodule';
-$string['modulenameplural'] = 'newmodules';
-$string['modulename_help'] = 'Use the newmodule module for... | The newmodule module allows...';
-$string['newmodulefieldset'] = 'Custom example fieldset';
-$string['newmodulename'] = 'newmodule name';
-$string['newmodulename_help'] = 'This is the content of the help tooltip associated with the newmodulename field. Markdown syntax is supported.';
-$string['newmodule'] = 'newmodule';
-$string['pluginadministration'] = 'newmodule administration';
-$string['pluginname'] = 'newmodule';
+$string['modulename'] = 'uniljournal';
+$string['modulenameplural'] = 'uniljournals';
+$string['modulename_help'] = 'Use the uniljournal module for... | The uniljournal module allows...';
+$string['uniljournalfieldset'] = 'Custom example fieldset';
+$string['uniljournalname'] = 'uniljournal name';
+$string['uniljournalname_help'] = 'This is the content of the help tooltip associated with the uniljournalname field. Markdown syntax is supported.';
+$string['uniljournal'] = 'uniljournal';
+$string['pluginadministration'] = 'uniljournal administration';
+$string['pluginname'] = 'uniljournal';

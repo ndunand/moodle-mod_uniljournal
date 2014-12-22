@@ -17,17 +17,17 @@
 /**
  * Defines the view event.
  *
- * @package    mod_newmodule
- * @copyright  2014 Daniel Neis Araujo
+ * @package    mod_uniljournal
+ * @copyright  2014  Liip AG {@url http://www.liip.ch/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_newmodule\event;
+namespace mod_uniljournal\event;
 defined('MOODLE_INTERNAL') || die();
 
 class course_module_viewed extends \core\event\course_module_viewed {
     protected function init() {
-        $this->data['objecttable'] = 'newmodule';
+        $this->data['objecttable'] = 'uniljournal';
         parent::init();
     }
     // You might need to override get_url() and get_legacy_log_data() if view mode needs to be stored as well.
