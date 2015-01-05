@@ -28,12 +28,16 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'uniljournal';
-$string['modulenameplural'] = 'uniljournals';
-$string['modulename_help'] = 'Use the uniljournal module for... | The uniljournal module allows...';
-$string['uniljournalfieldset'] = 'Custom example fieldset';
-$string['uniljournalname'] = 'uniljournal name';
-$string['uniljournalname_help'] = 'This is the content of the help tooltip associated with the uniljournalname field. Markdown syntax is supported.';
-$string['uniljournal'] = 'uniljournal';
-$string['pluginadministration'] = 'uniljournal administration';
-$string['pluginname'] = 'uniljournal';
+$string['modulename'] = 'UNIL Learning Journal';
+$string['modulenameplural'] = 'UNIL Learning Journals';
+$string['modulename_help'] = 'The UNIL journal module allows students to create learning journals structured in a structure of articles defined in advance.';
+$string['ujname'] = 'Journal name';
+$string['ujname_help'] = '(TO BE COMPLETED !) This is the name of the journal.';
+$string['ujsubtitle'] = 'Subtitle';
+$string['ujsubtitle_help'] = '(TO BE COMPLETED !) This is the subtitle of the journal.';
+$string['ujdescription'] = 'Description';
+$string['ujdescription_help'] = '(TO BE COMPLETED !) This is the description of the journal.';
+$string['ujlogo'] = 'Coverpage logo';
+$string['ujlogo_help'] = '(TO BE COMPLETED !) The logo will be displayed in its nominal size on the first page of the printable version.';
+$string['pluginadministration'] = 'UNIL Journal administration';
+$string['pluginname'] = 'UNIL Learning Journal';

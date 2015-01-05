@@ -83,7 +83,40 @@ function xmldb_uniljournal_upgrade($oldversion) {
         }
 
         // Another save point reached.
-        upgrade_mod_savepoint(true, 2012122200, 'uniljournal');
+        upgrade_mod_savepoint(true, 2014122200, 'uniljournal');
+    }
+    
+    if ($oldversion < 2015010500) {
+
+        // Define field subtitle to be added to uniljournal.
+        $table = new xmldb_table('uniljournal');
+        $field = new xmldb_field('subtitle', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'name');
+
+        // Conditionally launch add field subtitle.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+         // Define field description to be added to uniljournal.
+        $table = new xmldb_table('uniljournal');
+        $field = new xmldb_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null, 'subtitle');
+
+        // Conditionally launch add field description.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        // Define field logo to be added to uniljournal.
+        $table = new xmldb_table('uniljournal');
+        $field = new xmldb_field('logo', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'description');
+
+        // Conditionally launch add field logo.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Uniljournal savepoint reached.
+        upgrade_mod_savepoint(true, 2015010500, 'uniljournal');
     }
 
     return true;

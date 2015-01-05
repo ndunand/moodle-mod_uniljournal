@@ -45,23 +45,25 @@ class mod_uniljournal_mod_form extends moodleform_mod {
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('uniljournalname', 'uniljournal'), array('size' => '64'));
-        if (!empty($CFG->formatstringstriptags)) {
-            $mform->setType('name', PARAM_TEXT);
-        } else {
-            $mform->setType('name', PARAM_CLEAN);
-        }
+        $mform->addElement('text', 'name', get_string('ujname', 'uniljournal'), array('size' => '64'));
+        $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addHelpButton('name', 'uniljournalname', 'uniljournal');
-
-        // Adding the rest of uniljournal settings, spreeading all them into this fieldset
-        // ... or adding more fieldsets ('header' elements) if needed for better logic.
-        $mform->addElement('static', 'label1', 'uniljournalsetting1', 'Your uniljournal fields go here. Replace me!');
-
-        $mform->addElement('header', 'uniljournalfieldset', get_string('uniljournalfieldset', 'uniljournal'));
-        $mform->addElement('static', 'label2', 'uniljournalsetting2', 'Your uniljournal fields go here. Replace me!');
-
+        $mform->addHelpButton('name', 'ujname', 'uniljournal');
+        
+        $mform->addElement('text', 'subtitle', get_string('ujsubtitle', 'uniljournal'), array('size' => '64'));
+        $mform->setType('subtitle', PARAM_TEXT);
+        $mform->addRule('subtitle', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addHelpButton('subtitle', 'ujsubtitle', 'uniljournal');
+        
+        $mform->addElement('textarea', 'description', get_string('ujdescription', 'uniljournal'), '');
+        $mform->setType('description', PARAM_TEXT);
+        $mform->addRule('description', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addHelpButton('description', 'ujdescription', 'uniljournal');
+        
+        $mform->addElement('filepicker', 'logo', get_string('ujlogo', 'uniljournal'), null,
+                   array('maxbytes' => 100, 'accepted_types' => 'image'));
+        
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();
 
