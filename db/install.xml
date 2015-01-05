@@ -12,6 +12,7 @@
         <FIELD NAME="subtitle" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Activity subtitle"/>
         <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Activity description"/>
         <FIELD NAME="logo" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="Activity logo"/>
+        <FIELD NAME="comments_allowed" TYPE="binary" NOTNULL="false" SEQUENCE="false" COMMENT="Whether general comments are allowed"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>

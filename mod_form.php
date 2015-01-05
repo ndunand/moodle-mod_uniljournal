@@ -63,6 +63,10 @@ class mod_uniljournal_mod_form extends moodleform_mod {
         
         $mform->addElement('filepicker', 'logo', get_string('ujlogo', 'uniljournal'), null,
                    array('maxbytes' => 100, 'accepted_types' => 'image'));
+        $mform->addHelpButton('logo', 'ujlogo', 'uniljournal');
+        
+        $mform->addElement('selectyesno', 'comments_allowed', get_string('ujcomments_allowed', 'uniljournal'));
+        $mform->addHelpButton('comments_allowed', 'ujcomments_allowed', 'uniljournal');
         
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();

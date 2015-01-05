@@ -118,6 +118,21 @@ function xmldb_uniljournal_upgrade($oldversion) {
         // Uniljournal savepoint reached.
         upgrade_mod_savepoint(true, 2015010500, 'uniljournal');
     }
+    
+    if ($oldversion < 2015010501) {
+
+        // Define field comments_allowed to be added to uniljournal.
+        $table = new xmldb_table('uniljournal');
+        $field = new xmldb_field('comments_allowed', XMLDB_TYPE_BINARY, null, null, null, null, null, 'logo');
+
+        // Conditionally launch add field comments_allowed.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Uniljournal savepoint reached.
+        upgrade_mod_savepoint(true, 2015010501, 'uniljournal');
+    }
 
     return true;
 }

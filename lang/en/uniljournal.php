@@ -39,5 +39,7 @@ $string['ujdescription'] = 'Description';
 $string['ujdescription_help'] = '(TO BE COMPLETED !) This is the description of the journal.';
 $string['ujlogo'] = 'Coverpage logo';
 $string['ujlogo_help'] = '(TO BE COMPLETED !) The logo will be displayed in its nominal size on the first page of the printable version.';
+$string['ujcomments_allowed'] = 'Activate comments';
+$string['ujcomments_allowed_help'] = '(TO BE COMPLETED !) Activate (or not) the possibility to associate general comments to each article of the journal.';
 $string['pluginadministration'] = 'UNIL Journal administration';
 $string['pluginname'] = 'UNIL Learning Journal';
