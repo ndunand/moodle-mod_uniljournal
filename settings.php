@@ -39,6 +39,7 @@ if ($ADMIN->fulltree) {
     foreach($groups as $gid => $group) {
         $keyvalgroups[$group] = $group;
     }
+    ksort($keyvalgroups);
     
     $settings->add(new admin_setting_configmultiselect('uniljournal/allowedmimegroups',
         get_string('allowedmimegroups', 'uniljournal'), get_string('allowedmimegroupsdescription', 'uniljournal'),
