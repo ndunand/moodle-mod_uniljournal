@@ -41,5 +41,7 @@ $string['ujlogo'] = 'Coverpage logo';
 $string['ujlogo_help'] = '(TO BE COMPLETED !) The logo will be displayed in its nominal size on the first page of the printable version.';
 $string['ujcomments_allowed'] = 'Activate comments';
 $string['ujcomments_allowed_help'] = '(TO BE COMPLETED !) Activate (or not) the possibility to associate general comments to each article of the journal.';
+$string['allowedmimegroups'] = 'Allowed file types within Unil journal module';
+$string['allowedmimegroupsdescription'] = 'Restricts the list of allowed file MIME type groups in the UNIL journal module instances.';
 $string['pluginadministration'] = 'UNIL Journal administration';
 $string['pluginname'] = 'UNIL Learning Journal';
