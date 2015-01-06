@@ -157,6 +157,26 @@ function xmldb_uniljournal_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015010502, 'uniljournal');
     }
 
+    if ($oldversion < 2015010600) {
+
+        // Rename field description on table uniljournal to intro.
+        $table = new xmldb_table('uniljournal');
+        $field = new xmldb_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null, 'subtitle');
+
+        // Launch rename field description.
+        $dbman->rename_field($table, $field, 'intro');
+        
+         // Define field introformat to be added to uniljournal.
+        $field = new xmldb_field('introformat', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'intro');
+
+        // Conditionally launch add field introformat.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Uniljournal savepoint reached.
+        upgrade_mod_savepoint(true, 2015010600, 'uniljournal');
+    }
     
     return true;
 }

@@ -55,11 +55,8 @@ class mod_uniljournal_mod_form extends moodleform_mod {
         $mform->setType('subtitle', PARAM_TEXT);
         $mform->addRule('subtitle', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('subtitle', 'ujsubtitle', 'uniljournal');
-        
-        $mform->addElement('textarea', 'description', get_string('ujdescription', 'uniljournal'), '');
-        $mform->setType('description', PARAM_TEXT);
-        $mform->addRule('description', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        $mform->addHelpButton('description', 'ujdescription', 'uniljournal');
+
+        $this->add_intro_editor(false);
         
         $filemanager_options = array();
         $filemanager_options['accepted_types'] = 'web_image';
