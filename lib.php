@@ -24,7 +24,7 @@
  * Moodle is performing actions across all modules.
  *
  * @package    mod_uniljournal
- * @copyright  2014 Liip AG {@link http://www.liip.ch/}
+ * @copyright  2014, 2015 Liip AG {@link http://www.liip.ch/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -49,7 +49,7 @@ defined('MOODLE_INTERNAL') || die();
 function uniljournal_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_INTRO:
-            return true;
+            return false;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         default:
@@ -71,12 +71,17 @@ function uniljournal_supports($feature) {
  */
 function uniljournal_add_instance(stdClass $uniljournal, mod_uniljournal_mod_form $mform = null) {
     global $DB;
+    require_once("locallib.php");
 
+    $cmid = $uniljournal->coursemodule;
     $uniljournal->timecreated = time();
+    
+    $uniljournal->id = $DB->insert_record('uniljournal', $uniljournal);
 
-    // You may have to add extra stuff in here.
-
-    return $DB->insert_record('uniljournal', $uniljournal);
+    // we need to use context now, so we need to make sure all needed info is already in db
+    $DB->set_field('course_modules', 'instance', $uniljournal->id, array('id' => $cmid));
+    uniljournal_set_logo($uniljournal);
+    return $uniljournal->id;
 }
 
 /**
@@ -92,13 +97,15 @@ function uniljournal_add_instance(stdClass $uniljournal, mod_uniljournal_mod_for
  */
 function uniljournal_update_instance(stdClass $uniljournal, mod_uniljournal_mod_form $mform = null) {
     global $DB;
-
+    require_once("locallib.php");
+    
     $uniljournal->timemodified = time();
     $uniljournal->id = $uniljournal->instance;
-
-    // You may have to add extra stuff in here.
-
-    return $DB->update_record('uniljournal', $uniljournal);
+    
+    $DB->update_record('uniljournal', $uniljournal);
+    uniljournal_set_logo($uniljournal);
+    
+    return true;
 }
 
 /**
@@ -317,7 +324,7 @@ function uniljournal_update_grades(stdClass $uniljournal, $userid = 0) {
  * @return array of [(string)filearea] => (string)description
  */
 function uniljournal_get_file_areas($course, $cm, $context) {
-    return array();
+    return array("logo" => "Activity logo");
 }
 
 /**
@@ -338,7 +345,31 @@ function uniljournal_get_file_areas($course, $cm, $context) {
  * @return file_info instance or null if not found
  */
 function uniljournal_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
-    return null;
+
+    if (!has_capability('moodle/course:managefiles', $context)) {
+        return null;
+    }
+
+    $fs = get_file_storage();
+
+    switch ($filearea) {
+        case "logo":
+          $filepath = is_null($filepath) ? '/' : $filepath;
+          $filename = is_null($filename) ? '.' : $filename;
+
+          $urlbase = $CFG->wwwroot.'/pluginfile.php';
+          if (!$storedfile = $fs->get_file($context->id, 'mod_uniljournal', 'logo', 0, $filepath, $filename)) {
+              if ($filepath === '/' and $filename === '.') {
+                  $storedfile = new virtual_root_file($context->id, 'mod_uniljournal', 'logo', 0);
+              } else {
+                  // not found
+                  return null;
+              }
+          }
+          return new file_info_stored($browser, $context, $storedfile, $urlbase, $areas[$filearea], false, true, false, false);
+    }
+
+    return false;
 }
 
 /**
@@ -364,7 +395,34 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
 
     require_login($course, true, $cm);
 
-    send_file_not_found();
+    if (!$uniljournal = $DB->get_record('uniljournal', array('id' => $cm->instance))) {
+        return false;
+    }
+    
+    $fileareas = uniljournal_get_file_areas($course, $cm, $context);
+    if (!array_key_exists($filearea, $fileareas)) {
+        return false;
+    }
+
+    if (count($args) == 0) return false;
+    
+    if (count($args) == 1) {
+         $filepath = array_shift($args);
+    } else {
+         $itemid = (int)array_shift($args);
+         $filepath = array_shift($args);
+    }
+
+    $fs = get_file_storage();
+    switch ($filearea) {
+        case "logo":
+          $fullpath = "/$context->id/mod_uniljournal/$filearea/0/$filepath";
+          if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+              return false;
+          }
+          break;
+    }
+    send_stored_file($file, 0, 0, true);
 }
 
 /**

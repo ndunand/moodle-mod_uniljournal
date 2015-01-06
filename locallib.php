@@ -21,18 +21,33 @@
  * logic, should go here. Never include this file from your lib.php!
  *
  * @package    mod_uniljournal
- * @copyright  2014 Liip AG {@link http://www.liip.ch/}
+ * @copyright  2015 Liip AG {@link http://www.liip.ch/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-/*
- * Does something really useful with the passed things
- *
- * @param array $things
- * @return object
- *function uniljournal_do_something_useful(array $things) {
- *    return new stdClass();
- *}
- */
+function uniljournal_set_logo($data) {
+    global $DB;
+    $fs = get_file_storage();
+    $cmid = $data->coursemodule;
+    $draftitemid = $data->logo;
+
+    $context = context_module::instance($cmid);
+    if ($draftitemid) {
+        file_save_draft_area_files($draftitemid, $context->id, 'mod_uniljournal', 'logo', 0, array('subdirs'=>false));
+    }
+}
+
+function uniljournal_get_logo($context) {
+    global $DB;
+    $fs = get_file_storage();
+    
+    $logos = $fs->get_area_files($context->id, 'mod_uniljournal', 'logo', false, $sort = "itemid, filepath, filename", false);
+    foreach($logos as $logo) {
+      if ($logo->is_valid_image()) {
+        return $logo;
+      }
+    }
+    return false;
+}

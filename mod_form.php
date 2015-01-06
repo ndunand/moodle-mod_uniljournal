@@ -61,8 +61,11 @@ class mod_uniljournal_mod_form extends moodleform_mod {
         $mform->addRule('description', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('description', 'ujdescription', 'uniljournal');
         
-        $mform->addElement('filepicker', 'logo', get_string('ujlogo', 'uniljournal'), null,
-                   array('maxbytes' => 100, 'accepted_types' => 'image'));
+        $filemanager_options = array();
+        $filemanager_options['accepted_types'] = 'web_image';
+        $filemanager_options['subdirs'] = false;
+        $filemanager_options['maxfiles'] = 1;
+        $mform->addElement('filemanager', 'logo', get_string('ujlogo', 'uniljournal'), null, $filemanager_options);
         $mform->addHelpButton('logo', 'ujlogo', 'uniljournal');
         
         $mform->addElement('selectyesno', 'comments_allowed', get_string('ujcomments_allowed', 'uniljournal'));

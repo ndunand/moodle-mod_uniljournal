@@ -75,7 +75,26 @@ $PAGE->set_context($context);
 echo $OUTPUT->header();
 
 // Replace the following lines with you own code.
-echo $OUTPUT->heading('Yay! It works!');
+echo $OUTPUT->heading('UNIL Journal instance '.$uniljournal->id);
+
+require_once('locallib.php');
+
+$table = new html_table();
+$table->head = array('Key', 'Value');
+$table->data = array();
+
+$table->data[] = array('id', $uniljournal->id);
+$table->data[] = array('name', $uniljournal->name);
+$table->data[] = array('subtitle', $uniljournal->subtitle);
+$table->data[] = array('description', $uniljournal->description);
+if($logo = uniljournal_get_logo($context)) {
+  $url = moodle_url::make_pluginfile_url($logo->get_contextid(), $logo->get_component(), $logo->get_filearea(), $logo->get_itemid(), $logo->get_filepath(), $logo->get_filename());
+  $logoimg = html_writer::img($url, 'Logo');
+  $table->data[] = array('logo', $logoimg);
+}
+$table->data[] = array('comments_allowed', $uniljournal->comments_allowed?"Yes":"No");
+
+echo html_writer::table($table);
 
 // Finish the page.
 echo $OUTPUT->footer();
