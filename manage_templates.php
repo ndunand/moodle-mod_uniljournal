@@ -75,7 +75,7 @@ if (count($amodels) > 0) {
   echo html_writer::table($table);
 }
 
-$url = new moodle_url('/mod/uniljournal/edit_template.php', array('id'=> $cm->id));
+$url = new moodle_url('/mod/uniljournal/edit_template.php', array('cmid'=> $cm->id));
 echo html_writer::link($url, get_string('addtemplate', 'mod_uniljournal'));
 
 echo $OUTPUT->footer();
