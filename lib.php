@@ -450,4 +450,9 @@ function uniljournal_extend_navigation(navigation_node $navref, stdclass $course
  * @param navigation_node $uniljournalnode {@link navigation_node}
  */
 function uniljournal_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $uniljournalnode=null) {
+    global $PAGE;
+
+    if (has_capability('mod/uniljournal:managetemplates', $PAGE->cm->context)) {
+         $uniljournalnode->add(get_string("managetemplates", "mod_uniljournal"), new moodle_url('/mod/uniljournal/manage_templates.php', array('id'=>$PAGE->cm->id)));
+    }
 }

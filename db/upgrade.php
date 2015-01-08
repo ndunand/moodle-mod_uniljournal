@@ -178,5 +178,20 @@ function xmldb_uniljournal_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015010600, 'uniljournal');
     }
     
+    if ($oldversion < 2015010602) {
+
+        // Define field instructionsformat to be added to uniljournal_articlemodels.
+        $table = new xmldb_table('uniljournal_articlemodels');
+        $field = new xmldb_field('instructionsformat', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'instructions');
+
+        // Conditionally launch add field instructionsformat.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Uniljournal savepoint reached.
+        upgrade_mod_savepoint(true, 2015010602, 'uniljournal');
+    }
+    
     return true;
 }

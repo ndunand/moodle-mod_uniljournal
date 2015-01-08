@@ -46,7 +46,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// Modify capabilities as needed and remove this comment.
 $capabilities = array(
     'mod/uniljournal:addinstance' => array(
         'riskbitmask' => RISK_XSS,
@@ -78,5 +77,16 @@ $capabilities = array(
         'legacy' => array(
             'student' => CAP_ALLOW
         )
+    ),
+
+    'mod/uniljournal:managetemplates' => array(
+        'riskbitmask' => RISK_XSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
 );
