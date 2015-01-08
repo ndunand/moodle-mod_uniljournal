@@ -73,7 +73,7 @@ if ($mform->is_cancelled()) {
 
     $entry->instructions       = '';          // updated later
     $entry->instructionsformat = FORMAT_HTML; // updated later
-    $entry->sortorder = 0;
+    $entry->sortorder = 0; // TODO: See if it's needed to put it up last.
     $entry->hidden = false;
     $entry->uniljournalid = $uniljournal->id;
 
