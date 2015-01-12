@@ -54,7 +54,7 @@ $event = \mod_uniljournal\event\course_module_viewed::create(array(
 ));
 $event->add_record_snapshot('course', $PAGE->course);
 // In the next line you can use $PAGE->activityrecord if you have set it, or skip this line if you don't have a record.
-$event->add_record_snapshot($PAGE->cm->modname, $activityrecord);
+// $event->add_record_snapshot($PAGE->cm->modname, $PAGE->activityrecord);
 $event->trigger();
 
 // Print the page header.

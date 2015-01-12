@@ -437,8 +437,8 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
  * @param stdClass $module
  * @param cm_info $cm
  */
-function uniljournal_extend_navigation(navigation_node $navref, stdclass $course, stdclass $module, cm_info $cm) {
-}
+// function uniljournal_extend_navigation(navigation_node $navref, stdclass $course, stdclass $module, cm_info $cm) {
+// }
 
 /**
  * Extends the settings navigation with the uniljournal settings
