@@ -27,6 +27,7 @@
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(__FILE__).'/locallib.php');
 
 $cmid  = optional_param('cmid', 0, PARAM_INT); // Course_module ID, or
 $id = optional_param('id', 0, PARAM_INT);  // template ID
@@ -49,9 +50,11 @@ if ($id) { // if entry is specified
     if (!$entry = $DB->get_record('uniljournal_articlemodels', array('id' => $id))) {
         print_error('invalidentry');
     }
+    $elements = $DB->get_records('uniljournal_articleelements', array('articlemodelid' => $id), 'sortorder');
 } else { // new entry
     $entry = new stdClass();
     $entry->id = null;
+    $elements = array();
 }
 
 $entry = file_prepare_standard_editor($entry, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'articletemplates', $entry->id);
@@ -63,6 +66,9 @@ $customdata['current'] = $entry;
 $customdata['course'] = $course;
 $customdata['instructionsoptions'] = $instructionsoptions;
 $customdata['cm'] = $cm;
+$customdata['elements'] = $elements;
+$customdata['elementsoptions'] = uniljournal_get_elements_array();
+
 $mform = new template_edit_form(null, $customdata);
 
 //Form processing and displaying is done here
@@ -83,6 +89,34 @@ if ($mform->is_cancelled()) {
     } else {
         // Update existing entry.
         $DB->update_record('uniljournal_articlemodels', $entry);
+    }
+
+    $articleelementorder = 0;
+    foreach($entry->articleelements as $articleelementid => $articleelement) {
+      $articleelementobject = new stdClass();
+      $articleelementobject->articlemodelid = $entry->id;
+      $articleelementobject->sortorder = $articleelementorder++;
+      if(array_key_exists($articleelement, $customdata['elementsoptions'])) {
+        $articleelementobject->element_type = $articleelement;
+        if ($articleelement !== "0") {
+          if(!array_key_exists($articleelementid, $elements)) { // -1 should never be in there
+            // Add new entry
+            $articleelementobject->id = $DB->insert_record('uniljournal_articleelements', $articleelementobject);
+          } else {
+            // Old element, update!
+            $articleelementobject->id = $articleelementid;
+            $DB->update_record('uniljournal_articleelements', $articleelementobject);
+            // Don't delete it later on
+            unset($elements[$articleelementid]);
+          }
+        }
+      }
+    }
+
+    // Delete the elements that were there before and that aren't here anymore (see "unset(" above)
+    foreach($elements as $articleelementid => $articleelement) {
+      // TODO: Check if we can really delete it (it is not used anywhere)
+      $DB->delete_records('uniljournal_articleelements', array('id' => $articleelementid));
     }
 
     // save and relink embedded images and save attachments

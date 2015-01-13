@@ -39,6 +39,8 @@ class template_edit_form extends moodleform {
         $cm                  = $this->_customdata['cm'];
         $instructionsoptions = $this->_customdata['instructionsoptions'];
         $currententry        = $this->_customdata['current'];
+        $elements            = $this->_customdata['elements'];
+        $elementsoptions     = $this->_customdata['elementsoptions'];
         $context  = context_module::instance($cm->id);
 
         $this->course  = $course;
@@ -60,6 +62,17 @@ class template_edit_form extends moodleform {
         $mform->setType('instructions_editor', PARAM_RAW);
         $mform->addHelpButton('instructions_editor', 'template_instructions', 'uniljournal');
 
+        foreach($elements as $element) {
+          $select = $mform->addElement('select', 'articleelements['.$element->id.']', get_string('template_element', 'uniljournal'), $elementsoptions);
+          $mform->setType('articleelements['.$element->id.']', PARAM_TEXT);
+          $select->setSelected($element->element_type);
+        }
+        
+        $newelementsid = -1;
+        
+        $mform->addElement('select', 'articleelements['.$newelementsid.']', get_string('template_element', 'uniljournal'), $elementsoptions);
+        $mform->setType('articleelements['.$newelementsid.']', PARAM_TEXT);
+        
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'cmid');

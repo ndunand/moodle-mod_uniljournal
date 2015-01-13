@@ -193,5 +193,25 @@ function xmldb_uniljournal_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015010602, 'uniljournal');
     }
     
+    if ($oldversion < 2015011300) {
+    
+        // Define field id to be added to uniljournal_articlemodels.
+        $table = new xmldb_table('uniljournal_articleelements');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $table->add_field('articlemodelid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
+        $table->add_field('element_type', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null, 'articlemodelid');
+        $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'element_type');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('articlemodelid', XMLDB_INDEX_NOTUNIQUE, array('articlemodelid'));
+
+        // Conditionally launch create table for assign_user_mapping.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        
+        // Uniljournal savepoint reached.
+        upgrade_mod_savepoint(true, 2015011300, 'uniljournal');
+    }
+
     return true;
 }
