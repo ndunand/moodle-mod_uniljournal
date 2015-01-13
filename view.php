@@ -75,26 +75,80 @@ $PAGE->set_context($context);
 echo $OUTPUT->header();
 
 // Replace the following lines with you own code.
-echo $OUTPUT->heading('UNIL Journal instance '.$uniljournal->id);
+echo $OUTPUT->heading(get_string('myarticles','uniljournal'));
 
 require_once('locallib.php');
 
-$table = new html_table();
-$table->head = array('Key', 'Value');
-$table->data = array();
+// List existing articles: TODO
+// Get available article templates
+$articlemodels = $DB->get_records_select('uniljournal_articlemodels', "uniljournalid = $uniljournal->id AND hidden != '\x31' ORDER BY sortorder ASC");
+$articleelements = $DB->get_records_sql("
+    SELECT ae.id as aeid, am.id as id, am.title, am.sortorder as sortorder, ae.element_type, ae.sortorder as aesortorder
+         FROM {uniljournal_articlemodels} am
+    INNER JOIN {uniljournal_articleelements} ae ON ae.articlemodelid = am.id
+    WHERE am.hidden != '\x31' AND am.uniljournalid = :uniljournalid
+    ORDER BY am.sortorder ASC, ae.sortorder ASC", array('uniljournalid' => $uniljournal->id));
 
-$table->data[] = array('id', $uniljournal->id);
-$table->data[] = array('name', $uniljournal->name);
-$table->data[] = array('subtitle', $uniljournal->subtitle);
-$table->data[] = array('intro', $uniljournal->intro);
-if($logo = uniljournal_get_logo($context)) {
-  $url = moodle_url::make_pluginfile_url($logo->get_contextid(), $logo->get_component(), $logo->get_filearea(), $logo->get_itemid(), $logo->get_filepath(), $logo->get_filename());
-  $logoimg = html_writer::img($url, 'Logo');
-  $table->data[] = array('logo', $logoimg);
+$articleelementsgroups = array();
+foreach($articleelements as $aeid => $aehybrid) {
+  if(!array_key_exists($aehybrid->id, $articleelementsgroups)) {
+    $articleelementsgroups[$aehybrid->id] = array();
+  }
+  if(!array_key_exists($aehybrid->element_type, $articleelementsgroups[$aehybrid->id])) {
+    $articleelementsgroups[$aehybrid->id][$aehybrid->element_type] = 0;
+  }
+  $articleelementsgroups[$aehybrid->id][$aehybrid->element_type]++;
 }
-$table->data[] = array('comments_allowed', $uniljournal->comments_allowed?"Yes":"No");
 
-echo html_writer::table($table);
+$templatesoptions = array();
+$templatesoptions[-1] = get_string('addarticle', 'mod_uniljournal');
+function translate_templatedesc(&$item, $key) {
+  $item = get_string('element_'.$key.'_desc', 'mod_uniljournal', $item);
+}
+foreach($articlemodels as $amid => $am)  {
+
+  $templatesoptions[$amid] = $am->title;
+  if(array_key_exists($amid, $articleelementsgroups)) {
+    array_walk($articleelementsgroups[$amid], 'translate_templatedesc');
+    
+    $templatesoptions[$amid] .= " (".implode($articleelementsgroups[$amid],", ").")";
+  }
+}
+
+
+
+if(false) {
+  $table = new html_table();
+  $table->head = array('Key', 'Value');
+  $table->data = array();
+
+  $table->data[] = array('id', $uniljournal->id);
+  $table->data[] = array('name', $uniljournal->name);
+  $table->data[] = array('subtitle', $uniljournal->subtitle);
+  $table->data[] = array('intro', $uniljournal->intro);
+  if($logo = uniljournal_get_logo($context)) {
+    $url = moodle_url::make_pluginfile_url($logo->get_contextid(), $logo->get_component(), $logo->get_filearea(), $logo->get_itemid(), $logo->get_filepath(), $logo->get_filename());
+    $logoimg = html_writer::img($url, 'Logo');
+    $table->data[] = array('logo', $logoimg);
+  }
+  $table->data[] = array('comments_allowed', $uniljournal->comments_allowed?"Yes":"No");
+
+  echo html_writer::table($table);
+}
+
+if(count($articlemodels) > 1) {
+  require_once('view_choose_template_form.php');
+  $customdata = array();
+  $customdata['options'] = $templatesoptions;
+
+  $mform = new choose_template_form(new moodle_url('/mod/uniljournal/edit.php', array('cmid' => $cm->id)), $customdata);
+  //displays the form, with an auto-submitter and no change checker
+  $mform->display();
+  $PAGE->requires->yui_module('moodle-mod_uniljournal-viewsubmitonchange', 'M.mod_uniljournal.viewsubmitonchange.init');
+} else {
+  $am = array_pop($articlemodels);
+  echo html_writer::link(new moodle_url('/mod/uniljournal/edit.php', array('cmid' => $cm->id, 'amid' => $am->id)), get_string('addarticletempl', 'mod_uniljournal', $templatesoptions[$am->id]));
+}
 
 // Finish the page.
 echo $OUTPUT->footer();
