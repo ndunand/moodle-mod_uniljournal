@@ -73,7 +73,7 @@ $mform = new template_edit_form(null, $customdata);
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/mod/uniljournal/manage_templates.php', array('cmid' => $cm->id)));
+    redirect(new moodle_url('/mod/uniljournal/manage_templates.php', array('id' => $cm->id)));
 } else if ($entry = $mform->get_data()) {
     $isnewentry = empty($entry->id);
 
