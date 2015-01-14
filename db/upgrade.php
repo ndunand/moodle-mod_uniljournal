@@ -215,7 +215,6 @@ function xmldb_uniljournal_upgrade($oldversion) {
     
     if ($oldversion < 2015011400) {
     
-        // Define field id to be added to uniljournal_articlemodels.
         $table = new xmldb_table('uniljournal_articleinstances');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
         $table->add_field('articlemodelid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
@@ -229,7 +228,6 @@ function xmldb_uniljournal_upgrade($oldversion) {
             $dbman->create_table($table);
         }
         
-        // Define field id to be added to uniljournal_articlemodels.
         $table = new xmldb_table('uniljournal_aeinstances');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
         $table->add_field('instanceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
@@ -248,6 +246,28 @@ function xmldb_uniljournal_upgrade($oldversion) {
         
         // Uniljournal savepoint reached.
         upgrade_mod_savepoint(true, 2015011400, 'uniljournal');
+    }
+    
+    if ($oldversion < 2015011401) {
+    
+        $table = new xmldb_table('uniljournal_articleinstances');
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'userid');
+
+        // Conditionally launch add field instructionsformat.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table = new xmldb_table('uniljournal_aeinstances');
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'version');
+
+        // Conditionally launch add field instructionsformat.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        // Uniljournal savepoint reached.
+        upgrade_mod_savepoint(true, 2015011401, 'uniljournal');
     }
     
     return true;
