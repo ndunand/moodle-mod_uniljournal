@@ -136,6 +136,10 @@ $PAGE->set_title(format_string($uniljournal->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
+$PAGE->requires->jquery();
+$PAGE->requires->jquery_plugin('ui');
+$PAGE->requires->jquery_plugin('ui-css');
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('managetemplates', 'mod_uniljournal'));
 
@@ -143,3 +147,20 @@ echo $OUTPUT->heading(get_string('managetemplates', 'mod_uniljournal'));
 $mform->display();
 
 echo $OUTPUT->footer();
+
+echo '
+<script>
+    $(function() {
+        $( "#elementsToAdd" ).sortable({
+            connectWith: "#elementsAdded",
+            update: function(event, ui) {
+                $(event.toElement.cloneNode(true)).prependTo($("#elementsToAdd"));
+            }
+        });
+        $( "#elementsAdded" ).sortable({
+            stop: function(event, ui) {
+                console.log(event);
+            }
+        });
+    });
+</script>';

@@ -62,16 +62,22 @@ class template_edit_form extends moodleform {
         $mform->setType('instructions_editor', PARAM_RAW);
         $mform->addHelpButton('instructions_editor', 'template_instructions', 'uniljournal');
 
+        $mform->addElement('html', '<div class="fitem fitem_dragdrop">');
+        $mform->addElement('html', '<div class="fitemtitle"><label>' . get_string('template_element', 'uniljournal') . '</label></div>');
+        $mform->addElement('html', '<div class="felement">');
+        $mform->addElement('html', '<div><ul id="elementsAdded" class="elementsAdded">');
         foreach($elements as $element) {
-          $select = $mform->addElement('select', 'articleelements['.$element->id.']', get_string('template_element', 'uniljournal'), $elementsoptions);
-          $mform->setType('articleelements['.$element->id.']', PARAM_TEXT);
-          $select->setSelected($element->element_type);
+            $mform->addElement('html', '<li>' . $element->element_type . '</li>');
         }
-        
-        $newelementsid = -1;
-        
-        $mform->addElement('select', 'articleelements['.$newelementsid.']', get_string('template_element', 'uniljournal'), $elementsoptions);
-        $mform->setType('articleelements['.$newelementsid.']', PARAM_TEXT);
+        $mform->addElement('html', '</ul>');
+        $mform->addElement('html', '<ul id="elementsToAdd" class="elementsToAdd">');
+        $mform->addElement('html', '<li>Title</li>');
+        $mform->addElement('html', '<li>Text</li>');
+        $mform->addElement('html', '<li>Image</li>');
+        $mform->addElement('html', '<li>Attachment</li>');
+        $mform->addElement('html', '</ul></div>');
+        $mform->addElement('html', '</div>');
+        $mform->addElement('html', '</div>');
         
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);

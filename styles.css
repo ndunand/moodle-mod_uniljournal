@@ -1,0 +1,19 @@
+.fitem_dragdrop .row {
+    margin: 0;
+}
+
+.fitem_dragdrop ul {
+    list-style: none;
+    border: 1px solid black;
+}
+
+.fitem_dragdrop button {
+    display: block;
+}
+
+.fitem_dragdrop .elementsToAdd,
+.fitem_dragdrop .elementsAdded {
+    display: block;
+    float: left;
+    width: 45%;
+}
