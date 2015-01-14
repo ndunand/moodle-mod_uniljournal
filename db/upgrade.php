@@ -212,6 +212,43 @@ function xmldb_uniljournal_upgrade($oldversion) {
         // Uniljournal savepoint reached.
         upgrade_mod_savepoint(true, 2015011300, 'uniljournal');
     }
+    
+    if ($oldversion < 2015011400) {
+    
+        // Define field id to be added to uniljournal_articlemodels.
+        $table = new xmldb_table('uniljournal_articleinstances');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $table->add_field('articlemodelid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'articlemodelid');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('articlemodelid', XMLDB_INDEX_NOTUNIQUE, array('articlemodelid'));
+        $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, array('userid'));
 
+        // Conditionally launch create table for assign_user_mapping.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        
+        // Define field id to be added to uniljournal_articlemodels.
+        $table = new xmldb_table('uniljournal_aeinstances');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $table->add_field('instanceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
+        $table->add_field('elementid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'instanceid');
+        $table->add_field('version', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'elementid');
+        $table->add_field('text', XMLDB_TYPE_TEXT, null, null, null, null, null, 'version');
+        $table->add_field('file', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'text');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_index('instanceid', XMLDB_INDEX_NOTUNIQUE, array('instanceid'));
+        $table->add_index('elementid', XMLDB_INDEX_NOTUNIQUE, array('elementid'));
+
+        // Conditionally launch create table for assign_user_mapping.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        
+        // Uniljournal savepoint reached.
+        upgrade_mod_savepoint(true, 2015011400, 'uniljournal');
+    }
+    
     return true;
 }

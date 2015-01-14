@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/uniljournal/db" VERSION="20150113" COMMENT="XMLDB file for Moodle mod/uniljournal"
+<XMLDB PATH="mod/uniljournal/db" VERSION="20150114" COMMENT="XMLDB file for Moodle mod/uniljournal"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -54,6 +54,38 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="articlemodelid" UNIQUE="false" FIELDS="articlemodelid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="uniljournal_articleinstances" COMMENT="Article instances">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="articlemodelid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="articlemodelid" UNIQUE="false" FIELDS="articlemodelid"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="uniljournal_aeinstances" COMMENT="Article element instances">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="instanceid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="elementid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="version" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="text" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="file" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="instanceid" UNIQUE="false" FIELDS="instanceid"/>
+        <INDEX NAME="elementid" UNIQUE="false" FIELDS="elementid"/>
+        <INDEX NAME="version" UNIQUE="false" FIELDS="version"/>
       </INDEXES>
     </TABLE>
   </TABLES>
