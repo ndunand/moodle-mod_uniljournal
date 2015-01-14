@@ -136,6 +136,56 @@ if(false) {
   echo html_writer::table($table);
 }
 
+// Display table of articles
+$articleinstances = $DB->get_records_sql('SELECT ai.id, ai.timemodified, ai.title, am.id as amid, am.title as amtitle
+       FROM {uniljournal_articleinstances} ai
+  LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
+  WHERE uniljournalid = :ujid AND userid = :uid
+  ORDER BY ai.timemodified DESC', array('ujid' => $uniljournal->id, 'uid' => $USER->id));
+
+// TODO: Check rights
+if(count($articleinstances) > 0) {
+  $table = new html_table();
+  $table->head = array(
+      get_string('myarticles', 'uniljournal'),
+      get_string('lastmodified'),
+      get_string('template', 'uniljournal'),
+      get_string('actions'),
+  );
+
+  $aiter = 0;
+  foreach($articleinstances as $ai) {
+    $aiter++;
+    $row = new html_table_row();
+    $script = 'edit.php';
+    $row->cells[] = $ai->title; // TODO: Proper title
+    $row->cells[] = strftime('%c', $ai->timemodified);
+    $row->cells[] = $ai->amtitle;
+    
+    $actionarray = array();
+    $actionarray[] = 'edit';
+//     $actionarray[] = 'delete';
+    
+    $actions = "";
+    foreach($actionarray as $actcode) {
+      $script = 'view.php';
+      $args = array('id'=> $cm->id, 'aid' => $ai->id, 'action' => $actcode);
+      
+      if($actcode == 'edit') {
+        $script = 'edit.php';
+        $args = array('cmid'=> $cm->id, 'id' => $ai->id, 'amid' => $ai->amid);
+      }
+
+      $url = new moodle_url('/mod/uniljournal/' . $script, $args);
+      $img = html_writer::img($OUTPUT->pix_url('t/'. $actcode), get_string($actcode));
+      $actions .= html_writer::link($url, $img)."\t";
+    }
+    $row->cells[] = $actions;
+    $table->data[] = $row;
+  }
+  echo html_writer::table($table);
+}
+
 if(count($articlemodels) > 1) {
   require_once('view_choose_template_form.php');
   $customdata = array();
