@@ -35,30 +35,25 @@ class edit_form extends moodleform {
     public function definition() {
 
         global $CFG;
-        $course          = $this->_customdata['course'];
-        $cm              = $this->_customdata['cm'];
-        $currententry    = $this->_customdata['current'];
-        $articlemodel    = $this->_customdata['articlemodel'];
-        $articleelements = $this->_customdata['articleelements'];
+        $course            = $this->_customdata['course'];
+        $cm                = $this->_customdata['cm'];
+        $currententry      = $this->_customdata['current'];
+        $articlemodel      = $this->_customdata['articlemodel'];
+        $articleelements   = $this->_customdata['articleelements'];
+        $textfieldoptions  = $this->_customdata['textfieldoptions'];
+        $attachmentoptions = $this->_customdata['attachmentoptions'];
+        $imageoptions      = $attachmentoptions;
+        $imageoptions['accepted_types'] = array('web_image');
+        
         $context         = context_module::instance($cm->id);
 
         $this->course  = $course;
-    
-        $attachment_options = array();
-//         $attachment_options['accepted_types'] = 'web_image'; // TODO: Inherit from the global admin
-        $attachment_options['subdirs'] = false;
-        $attachment_options['maxfiles'] = 1;
-        
-        $image_options = array();
-        $image_options['accepted_types'] = 'web_image';
-        $image_options['subdirs'] = false;
-        $image_options['maxfiles'] = 1;
     
         $mform = $this->_form;
         
         $mform->addElement('html', '<div class="instructions">'.$articlemodel->instructions.'</div>');
         
-        $mform->addElement('text', 'title', get_string('element_title', 'uniljournal'), array('size' => '64'));
+        $mform->addElement('text', 'title', get_string('article_title', 'uniljournal'), array('size' => '64'));
         $mform->setType('title', PARAM_TEXT);
         $mform->addRule('title', null, 'required', null, 'client');
         $mform->addRule('title', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
@@ -69,16 +64,17 @@ class edit_form extends moodleform {
           
           switch($ae->element_type) {
             case "attachment":
-              $mform->addElement('filemanager', $id, $desc, null, $attachment_options);
+              $mform->addElement('filemanager', $id, $desc, null, $attachmentoptions);
               break;
             case "image":
-              $mform->addElement('filemanager', $id, $desc, null, $image_options);
+              $mform->addElement('filemanager', $id, $desc, null, $imageoptions);
               break;
             case "text":
-              $mform->addElement('editor', $id, $desc);
+              $id .= '_editor';
+              $mform->addElement('editor', $id, $desc, null, $textfieldoptions);
               $mform->setType($id, PARAM_RAW);
               break;
-            case "title":
+            case "subtitle":
               $mform->addElement('text', $id, $desc, array('size' => '64'));
               $mform->setType($id, PARAM_TEXT);
               $mform->addRule($id, get_string('maximumchars', '', 255), 'maxlength', 255, 'client');

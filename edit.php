@@ -43,12 +43,26 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 // TODO: require_capability('mod/uniljournal:', $context);
 
+// Get the model we're editing
 if (!$articlemodel = $DB->get_record_select('uniljournal_articlemodels', "id = $amid AND hidden != '\x31'")) {
        print_error('invalidentry');
 }
+// Get all elements of the model
 $articleelements = $DB->get_records_select('uniljournal_articleelements', "articlemodelid = $amid ORDER BY sortorder ASC");
 
-// $instructionsoptions = array('trusttext'=> true, 'maxfiles'=> 0, 'context'=> $context, 'subdirs'=>0);
+$textfieldoptions = array(
+  'subdirs'  => false,
+  'maxfiles' => '12',
+  'maxbytes' => $articlemodel->maxbytes,
+  'context'  => $context
+);
+
+$attachmentoptions = array(
+  'subdirs'  => false,
+  'maxfiles' => '1',
+  'maxbytes' => $articlemodel->maxbytes,
+  'context'  => $context
+);
 
 if ($id) { // if entry is specified
   if (!$articleinstance = $DB->get_record('uniljournal_articleinstances', array('id' => $id))) {
@@ -58,37 +72,36 @@ if ($id) { // if entry is specified
   // Get the existing article elements for edition
   $version = 0;
   foreach($articleelements as $ae) {
-    $property_name = 'element_'.$ae->id;
+    $property_name   = 'element_'.$ae->id;
+    $property_edit   = $property_name.'_editor';
+    $property_format = $property_name.'format';
     $aeinstance = $DB->get_record_sql('
       SELECT * FROM {uniljournal_aeinstances} 
         WHERE instanceid = :instanceid
           AND elementid  = :elementid 
      ORDER BY version DESC LIMIT 1', array('instanceid' => $articleinstance->id, 'elementid' => $ae->id));
-     switch($ae->element_type) {
-            case "attachment":
-              // TODO
-              break;
-            case "image":
-              // TODO
-              break;
-            case "text":
-              // TODO
-              break;
-            case "title":
-              $p = $aeinstance->text;
-              break;
+    if($aeinstance !== false) {
+      $articleinstance->$property_name = $aeinstance->value;
+      $articleinstance->$property_format = $aeinstance->valueformat;
+      $version = max($version, $aeinstance->version);
+      
+      switch($ae->element_type) {
+        case "image":
+        case "attachement":
+          $articleinstance = file_prepare_standard_filemanager($articleinstance, $property_name, $attachmentoptions, $context, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
+          break;
+        case "text":
+          $articleinstance = file_prepare_standard_editor($articleinstance, $property_name, $textfieldoptions, $context, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
+          break;
+      }
     }
-    $articleinstance->$property_name = $p;
-    $version = max($version, $aeinstance->version);
   }
-  
 } else { // new entry
   $articleinstance = new stdClass();
   $articleinstance->id = null;
   $version = 0;
 }
 
-// $articleinstance = file_prepare_standard_editor($articleinstance, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'articletemplates', $articleinstance->id);
 $articleinstance->cmid = $cmid;
 $articleinstance->amid = $amid;
 
@@ -98,6 +111,8 @@ $customdata['current'] = $articleinstance;
 $customdata['course'] = $course;
 $customdata['articlemodel'] = $articlemodel;
 $customdata['articleelements'] = $articleelements;
+$customdata['attachmentoptions'] = $attachmentoptions;
+$customdata['textfieldoptions'] = $textfieldoptions;
 $customdata['cm'] = $cm;
 
 $mform = new edit_form(null, $customdata);
@@ -119,28 +134,35 @@ if ($mform->is_cancelled()) {
     }
     
     foreach($articleelements as $ae) {
-      $property_name = 'element_'.$ae->id;
-      if(isset($articleinstance->$property_name)) {
+      $property_name   = 'element_'.$ae->id;
+      $property_edit   = $property_name.'_editor';
+      $property_format = $property_name.'format';
+      if(isset($articleinstance->$property_name) or isset($articleinstance->$property_edit)) {
         $element = new stdClass();
         $element->instanceid = $articleinstance->id;
         $element->elementid = $ae->id;
         $element->version = $version + 1;
         $element->timemodified = time();
+        if(isset($articleinstance->$property_name)) {
+          $element->value = $articleinstance->$property_name;
+        }
+        $element->id = $DB->insert_record('uniljournal_aeinstances', $element);
         switch($ae->element_type) {
             case "attachment":
-              // TODO
-              break;
             case "image":
-              // TODO
+              $draftitemid = $articleinstance->$property_name;
+              $context = context_module::instance($cmid);
+              if ($draftitemid) {
+                  file_save_draft_area_files($draftitemid, $context->id, 'mod_uniljournal', 'elementinstance', $element->id, $attachmentoptions);
+              }
               break;
             case "text":
-              // TODO
-              break;
-            case "title":
-              $element->text = $articleinstance->$property_name;
+              $articleinstance = file_postupdate_standard_editor($articleinstance, $property_name, $textfieldoptions, $context, 'mod_uniljournal', 'elementinstance', $element->id);
+              $element->value       = $articleinstance->$property_name;
+              $element->valueformat = $articleinstance->$property_format;
+              $DB->update_record('uniljournal_aeinstances', $element);
               break;
         }
-        $DB->insert_record('uniljournal_aeinstances', $element);
       }
     }
     redirect(new moodle_url('/mod/uniljournal/view.php', array('id' => $cm->id)));

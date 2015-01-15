@@ -55,7 +55,7 @@ function uniljournal_get_logo($context) {
 function uniljournal_get_elements_array() {
   $options = array();
   $options[0] = '-';
-  foreach(array('title', 'text', 'image', 'attachment') as $elem) {
+  foreach(array('subtitle', 'text', 'image', 'attachment') as $elem) {
     $options[$elem] = get_string('element_'.$elem, 'uniljournal');
   }
   return $options;
