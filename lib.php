@@ -322,7 +322,10 @@ function uniljournal_update_grades(stdClass $uniljournal, $userid = 0) {
  * @return array of [(string)filearea] => (string)description
  */
 function uniljournal_get_file_areas($course, $cm, $context) {
-    return array("logo" => "Activity logo");
+    return array(
+      "logo" => "Activity logo", // TODO: Translate
+      "elementinstance" => "Elements uploaded", // TODO: Translate
+      );
 }
 
 /**
@@ -414,11 +417,16 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
     $fs = get_file_storage();
     switch ($filearea) {
         case "logo":
-          $fullpath = "/$context->id/mod_uniljournal/$filearea/0/$filepath";
-          if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-              return false;
-          }
+          $itemid = 0;
+        case "elementinstance":
           break;
+        default:
+          return false;
+    }
+
+    $fullpath = "/$context->id/mod_uniljournal/$filearea/$itemid/$filepath";
+    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+        return false;
     }
     send_stored_file($file, 0, 0, true);
 }

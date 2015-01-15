@@ -158,7 +158,9 @@ if(count($articleinstances) > 0) {
     $aiter++;
     $row = new html_table_row();
     $script = 'edit.php';
-    $row->cells[] = $ai->title; // TODO: Proper title
+    $row->cells[] = html_writer::link(
+                      new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ai->id, 'cmid' => $cm->id)),
+                      $ai->title);
     $row->cells[] = strftime('%c', $ai->timemodified);
     $row->cells[] = $ai->amtitle;
     
@@ -172,7 +174,7 @@ if(count($articleinstances) > 0) {
       $args = array('id'=> $cm->id, 'aid' => $ai->id, 'action' => $actcode);
       
       if($actcode == 'edit') {
-        $script = 'edit.php';
+        $script = 'edit_article.php';
         $args = array('cmid'=> $cm->id, 'id' => $ai->id, 'amid' => $ai->amid);
       }
 
@@ -191,13 +193,13 @@ if(count($articlemodels) > 1) {
   $customdata = array();
   $customdata['options'] = $templatesoptions;
 
-  $mform = new choose_template_form(new moodle_url('/mod/uniljournal/edit.php', array('cmid' => $cm->id)), $customdata);
+  $mform = new choose_template_form(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id)), $customdata);
   //displays the form, with an auto-submitter and no change checker
   $mform->display();
   $PAGE->requires->yui_module('moodle-mod_uniljournal-viewsubmitonchange', 'M.mod_uniljournal.viewsubmitonchange.init');
 } else {
   $am = array_pop($articlemodels);
-  echo html_writer::link(new moodle_url('/mod/uniljournal/edit.php', array('cmid' => $cm->id, 'amid' => $am->id)), get_string('addarticletempl', 'mod_uniljournal', $templatesoptions[$am->id]));
+  echo html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id, 'amid' => $am->id)), get_string('addarticletempl', 'mod_uniljournal', $templatesoptions[$am->id]));
 }
 
 // Finish the page.

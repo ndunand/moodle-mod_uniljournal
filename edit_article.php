@@ -105,7 +105,7 @@ if ($id) { // if entry is specified
 $articleinstance->cmid = $cmid;
 $articleinstance->amid = $amid;
 
-require_once('edit_form.php');
+require_once('edit_article_form.php');
 $customdata = array();
 $customdata['current'] = $articleinstance;
 $customdata['course'] = $course;
@@ -115,7 +115,7 @@ $customdata['attachmentoptions'] = $attachmentoptions;
 $customdata['textfieldoptions'] = $textfieldoptions;
 $customdata['cm'] = $cm;
 
-$mform = new edit_form(null, $customdata);
+$mform = new edit_article_form(null, $customdata);
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
@@ -169,7 +169,7 @@ if ($mform->is_cancelled()) {
 }
 
 
-$url = new moodle_url('/mod/uniljournal/edit.php', array('cmid'=>$cm->id, 'articlemodelid' => $amid));
+$url = new moodle_url('/mod/uniljournal/edit_article.php', array('cmid'=>$cm->id, 'articlemodelid' => $amid));
 $PAGE->set_url($url);
 $PAGE->set_title(format_string(get_string('writearticletempl', 'mod_uniljournal', $articlemodel->title)));
 $PAGE->set_heading(format_string($course->fullname));
@@ -178,16 +178,6 @@ $PAGE->set_context($context);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('writearticletempl', 'mod_uniljournal', $articlemodel->title));
 
-if(true) {
-  echo "<p>About to create an article for model $articlemodel->title.</p>";
-  echo "<p>It has the following elements:</p><ul>";
-  foreach($articleelements as $articleelement) {
-    echo "<li>".get_string('element_'.$articleelement->element_type, 'mod_uniljournal')."</li>";
-  }
-  echo "</ul>";
-}
-
-//displays the form
 $mform->display();
 
 echo $OUTPUT->footer();

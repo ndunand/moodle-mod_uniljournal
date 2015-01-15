@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
 
-class edit_form extends moodleform {
+class edit_article_form extends moodleform {
     protected $course;
 
     public function definition() {
