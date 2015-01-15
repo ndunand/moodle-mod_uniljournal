@@ -283,6 +283,29 @@ function xmldb_uniljournal_upgrade($oldversion) {
         // Uniljournal savepoint reached.
         upgrade_mod_savepoint(true, 2015011402, 'uniljournal');
     }
-    
+
+    if ($oldversion < 2015011500) {
+        $table = new xmldb_table('uniljournal_aeinstances');
+        $field = new xmldb_field('file');
+
+        // Conditionally launch drop field value.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        
+        $field = new xmldb_field('text', XMLDB_TYPE_TEXT, null, null, null, null, null, 'timemodified');
+        $dbman->rename_field($table, $field, 'value');
+        
+        $field = new xmldb_field('valueformat', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'value');
+
+        // Conditionally launch add field valueformat.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        // Uniljournal savepoint reached.
+        upgrade_mod_savepoint(true, 2015011500, 'uniljournal');
+    }
+        
     return true;
 }
