@@ -28,8 +28,9 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 require_once(dirname(__FILE__).'/locallib.php');
 
-$cmid = optional_param('cmid', 0, PARAM_INT);  // Course_module ID, or
-$id   = optional_param('id', 0, PARAM_INT);    // Article instance ID
+$cmid    = optional_param('cmid', 0, PARAM_INT);  // Course_module ID, or
+$id      = optional_param('id', 0, PARAM_INT);    // Article instance ID
+$version = optional_param('version', 0, PARAM_INT);    // Article instance ID
 
 if ($cmid and $id) {
     $cm              = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
@@ -56,16 +57,23 @@ $content = "";
 $attachments = "";
 
 // Get the existing article elements for display
-$version = 0;
+$actualversion = 0;
 foreach($articleelements as $ae) {
   $property_name   = 'element_'.$ae->id;
   $property_edit   = $property_name.'_editor';
   $property_format = $property_name.'format';
-  $aeinstance = $DB->get_record_sql('
+  
+  $sqlargs = array('instanceid' => $articleinstance->id, 'elementid' => $ae->id);
+  $sql = '
     SELECT * FROM {uniljournal_aeinstances} 
       WHERE instanceid = :instanceid
-        AND elementid  = :elementid 
-    ORDER BY version DESC LIMIT 1', array('instanceid' => $articleinstance->id, 'elementid' => $ae->id));
+        AND elementid  = :elementid ';
+  if ($version != 0) {
+    $sql .= 'AND version <= :version';
+    $sqlargs['version'] = $version;
+  }
+  $sql .= 'ORDER BY version DESC LIMIT 1';
+  $aeinstance = $DB->get_record_sql($sql, $sqlargs);
   if($aeinstance !== false) {
     switch($ae->element_type) {
       case "subtitle":
@@ -90,9 +98,11 @@ foreach($articleelements as $ae) {
         }
         break;
     }
-    $version = max($version, $aeinstance->version);
+    $actualversion = max($actualversion, $aeinstance->version);
   }
 }
+
+$maxversionsql = $DB->get_record_sql('SELECT max(version) as maxversion FROM {uniljournal_aeinstances} WHERE instanceid = :instanceid', array('instanceid' => $articleinstance->id));
 
 $titlecell = new html_table_cell(html_writer::tag('h3', $articleinstance->title));
 $titlecell->colspan = 2;
@@ -119,7 +129,17 @@ $PAGE->set_context($context);
 echo $OUTPUT->header();
 
 // Replace the following lines with you own code.
-echo $OUTPUT->heading(format_string($articleinstance->title)." - Preview"); // TODO
+echo $OUTPUT->heading(format_string($articleinstance->title)." - Preview (version: ".$actualversion.")"); // TODO
+
+if($actualversion > 1) {
+  echo html_writer::tag('span', html_writer::link(new moodle_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id, 'version'=> $actualversion-1)), '←'));
+}
+
+echo html_writer::tag('span', 'Version '.$actualversion." / ".$maxversionsql->maxversion);
+
+if($actualversion < $maxversionsql->maxversion) {
+  echo html_writer::tag('span', html_writer::link(new moodle_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id, 'version'=> $actualversion+1)), '→'));
+}
 
 echo html_writer::table($table);
 
