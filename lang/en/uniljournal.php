@@ -66,3 +66,4 @@ $string['myarticles'] = 'My articles';
 $string['addarticle'] = 'Add a new article …';
 $string['addarticletempl'] = 'Add a new article with template \'{$a}\'';
 $string['writearticletempl'] = 'Write an article with template \'{$a}\'';
+$string['notemplates'] = 'No templates are available!';

@@ -30,8 +30,10 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 
-$id = optional_param('id', 0, PARAM_INT); // Course_module ID, or
-$n  = optional_param('n', 0, PARAM_INT);  // ... uniljournal instance ID - it should be named as the first character of the module.
+$id      = optional_param('id', 0, PARAM_INT); // Course_module ID, or
+$n       = optional_param('n', 0, PARAM_INT);  // ... uniljournal instance ID - it should be named as the first character of the module.
+$action  = optional_param('action', 0, PARAM_TEXT);
+$aid     = optional_param('aid', 0, PARAM_INT);
 
 if ($id) {
     $cm         = get_coursemodule_from_id('uniljournal', $id, 0, false, MUST_EXIST);
@@ -57,29 +59,8 @@ $event->add_record_snapshot('course', $PAGE->course);
 // $event->add_record_snapshot($PAGE->cm->modname, $PAGE->activityrecord);
 $event->trigger();
 
-// Print the page header.
-
-$PAGE->set_url('/mod/uniljournal/view.php', array('id' => $cm->id));
-$PAGE->set_title(format_string($uniljournal->name));
-$PAGE->set_heading(format_string($course->fullname));
-$PAGE->set_context($context);
-
-/*
- * Other things you may want to set - remove if not needed.
- * $PAGE->set_cacheable(false);
- * $PAGE->set_focuscontrol('some-html-id');
- * $PAGE->add_body_class('uniljournal-'.$somevar);
- */
-
-// Output starts here.
-echo $OUTPUT->header();
-
-// Replace the following lines with you own code.
-echo $OUTPUT->heading(get_string('myarticles','uniljournal'));
-
 require_once('locallib.php');
 
-// List existing articles: TODO
 // Get available article templates
 $articlemodels = $DB->get_records_select('uniljournal_articlemodels', "uniljournalid = $uniljournal->id AND hidden != '\x31' ORDER BY sortorder ASC");
 $articleelements = $DB->get_records_sql("
@@ -115,27 +96,6 @@ foreach($articlemodels as $amid => $am)  {
   }
 }
 
-
-
-if(false) {
-  $table = new html_table();
-  $table->head = array('Key', 'Value');
-  $table->data = array();
-
-  $table->data[] = array('id', $uniljournal->id);
-  $table->data[] = array('name', $uniljournal->name);
-  $table->data[] = array('subtitle', $uniljournal->subtitle);
-  $table->data[] = array('intro', $uniljournal->intro);
-  if($logo = uniljournal_get_logo($context)) {
-    $url = moodle_url::make_pluginfile_url($logo->get_contextid(), $logo->get_component(), $logo->get_filearea(), $logo->get_itemid(), $logo->get_filepath(), $logo->get_filename());
-    $logoimg = html_writer::img($url, 'Logo');
-    $table->data[] = array('logo', $logoimg);
-  }
-  $table->data[] = array('comments_allowed', $uniljournal->comments_allowed?"Yes":"No");
-
-  echo html_writer::table($table);
-}
-
 // Display table of articles
 $articleinstances = $DB->get_records_sql('SELECT ai.id, ai.timemodified, ai.title, am.id as amid, am.title as amtitle
        FROM {uniljournal_articleinstances} ai
@@ -143,6 +103,50 @@ $articleinstances = $DB->get_records_sql('SELECT ai.id, ai.timemodified, ai.titl
   WHERE uniljournalid = :ujid AND userid = :uid
   ORDER BY ai.timemodified DESC', array('ujid' => $uniljournal->id, 'uid' => $USER->id));
 
+if ($action && $aid) {
+  if (!$ai  = $articleinstances[$aid]) {
+    error('Must exist!');
+  }
+  if($action == "delete") {
+    // Delete the record in question
+    // TODO: Confirmation !?
+    // TODO: Confirm that the deletion of associated files is done with garbage collection
+    $DB->delete_records('uniljournal_aeinstances', array('instanceid' => $ai->id));
+    $DB->delete_records('uniljournal_articleinstances', array('id' => $ai->id));
+    unset($articleinstances[$aid]);
+  }
+}
+
+// Print the page header.
+$PAGE->set_url('/mod/uniljournal/view.php', array('id' => $cm->id));
+$PAGE->set_title(format_string($uniljournal->name));
+$PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_context($context);
+
+/*
+ * Other things you may want to set - remove if not needed.
+ * $PAGE->set_cacheable(false);
+ * $PAGE->set_focuscontrol('some-html-id');
+ * $PAGE->add_body_class('uniljournal-'.$somevar);
+ */
+
+// Output starts here.
+echo $OUTPUT->header();
+
+// Replace the following lines with you own code.
+echo $OUTPUT->heading(get_string('myarticles','uniljournal'));
+
+if(isset($uniljournal->subtitle)) {
+  echo html_writer::tag('h3', $uniljournal->subtitle);
+}
+
+// TODO: Determine what to do with the logo:
+if($logo = uniljournal_get_logo($context)) {
+  $url = moodle_url::make_pluginfile_url($logo->get_contextid(), $logo->get_component(), $logo->get_filearea(), $logo->get_itemid(), $logo->get_filepath(), $logo->get_filename());
+  $logoimg = html_writer::img($url, 'Logo'); // TODO: translate
+  echo html_writer::tag('div', $logoimg, array('class' => 'logo'));
+}
+  
 // TODO: Check rights
 if(count($articleinstances) > 0) {
   $table = new html_table();
@@ -166,7 +170,7 @@ if(count($articleinstances) > 0) {
     
     $actionarray = array();
     $actionarray[] = 'edit';
-//     $actionarray[] = 'delete';
+    $actionarray[] = 'delete';
     
     $actions = "";
     foreach($actionarray as $actcode) {
@@ -199,7 +203,11 @@ if(count($articlemodels) > 1) {
   $PAGE->requires->yui_module('moodle-mod_uniljournal-viewsubmitonchange', 'M.mod_uniljournal.viewsubmitonchange.init');
 } else {
   $am = array_pop($articlemodels);
-  echo html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id, 'amid' => $am->id)), get_string('addarticletempl', 'mod_uniljournal', $templatesoptions[$am->id]));
+  if($am) {
+    echo html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id, 'amid' => $am->id)), get_string('addarticletempl', 'mod_uniljournal', $templatesoptions[$am->id]));
+  } else {
+    echo $OUTPUT->error_text(get_string('notemplates', 'mod_uniljournal'));
+  }
 }
 
 // Finish the page.

@@ -49,14 +49,20 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/uniljournal:managetemplates', $context);
 
-$amodels = $DB->get_records('uniljournal_articlemodels', array('uniljournalid' => $uniljournal->id), 'sortorder, id');
+$amodels = $DB->get_records_sql('
+       SELECT am.*, COUNT(ai.id) as articleinstancescount
+         FROM {uniljournal_articlemodels} am
+    LEFT JOIN {uniljournal_articleinstances} ai ON ai.articlemodelid = am.id
+        WHERE am.uniljournalid = :uniljournalid
+     GROUP BY am.id
+     ORDER BY am.sortorder, am.id', array('uniljournalid' => $uniljournal->id));
 
 if ($action && $tid) {
    if (!$model  = $amodels[$tid]) {
      error('Must exist!');
    }
    
-   if($action == "delete") {
+   if($action == "delete" and $model->articleinstancescount == 0 ) {
      // Delete the record in question
      // TODO: Check if the record is used in places before deleting it
      $DB->delete_records('uniljournal_articlemodels', array('id' => $tid));
@@ -132,7 +138,7 @@ if (count($amodels) > 0) {
     if($aiter != 1) $actionarray[] = 'up';
     if($aiter != count($amodels)) $actionarray[] = 'down';
     $actionarray[] = 'edit';
-    $actionarray[] = 'delete';
+    if($amodel->articleinstancescount == 0) $actionarray[] = 'delete';
     
     $actions = "";
     foreach($actionarray as $actcode) {
