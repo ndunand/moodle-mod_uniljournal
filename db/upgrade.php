@@ -97,7 +97,7 @@ function xmldb_uniljournal_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
         
-         // Define field description to be added to uniljournal.
+        // Define field description to be added to uniljournal.
         $table = new xmldb_table('uniljournal');
         $field = new xmldb_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null, 'subtitle');
 

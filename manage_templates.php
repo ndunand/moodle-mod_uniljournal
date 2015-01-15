@@ -64,7 +64,6 @@ if ($action && $tid) {
    
    if($action == "delete" and $model->articleinstancescount == 0 ) {
      // Delete the record in question
-     // TODO: Check if the record is used in places before deleting it
      $DB->delete_records('uniljournal_articlemodels', array('id' => $tid));
      unset($amodels[$tid]);
    } elseif(in_array($action, array('hide', 'show'))) {
