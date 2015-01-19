@@ -97,7 +97,7 @@ foreach($articlemodels as $amid => $am)  {
 }
 
 // Display table of articles
-$articleinstances = $DB->get_records_sql('SELECT ai.id, ai.timemodified, ai.title, am.id as amid, am.title as amtitle
+$articleinstances = $DB->get_records_sql('SELECT ai.id, ai.timemodified, ai.title, am.id as amid, am.title as amtitle, am.freetitle as freetitle
        FROM {uniljournal_articleinstances} ai
   LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
   WHERE uniljournalid = :ujid AND userid = :uid
@@ -162,9 +162,11 @@ if(count($articleinstances) > 0) {
     $aiter++;
     $row = new html_table_row();
     $script = 'edit.php';
+    // Set the article title based on the theme
+    $title = $ai->freetitle == 1 ? $ai->title : 'TODO: Theme title';
     $row->cells[] = html_writer::link(
                       new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ai->id, 'cmid' => $cm->id)),
-                      $ai->title);
+                      $title);
     $row->cells[] = strftime('%c', $ai->timemodified);
     $row->cells[] = $ai->amtitle;
     

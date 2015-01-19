@@ -104,7 +104,10 @@ foreach($articleelements as $ae) {
 
 $maxversionsql = $DB->get_record_sql('SELECT max(version) as maxversion FROM {uniljournal_aeinstances} WHERE instanceid = :instanceid', array('instanceid' => $articleinstance->id));
 
-$titlecell = new html_table_cell(html_writer::tag('h3', $articleinstance->title));
+// Build article title if it doesn't exist
+$articletitle = !empty($articleinstance->title) ? $articleinstance->title : 'TODO: Theme title';
+
+$titlecell = new html_table_cell(html_writer::tag('h3', $articletitle));
 $titlecell->colspan = 2;
 $table->data[] = new html_table_row(array($titlecell));
 $table->data[] = new html_table_row(
@@ -114,7 +117,7 @@ $table->data[] = new html_table_row(
     ));
 
 $PAGE->set_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id));
-$PAGE->set_title(format_string($articleinstance->title));
+$PAGE->set_title(format_string($articletitle));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
@@ -129,7 +132,7 @@ $PAGE->set_context($context);
 echo $OUTPUT->header();
 
 // Replace the following lines with you own code.
-echo $OUTPUT->heading(format_string($articleinstance->title)." - Preview (version: ".$actualversion.")"); // TODO
+echo $OUTPUT->heading(format_string($articletitle)." - Preview (version: ".$actualversion.")"); // TODO
 
 if($actualversion > 1) {
   echo html_writer::tag('span', html_writer::link(new moodle_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id, 'version'=> $actualversion-1)), '←'));

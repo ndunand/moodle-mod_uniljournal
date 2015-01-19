@@ -82,6 +82,7 @@ if ($mform->is_cancelled()) {
     $entry->sortorder = 0; // TODO: See if it's needed to put it up last.
     $entry->hidden = false;
     $entry->uniljournalid = $uniljournal->id;
+    $entry->freetitle = (isset($entry->freetitle) && $entry->freetitle == 1);
 
     if ($isnewentry) {
         // Add new entry.

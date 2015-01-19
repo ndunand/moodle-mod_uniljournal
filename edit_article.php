@@ -126,6 +126,10 @@ if ($mform->is_cancelled()) {
     $articleinstance->userid = $USER->id;// TODO: What happens when a teacher creates or edits a content for a student ?
     $articleinstance->articlemodelid = $amid;
     $articleinstance->timemodified = time();
+    
+    if(!isset($articlemodel->freetitle) || $articlemodel->freetitle == 0) {
+      $articleinstance->title = ""; // Makes sure the article title is deleted if it exists.
+    }
 
     if($isnewentry) {
       $articleinstance->id = $DB->insert_record('uniljournal_articleinstances', $articleinstance);

@@ -52,12 +52,16 @@ class edit_article_form extends moodleform {
         $mform = $this->_form;
         
         $mform->addElement('html', '<div class="instructions">'.$articlemodel->instructions.'</div>');
-        
-        $mform->addElement('text', 'title', get_string('article_title', 'uniljournal'), array('size' => '64'));
-        $mform->setType('title', PARAM_TEXT);
-        $mform->addRule('title', null, 'required', null, 'client');
-        $mform->addRule('title', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        
+
+        if($articlemodel->freetitle == 1) {
+          $mform->addElement('text', 'title', get_string('article_title', 'uniljournal'), array('size' => '64'));
+          $mform->setType('title', PARAM_TEXT);
+          $mform->addRule('title', null, 'required', null, 'client');
+          $mform->addRule('title', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        } else {
+          $mform->addElement('static', 'statictitle', get_string('article_title', 'uniljournal'), 'TODO: The article title is forced to be the one from the theme');
+        }
+
         foreach($articleelements as $ae) {
           $id = 'element_'.$ae->id;
           $desc = get_string('element_'.$ae->element_type, 'uniljournal');
