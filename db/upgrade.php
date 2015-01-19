@@ -44,99 +44,69 @@ function xmldb_uniljournal_upgrade($oldversion) {
 
     if ($oldversion < 2014122200) {
 
-        // Define field course to be added to uniljournal.
         $table = new xmldb_table('uniljournal');
         $field = new xmldb_field('course', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'id');
-
-        // Add field course.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // Define field timecreated to be added to uniljournal.
         $table = new xmldb_table('uniljournal');
         $field = new xmldb_field('timecreated', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0',
             'introformat');
-
-        // Add field timecreated.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // Define field timemodified to be added to uniljournal.
         $table = new xmldb_table('uniljournal');
         $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0',
             'timecreated');
-
-        // Add field timemodified.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // Define index course (not unique) to be added to uniljournal.
         $table = new xmldb_table('uniljournal');
         $index = new xmldb_index('courseindex', XMLDB_INDEX_NOTUNIQUE, array('course'));
-
-        // Add index to course field.
         if (!$dbman->index_exists($table, $index)) {
             $dbman->add_index($table, $index);
         }
 
-        // Another save point reached.
         upgrade_mod_savepoint(true, 2014122200, 'uniljournal');
     }
     
     if ($oldversion < 2015010500) {
 
-        // Define field subtitle to be added to uniljournal.
         $table = new xmldb_table('uniljournal');
         $field = new xmldb_field('subtitle', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'name');
-
-        // Conditionally launch add field subtitle.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
-        // Define field description to be added to uniljournal.
-        $table = new xmldb_table('uniljournal');
+
         $field = new xmldb_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null, 'subtitle');
-
-        // Conditionally launch add field description.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
-        // Define field logo to be added to uniljournal.
-        $table = new xmldb_table('uniljournal');
+
         $field = new xmldb_field('logo', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'description');
-
-        // Conditionally launch add field logo.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // Uniljournal savepoint reached.
         upgrade_mod_savepoint(true, 2015010500, 'uniljournal');
     }
     
     if ($oldversion < 2015010501) {
 
-        // Define field comments_allowed to be added to uniljournal.
         $table = new xmldb_table('uniljournal');
         $field = new xmldb_field('comments_allowed', XMLDB_TYPE_BINARY, null, null, null, null, null, 'logo');
-
-        // Conditionally launch add field comments_allowed.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // Uniljournal savepoint reached.
         upgrade_mod_savepoint(true, 2015010501, 'uniljournal');
     }
 
     if ($oldversion < 2015010502) {
 
-        // Define field id to be added to uniljournal_articlemodels.
         $table = new xmldb_table('uniljournal_articlemodels');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
         $table->add_field('uniljournalid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
@@ -148,54 +118,40 @@ function xmldb_uniljournal_upgrade($oldversion) {
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table->add_index('uniljournalid', XMLDB_INDEX_NOTUNIQUE, array('uniljournalid'));
 
-        // Conditionally launch create table for assign_user_mapping.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-        
-        // Uniljournal savepoint reached.
+
         upgrade_mod_savepoint(true, 2015010502, 'uniljournal');
     }
 
     if ($oldversion < 2015010600) {
 
-        // Rename field description on table uniljournal to intro.
         $table = new xmldb_table('uniljournal');
         $field = new xmldb_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null, 'subtitle');
-
-        // Launch rename field description.
         $dbman->rename_field($table, $field, 'intro');
-        
-         // Define field introformat to be added to uniljournal.
-        $field = new xmldb_field('introformat', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'intro');
 
-        // Conditionally launch add field introformat.
+        $field = new xmldb_field('introformat', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'intro');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // Uniljournal savepoint reached.
         upgrade_mod_savepoint(true, 2015010600, 'uniljournal');
     }
-    
+
     if ($oldversion < 2015010602) {
 
-        // Define field instructionsformat to be added to uniljournal_articlemodels.
         $table = new xmldb_table('uniljournal_articlemodels');
         $field = new xmldb_field('instructionsformat', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'instructions');
-
-        // Conditionally launch add field instructionsformat.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // Uniljournal savepoint reached.
         upgrade_mod_savepoint(true, 2015010602, 'uniljournal');
     }
-    
+
     if ($oldversion < 2015011300) {
-    
-        // Define field id to be added to uniljournal_articlemodels.
+
         $table = new xmldb_table('uniljournal_articleelements');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
         $table->add_field('articlemodelid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
@@ -203,18 +159,15 @@ function xmldb_uniljournal_upgrade($oldversion) {
         $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'element_type');
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table->add_index('articlemodelid', XMLDB_INDEX_NOTUNIQUE, array('articlemodelid'));
-
-        // Conditionally launch create table for assign_user_mapping.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-        
-        // Uniljournal savepoint reached.
+
         upgrade_mod_savepoint(true, 2015011300, 'uniljournal');
     }
-    
+
     if ($oldversion < 2015011400) {
-    
+
         $table = new xmldb_table('uniljournal_articleinstances');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
         $table->add_field('articlemodelid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
@@ -222,12 +175,10 @@ function xmldb_uniljournal_upgrade($oldversion) {
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table->add_index('articlemodelid', XMLDB_INDEX_NOTUNIQUE, array('articlemodelid'));
         $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, array('userid'));
-
-        // Conditionally launch create table for assign_user_mapping.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-        
+
         $table = new xmldb_table('uniljournal_aeinstances');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
         $table->add_field('instanceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
@@ -239,73 +190,59 @@ function xmldb_uniljournal_upgrade($oldversion) {
         $table->add_index('instanceid', XMLDB_INDEX_NOTUNIQUE, array('instanceid'));
         $table->add_index('elementid', XMLDB_INDEX_NOTUNIQUE, array('elementid'));
 
-        // Conditionally launch create table for assign_user_mapping.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-        
-        // Uniljournal savepoint reached.
+
         upgrade_mod_savepoint(true, 2015011400, 'uniljournal');
     }
-    
+
     if ($oldversion < 2015011401) {
-    
+
         $table = new xmldb_table('uniljournal_articleinstances');
         $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'userid');
-
-        // Conditionally launch add field instructionsformat.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
         $table = new xmldb_table('uniljournal_aeinstances');
         $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'version');
-
-        // Conditionally launch add field instructionsformat.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
-        // Uniljournal savepoint reached.
+
         upgrade_mod_savepoint(true, 2015011401, 'uniljournal');
     }
-    
+
     if ($oldversion < 2015011402) {
-    
+
         $table = new xmldb_table('uniljournal_articleinstances');
         $field = new xmldb_field('title', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'timemodified');
-        
-        // Conditionally launch add field instructionsformat.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
-        // Uniljournal savepoint reached.
+
         upgrade_mod_savepoint(true, 2015011402, 'uniljournal');
     }
 
     if ($oldversion < 2015011500) {
         $table = new xmldb_table('uniljournal_aeinstances');
         $field = new xmldb_field('file');
-
-        // Conditionally launch drop field value.
         if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table, $field);
         }
-        
+
         $field = new xmldb_field('text', XMLDB_TYPE_TEXT, null, null, null, null, null, 'timemodified');
         $dbman->rename_field($table, $field, 'value');
-        
+
         $field = new xmldb_field('valueformat', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'value');
 
-        // Conditionally launch add field valueformat.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
-        // Uniljournal savepoint reached.
+
         upgrade_mod_savepoint(true, 2015011500, 'uniljournal');
     }
-        
+
     return true;
 }
