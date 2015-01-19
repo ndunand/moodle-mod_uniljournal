@@ -62,6 +62,9 @@ class template_edit_form extends moodleform {
         $mform->setType('instructions_editor', PARAM_RAW);
         $mform->addHelpButton('instructions_editor', 'template_instructions', 'uniljournal');
 
+        $mform->addElement('checkbox', 'freetitle', get_string('template_freetitle', 'uniljournal'));
+        $mform->addHelpButton('freetitle', 'template_freetitle', 'uniljournal');
+
         $mform->addElement('html', '<div class="fitem fitem_dragdrop">');
         $mform->addElement('html', '<div class="fitemtitle"><label>' . get_string('template_element', 'uniljournal') . '</label></div>');
         $mform->addElement('html', '<div class="felement">');
