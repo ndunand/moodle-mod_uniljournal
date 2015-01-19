@@ -71,10 +71,11 @@ class template_edit_form extends moodleform {
         }
         $mform->addElement('html', '</ul>');
         $mform->addElement('html', '<ul id="elementsToAdd" class="elementsToAdd">');
-        $mform->addElement('html', '<li id="element1">' . get_string("element_" . $element->element_type, "uniljournal") . '<input style="display: none;" type="text" value="title"></li>');
-        $mform->addElement('html', '<li id="element2">' . get_string("element_" . $element->element_type, "uniljournal") . '<input style="display: none;" type="text" value="text"></li>');
-        $mform->addElement('html', '<li id="element3">' . get_string("element_" . $element->element_type, "uniljournal") . '<input style="display: none;" type="text" value="image"></li>');
-        $mform->addElement('html', '<li id="element4">' . get_string("element_" . $element->element_type, "uniljournal") . '<input style="display: none;" type="text" value="attachment"></li>');
+        $count = 1;
+        foreach (uniljournal_get_elements_array() as $key => $element) {
+            $mform->addElement('html', '<li id="element' . $count . '">' . get_string("element_" . $key, "uniljournal") . '<input style="display: none;" type="text" value="' . $key . '"></li>');
+            $count += 1;
+        }
         $mform->addElement('html', '</ul></div>');
         $mform->addElement('html', '</div>');
         $mform->addElement('html', '</div>');
