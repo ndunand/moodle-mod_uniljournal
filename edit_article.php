@@ -57,6 +57,12 @@ $textfieldoptions = array(
   'context'  => $context
 );
 
+$textonlyoptions = array(
+  'subdirs'  => false,
+  'maxfiles' => 0,
+  'context'  => $context
+);
+
 $attachmentoptions = array(
   'subdirs'  => false,
   'maxfiles' => '1',
@@ -113,6 +119,7 @@ $customdata['articlemodel'] = $articlemodel;
 $customdata['articleelements'] = $articleelements;
 $customdata['attachmentoptions'] = $attachmentoptions;
 $customdata['textfieldoptions'] = $textfieldoptions;
+$customdata['textonlyoptions'] = $textonlyoptions;
 $customdata['cm'] = $cm;
 
 $mform = new edit_article_form(null, $customdata);

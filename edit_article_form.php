@@ -41,6 +41,7 @@ class edit_article_form extends moodleform {
         $articlemodel      = $this->_customdata['articlemodel'];
         $articleelements   = $this->_customdata['articleelements'];
         $textfieldoptions  = $this->_customdata['textfieldoptions'];
+        $textonlyoptions   = $this->_customdata['textonlyoptions'];
         $attachmentoptions = $this->_customdata['attachmentoptions'];
         $imageoptions      = $attachmentoptions;
         $imageoptions['accepted_types'] = array('web_image');
@@ -76,6 +77,11 @@ class edit_article_form extends moodleform {
             case "text":
               $id .= '_editor';
               $mform->addElement('editor', $id, $desc, null, $textfieldoptions);
+              $mform->setType($id, PARAM_RAW);
+              break;
+            case "textonly":
+              $id .= '_editor';
+              $mform->addElement('editor', $id, $desc, null, $textonlyoptions);
               $mform->setType($id, PARAM_RAW);
               break;
             case "subtitle":
