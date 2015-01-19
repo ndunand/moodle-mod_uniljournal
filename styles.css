@@ -2,9 +2,23 @@
     margin: 0;
 }
 
-.fitem_dragdrop ul {
+#elementsToAdd,
+#elementsAdded {
     list-style: none;
+    padding: 10px;
+    border: 1px solid rgb(196, 196, 208);
+}
+
+#elementsToAdd li,
+#elementsAdded li {
     border: 1px solid black;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+#elementsToAdd li .fitem,
+#elementsAdded li .fitem {
+    display: none;
 }
 
 .fitem_dragdrop button {

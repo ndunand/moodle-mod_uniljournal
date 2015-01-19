@@ -67,14 +67,14 @@ class template_edit_form extends moodleform {
         $mform->addElement('html', '<div class="felement">');
         $mform->addElement('html', '<div><ul id="elementsAdded" class="elementsAdded">');
         foreach($elements as $element) {
-            $mform->addElement('html', '<li>' . $element->element_type . '</li>');
+            $mform->addElement('html', '<li>' . get_string('element_' . $element->element_type, 'uniljournal') . '<input style="display: none;" type="text" name="articleelements[]" value="' . $element->element_type . '"></li>');
         }
         $mform->addElement('html', '</ul>');
         $mform->addElement('html', '<ul id="elementsToAdd" class="elementsToAdd">');
-        $mform->addElement('html', '<li>Title</li>');
-        $mform->addElement('html', '<li>Text</li>');
-        $mform->addElement('html', '<li>Image</li>');
-        $mform->addElement('html', '<li>Attachment</li>');
+        $mform->addElement('html', '<li id="element1">' . get_string("element_" . $element->element_type, "uniljournal") . '<input style="display: none;" type="text" value="title"></li>');
+        $mform->addElement('html', '<li id="element2">' . get_string("element_" . $element->element_type, "uniljournal") . '<input style="display: none;" type="text" value="text"></li>');
+        $mform->addElement('html', '<li id="element3">' . get_string("element_" . $element->element_type, "uniljournal") . '<input style="display: none;" type="text" value="image"></li>');
+        $mform->addElement('html', '<li id="element4">' . get_string("element_" . $element->element_type, "uniljournal") . '<input style="display: none;" type="text" value="attachment"></li>');
         $mform->addElement('html', '</ul></div>');
         $mform->addElement('html', '</div>');
         $mform->addElement('html', '</div>');
@@ -89,5 +89,9 @@ class template_edit_form extends moodleform {
 
 //-------------------------------------------------------------------------------
         $this->set_data($currententry);
+    }
+
+    public function getArticleElements() {
+        return $this->_form->_submitValues['articleelements'];
     }
 }

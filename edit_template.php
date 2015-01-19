@@ -90,9 +90,8 @@ if ($mform->is_cancelled()) {
         // Update existing entry.
         $DB->update_record('uniljournal_articlemodels', $entry);
     }
-
     $articleelementorder = 0;
-    foreach($entry->articleelements as $articleelementid => $articleelement) {
+    foreach($mform->getArticleElements() as $articleelementid => $articleelement) {
       $articleelementobject = new stdClass();
       $articleelementobject->articlemodelid = $entry->id;
       $articleelementobject->sortorder = $articleelementorder++;
@@ -154,12 +153,34 @@ echo '
         $( "#elementsToAdd" ).sortable({
             connectWith: "#elementsAdded",
             update: function(event, ui) {
-                $(event.toElement.cloneNode(true)).prependTo($("#elementsToAdd"));
+                var item = $(event.toElement.cloneNode(true));
+                var position = parseInt(item.attr("id")[item.attr("id").length - 1]);
+                if (position > 1) {
+                    $(item).insertAfter($("#elementsToAdd #element" + (position - 1)));
+                } else {
+                    console.log(position)
+                    console.log("#elementsToAdd #element" + (position + 1))
+                    $(item).insertBefore($("#elementsToAdd #element" + (position + 1)));
+                }
+
+                var elementsAdded = $("#elementsAdded input[type=\"text\"]");
+                for (var i = 0; i < elementsAdded.length; i++) {
+                    var element = elementsAdded[i];
+                    $(element).attr("name", "articleelements[]");
+                }
+
             }
         });
         $( "#elementsAdded" ).sortable({
             stop: function(event, ui) {
-                console.log(event);
+                var table = $("#elementsAdded");
+                var minX = table.position().left;
+                var maxX = minX + table.width();
+                var minY = table.position().top;
+                var maxY = minY + table.height();
+                if (event.pageX > maxX || event.pageX < minX || event.pageY > maxY || event.pageY < minY) {
+                    $(event.toElement).remove();
+                }
             }
         });
     });
