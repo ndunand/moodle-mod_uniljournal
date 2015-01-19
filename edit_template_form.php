@@ -71,13 +71,28 @@ class template_edit_form extends moodleform {
         $mform->addElement('html', '<div class="felement">');
         $mform->addElement('html', '<div><ul id="elementsAdded" class="elementsAdded">');
         foreach($elements as $element) {
-            $mform->addElement('html', '<li>' . get_string('element_' . $element->element_type, 'uniljournal') . '<input style="display: none;" type="text" name="articleelements[]" value="' . $element->element_type . '"></li>');
+            $mform->addElement('html', html_writer::tag('li',
+                get_string('element_' . $element->element_type, 'uniljournal') .
+                html_writer::tag('input', '',
+                  array(
+                    'style' => "display: none;",
+                    'type' => "text",
+                    "name" => "articleelements['. $element->id .']",
+                    "value" => $element->element_type
+                    ))));
         }
         $mform->addElement('html', '</ul>');
         $mform->addElement('html', '<ul id="elementsToAdd" class="elementsToAdd">');
         $count = 1;
-        foreach (uniljournal_get_elements_array() as $key => $element) {
-            $mform->addElement('html', '<li id="element' . $count . '">' . get_string("element_" . $key, "uniljournal") . '<input style="display: none;" type="text" value="' . $key . '"></li>');
+        foreach ($elementsoptions as $key => $element) {
+            $mform->addElement('html', html_writer::tag('li',
+                get_string('element_' . $key, 'uniljournal') .
+                html_writer::tag('input', '',
+                  array(
+                    'style' => "display: none;",
+                    'type' => "text",
+                    "value" => $key
+                    )), array('id' => 'element'.$count)));
             $count += 1;
         }
         $mform->addElement('html', '</ul></div>');
