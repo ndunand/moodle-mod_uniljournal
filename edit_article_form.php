@@ -98,3 +98,35 @@ class edit_article_form extends moodleform {
         $this->set_data($currententry);
     }
 }
+
+class article_delete_form extends moodleform {
+    protected $course;
+
+    public function definition() {
+
+        global $CFG;
+        $course            = $this->_customdata['course'];
+        $cm                = $this->_customdata['cm'];
+        $currententry      = $this->_customdata['current'];
+        $context           = context_module::instance($cm->id);
+
+        $this->course  = $course;
+    
+        $mform = $this->_form;
+        
+        $a = new stdClass();
+        $a->type = get_string('templatelower', 'mod_uniljournal');
+        $a->name = $currententry->freetitle == 1 ? $currententry->title : 'TODO: Theme title';
+        
+        $mform->addElement('html', '<div>'.get_string('deletechecktypename', 'core', $a).'</div>');
+
+        $mform->addElement('hidden', 'confirm');
+        $mform->setType('confirm', PARAM_BOOL);
+        
+        // Add standard buttons, common to all modules.
+        $this->add_action_buttons(true, get_string('delete', 'core'));
+        
+        $this->set_data(array('confirm' => true));
+        
+    }
+}

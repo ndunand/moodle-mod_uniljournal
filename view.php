@@ -108,12 +108,25 @@ if ($action && $aid) {
     error('Must exist!');
   }
   if($action == "delete") {
-    // Delete the record in question
-    // TODO: Confirmation !?
-    // TODO: Confirm that the deletion of associated files is done with garbage collection
-    $DB->delete_records('uniljournal_aeinstances', array('instanceid' => $ai->id));
-    $DB->delete_records('uniljournal_articleinstances', array('id' => $ai->id));
-    unset($articleinstances[$aid]);
+    require_once('edit_article_form.php');
+    $customdata = array();
+    $customdata['course'] = $course;
+    $customdata['cm'] = $cm;
+    $customdata['current'] = $ai;
+
+    $deleteform = new article_delete_form(new moodle_url('/mod/uniljournal/view.php', array('id'=> $cm->id, 'aid' => $aid, 'action' => 'delete')), $customdata);
+
+    if ($deleteform->is_cancelled()) {
+      unset($deleteform);
+    } elseif ( ($entry = $deleteform->get_data()) && $entry->confirm == 1) {
+      // Delete the record in question
+      // TODO: Confirm that the deletion of associated files is done with garbage collection
+      $DB->delete_records('uniljournal_aeinstances', array('instanceid' => $ai->id));
+      $DB->delete_records('uniljournal_articleinstances', array('id' => $ai->id));
+      unset($articleinstances[$aid]);
+      unset($deleteform);
+    }
+
   }
 }
 
@@ -136,81 +149,84 @@ echo $OUTPUT->header();
 // Replace the following lines with you own code.
 echo $OUTPUT->heading(get_string('myarticles','uniljournal'));
 
-if(isset($uniljournal->subtitle)) {
-  echo html_writer::tag('h3', $uniljournal->subtitle);
-}
-
-// TODO: Determine what to do with the logo:
-if($logo = uniljournal_get_logo($context)) {
-  $url = moodle_url::make_pluginfile_url($logo->get_contextid(), $logo->get_component(), $logo->get_filearea(), $logo->get_itemid(), $logo->get_filepath(), $logo->get_filename());
-  $logoimg = html_writer::img($url, 'Logo'); // TODO: translate
-  echo html_writer::tag('div', $logoimg, array('class' => 'logo'));
-}
-  
-// TODO: Check rights
-if(count($articleinstances) > 0) {
-  $table = new html_table();
-  $table->head = array(
-      get_string('myarticles', 'uniljournal'),
-      get_string('lastmodified'),
-      get_string('template', 'uniljournal'),
-      get_string('actions'),
-  );
-
-  $aiter = 0;
-  foreach($articleinstances as $ai) {
-    $aiter++;
-    $row = new html_table_row();
-    $script = 'edit.php';
-    // Set the article title based on the theme
-    $title = $ai->freetitle == 1 ? $ai->title : 'TODO: Theme title';
-    $row->cells[] = html_writer::link(
-                      new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ai->id, 'cmid' => $cm->id)),
-                      $title);
-    $row->cells[] = strftime('%c', $ai->timemodified);
-    $row->cells[] = $ai->amtitle;
-    
-    $actionarray = array();
-    $actionarray[] = 'edit';
-    $actionarray[] = 'delete';
-    
-    $actions = "";
-    foreach($actionarray as $actcode) {
-      $script = 'view.php';
-      $args = array('id'=> $cm->id, 'aid' => $ai->id, 'action' => $actcode);
-      
-      if($actcode == 'edit') {
-        $script = 'edit_article.php';
-        $args = array('cmid'=> $cm->id, 'id' => $ai->id, 'amid' => $ai->amid);
-      }
-
-      $url = new moodle_url('/mod/uniljournal/' . $script, $args);
-      $img = html_writer::img($OUTPUT->pix_url('t/'. $actcode), get_string($actcode));
-      $actions .= html_writer::link($url, $img)."\t";
-    }
-    $row->cells[] = $actions;
-    $table->data[] = $row;
-  }
-  echo html_writer::table($table);
-}
-
-if(count($articlemodels) > 1) {
-  require_once('view_choose_template_form.php');
-  $customdata = array();
-  $customdata['options'] = $templatesoptions;
-
-  $mform = new choose_template_form(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id)), $customdata);
-  //displays the form, with an auto-submitter and no change checker
-  $mform->display();
-  $PAGE->requires->yui_module('moodle-mod_uniljournal-viewsubmitonchange', 'M.mod_uniljournal.viewsubmitonchange.init');
+if(isset($deleteform)) {
+  $deleteform->display();
 } else {
-  $am = array_pop($articlemodels);
-  if($am) {
-    echo html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id, 'amid' => $am->id)), get_string('addarticletempl', 'mod_uniljournal', $templatesoptions[$am->id]));
+  if(isset($uniljournal->subtitle)) {
+    echo html_writer::tag('h3', $uniljournal->subtitle);
+  }
+
+  // TODO: Determine what to do with the logo:
+  if($logo = uniljournal_get_logo($context)) {
+    $url = moodle_url::make_pluginfile_url($logo->get_contextid(), $logo->get_component(), $logo->get_filearea(), $logo->get_itemid(), $logo->get_filepath(), $logo->get_filename());
+    $logoimg = html_writer::img($url, 'Logo'); // TODO: translate
+    echo html_writer::tag('div', $logoimg, array('class' => 'logo'));
+  }
+    
+  // TODO: Check rights
+  if(count($articleinstances) > 0) {
+    $table = new html_table();
+    $table->head = array(
+        get_string('myarticles', 'uniljournal'),
+        get_string('lastmodified'),
+        get_string('template', 'uniljournal'),
+        get_string('actions'),
+    );
+
+    $aiter = 0;
+    foreach($articleinstances as $ai) {
+      $aiter++;
+      $row = new html_table_row();
+      $script = 'edit.php';
+      // Set the article title based on the theme
+      $title = $ai->freetitle == 1 ? $ai->title : 'TODO: Theme title';
+      $row->cells[] = html_writer::link(
+                        new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ai->id, 'cmid' => $cm->id)),
+                        $title);
+      $row->cells[] = strftime('%c', $ai->timemodified);
+      $row->cells[] = $ai->amtitle;
+      
+      $actionarray = array();
+      $actionarray[] = 'edit';
+      $actionarray[] = 'delete';
+      
+      $actions = "";
+      foreach($actionarray as $actcode) {
+        $script = 'view.php';
+        $args = array('id'=> $cm->id, 'aid' => $ai->id, 'action' => $actcode);
+        
+        if($actcode == 'edit') {
+          $script = 'edit_article.php';
+          $args = array('cmid'=> $cm->id, 'id' => $ai->id, 'amid' => $ai->amid);
+        }
+
+        $url = new moodle_url('/mod/uniljournal/' . $script, $args);
+        $img = html_writer::img($OUTPUT->pix_url('t/'. $actcode), get_string($actcode));
+        $actions .= html_writer::link($url, $img)."\t";
+      }
+      $row->cells[] = $actions;
+      $table->data[] = $row;
+    }
+    echo html_writer::table($table);
+  }
+
+  if(count($articlemodels) > 1) {
+    require_once('view_choose_template_form.php');
+    $customdata = array();
+    $customdata['options'] = $templatesoptions;
+
+    $mform = new choose_template_form(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id)), $customdata);
+    //displays the form, with an auto-submitter and no change checker
+    $mform->display();
+    $PAGE->requires->yui_module('moodle-mod_uniljournal-viewsubmitonchange', 'M.mod_uniljournal.viewsubmitonchange.init');
   } else {
-    echo $OUTPUT->error_text(get_string('notemplates', 'mod_uniljournal'));
+    $am = array_pop($articlemodels);
+    if($am) {
+      echo html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id, 'amid' => $am->id)), get_string('addarticletempl', 'mod_uniljournal', $templatesoptions[$am->id]));
+    } else {
+      echo $OUTPUT->error_text(get_string('notemplates', 'mod_uniljournal'));
+    }
   }
 }
-
 // Finish the page.
 echo $OUTPUT->footer();
