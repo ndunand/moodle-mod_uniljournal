@@ -48,6 +48,7 @@ $string['pluginname'] = 'UNIL Learning Journal';
 $string['managetemplates'] = 'Manage templates';
 $string['addtemplate'] = 'Add template';
 $string['template'] = 'Template';
+$string['templatelower'] = 'template';
 $string['template_title'] = 'Template title';
 $string['template_title_help'] = '(TO BE COMPLETED !) This is the title of the template';
 $string['template_freetitle'] = 'Students can freely pick a title';
