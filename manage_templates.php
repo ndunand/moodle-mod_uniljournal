@@ -76,6 +76,7 @@ if ($action && $tid) {
     } elseif ( ($entry = $deleteform->get_data()) && $entry->confirm == 1) {
       // Delete the record in question
       $DB->delete_records('uniljournal_articlemodels', array('id' => $tid));
+      $DB->delete_records('uniljournal_articleelements', array('articlemodelid' => $tid));
       unset($amodels[$tid]);
       unset($deleteform);
     }
