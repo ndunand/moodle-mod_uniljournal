@@ -168,7 +168,16 @@ echo '
                     var element = elementsAdded[i];
                     $(element).attr("name", "articleelements[]");
                 }
-
+            },
+            beforeStop: function(event, ui) {
+                var table = $("#elementsAdded");
+                var minX = table.position().left;
+                var maxX = minX + table.width();
+                var minY = table.position().top;
+                var maxY = minY + table.height();
+                if (event.pageX > maxX || event.pageX < minX || event.pageY > maxY || event.pageY < minY) {
+                    $(this).sortable("cancel");
+                }
             }
         });
         $( "#elementsAdded" ).sortable({

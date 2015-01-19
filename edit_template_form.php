@@ -93,6 +93,10 @@ class template_edit_form extends moodleform {
     }
 
     public function getArticleElements() {
-        return $this->_form->_submitValues['articleelements'];
+        if (array_key_exists('articleelements', $this->_form->_submitValues)) {
+            return $this->_form->_submitValues['articleelements'];
+        } else  {
+            return array();
+        }
     }
 }

@@ -7,6 +7,11 @@
     list-style: none;
     padding: 10px;
     border: 1px solid rgb(196, 196, 208);
+    margin: 0;
+}
+
+#elementsToAdd {
+    margin-left: 10px;
 }
 
 #elementsToAdd li,
