@@ -41,7 +41,7 @@ if ($cmid) {
 
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
-// TODO: require_capability('mod/uniljournal:', $context);
+require_capability('mod/uniljournal:createarticle', $context);
 
 // Get the model we're editing
 if (!$articlemodel = $DB->get_record_select('uniljournal_articlemodels', "id = $amid AND hidden != '\x31'")) {

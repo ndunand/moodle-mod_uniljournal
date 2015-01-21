@@ -44,7 +44,11 @@ if ($cmid and $id) {
 
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
-// TODO: require_capability('mod/uniljournal:', $context);
+if($articleinstance->userid == $USER->id) {
+  require_capability('mod/uniljournal:view', $context);
+} else {
+  require_capability('mod/uniljournal:viewallarticles', $context);
+}
 
 // Get all elements of the model
 $articleelements = $DB->get_records_select('uniljournal_articleelements', "articlemodelid = $articleinstance->articlemodelid ORDER BY sortorder ASC");
