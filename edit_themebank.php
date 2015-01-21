@@ -83,9 +83,6 @@ if ($mform->is_cancelled()) {
 } else if ($entry = $mform->get_data()) {
     $isnewentry = empty($entry->id);
 
-    $entry->hidden = false;
-    $entry->uniljournalid = $uniljournal->id;
-
     if ($isnewentry) {
         // Add new entry.
         $entry->id = $DB->insert_record('uniljournal_themebanks', $entry);
@@ -107,7 +104,7 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('managetemplates', 'mod_uniljournal'));
+echo $OUTPUT->heading(get_string('managethemebanks', 'mod_uniljournal'));
 
 //displays the form
 $mform->display();

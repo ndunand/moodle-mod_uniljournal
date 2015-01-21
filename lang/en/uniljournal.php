@@ -108,5 +108,12 @@ $string['category_context'] = 'This category only';
 $string['user_context'] = 'This user only';
 $string['system_context'] = 'Everywhere';
 $string['themebank_contextid_help'] = '(TO BE COMPLETED !) This where this bank will be available.';
-
+$string['managethemes'] = 'Manage themes';
+$string['addtheme'] = 'Add theme ';
+$string['theme'] = 'Theme';
+$string['themelower'] = 'theme';
+$string['theme_title'] = 'Theme title';
+$string['theme_title_help'] = '(TO BE COMPLETED !) This is the title of the theme';
+$string['theme_instructions'] = 'Instructions';
+$string['theme_instructions_help'] = '(TO BE COMPLETED !) These are the theme instructions';
 $string['n_articleinstances'] = '{$a} articles';
