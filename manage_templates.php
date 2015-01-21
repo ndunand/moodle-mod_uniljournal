@@ -125,7 +125,7 @@ $PAGE->set_context($context);
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(get_string('managetemplates', 'mod_uniljournal'));
+echo $OUTPUT->heading(get_string('articletemplates', 'mod_uniljournal'));
 
 if (isset($deleteform)) {
   //displays the form

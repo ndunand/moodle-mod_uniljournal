@@ -49,6 +49,7 @@ if ($id) {
 
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
+require_capability('mod/uniljournal:view', $context);
 
 $event = \mod_uniljournal\event\course_module_viewed::create(array(
     'objectid' => $PAGE->cm->instance,
@@ -63,40 +64,44 @@ require_once('locallib.php');
 
 // Get available article templates
 $articlemodels = $DB->get_records_select('uniljournal_articlemodels', "uniljournalid = $uniljournal->id AND hidden != '\x31' ORDER BY sortorder ASC");
-$articleelements = $DB->get_records_sql("
-    SELECT ae.id as aeid, am.id as id, am.title, am.sortorder as sortorder, ae.element_type, ae.sortorder as aesortorder
-         FROM {uniljournal_articlemodels} am
-    INNER JOIN {uniljournal_articleelements} ae ON ae.articlemodelid = am.id
-    WHERE am.hidden != '\x31' AND am.uniljournalid = :uniljournalid
-    ORDER BY am.sortorder ASC, ae.sortorder ASC", array('uniljournalid' => $uniljournal->id));
 
-$articleelementsgroups = array();
-foreach($articleelements as $aeid => $aehybrid) {
-  if(!array_key_exists($aehybrid->id, $articleelementsgroups)) {
-    $articleelementsgroups[$aehybrid->id] = array();
+// Creating new article is only allowed for students
+if(has_capability('mod/uniljournal:createarticle', $context)) {
+  $articleelements = $DB->get_records_sql("
+      SELECT ae.id as aeid, am.id as id, am.title, am.sortorder as sortorder, ae.element_type, ae.sortorder as aesortorder
+          FROM {uniljournal_articlemodels} am
+      INNER JOIN {uniljournal_articleelements} ae ON ae.articlemodelid = am.id
+      WHERE am.hidden != '\x31' AND am.uniljournalid = :uniljournalid
+      ORDER BY am.sortorder ASC, ae.sortorder ASC", array('uniljournalid' => $uniljournal->id));
+
+  $articleelementsgroups = array();
+  foreach($articleelements as $aeid => $aehybrid) {
+    if(!array_key_exists($aehybrid->id, $articleelementsgroups)) {
+      $articleelementsgroups[$aehybrid->id] = array();
+    }
+    if(!array_key_exists($aehybrid->element_type, $articleelementsgroups[$aehybrid->id])) {
+      $articleelementsgroups[$aehybrid->id][$aehybrid->element_type] = 0;
+    }
+    $articleelementsgroups[$aehybrid->id][$aehybrid->element_type]++;
   }
-  if(!array_key_exists($aehybrid->element_type, $articleelementsgroups[$aehybrid->id])) {
-    $articleelementsgroups[$aehybrid->id][$aehybrid->element_type] = 0;
+
+  $templatesoptions = array();
+  $templatesoptions[-1] = get_string('addarticle', 'mod_uniljournal');
+  function translate_templatedesc(&$item, $key) {
+    $item = get_string('element_'.$key.'_desc', 'mod_uniljournal', $item);
   }
-  $articleelementsgroups[$aehybrid->id][$aehybrid->element_type]++;
+  foreach($articlemodels as $amid => $am)  {
+
+    $templatesoptions[$amid] = $am->title;
+    if(array_key_exists($amid, $articleelementsgroups)) {
+      array_walk($articleelementsgroups[$amid], 'translate_templatedesc');
+      
+      $templatesoptions[$amid] .= " (".implode($articleelementsgroups[$amid],", ").")";
+    }
+  }
 }
 
-$templatesoptions = array();
-$templatesoptions[-1] = get_string('addarticle', 'mod_uniljournal');
-function translate_templatedesc(&$item, $key) {
-  $item = get_string('element_'.$key.'_desc', 'mod_uniljournal', $item);
-}
-foreach($articlemodels as $amid => $am)  {
-
-  $templatesoptions[$amid] = $am->title;
-  if(array_key_exists($amid, $articleelementsgroups)) {
-    array_walk($articleelementsgroups[$amid], 'translate_templatedesc');
-    
-    $templatesoptions[$amid] .= " (".implode($articleelementsgroups[$amid],", ").")";
-  }
-}
-
-// Display table of articles
+// Display table of my articles
 $articleinstances = $DB->get_records_sql('SELECT ai.id, ai.timemodified, ai.title, am.id as amid, am.title as amtitle, am.freetitle as freetitle
        FROM {uniljournal_articleinstances} ai
   LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
@@ -107,7 +112,7 @@ if ($action && $aid) {
   if (!$ai  = $articleinstances[$aid]) {
     error('Must exist!');
   }
-  if($action == "delete") {
+  if($action == "delete" && has_capability('mod/uniljournal:deletearticle', $context)) {
     require_once('edit_article_form.php');
     $customdata = array();
     $customdata['course'] = $course;
@@ -147,7 +152,7 @@ $PAGE->set_context($context);
 echo $OUTPUT->header();
 
 // Replace the following lines with you own code.
-echo $OUTPUT->heading(get_string('myarticles','uniljournal'));
+echo $OUTPUT->heading(format_string($uniljournal->name));
 
 if(isset($deleteform)) {
   $deleteform->display();
@@ -162,8 +167,45 @@ if(isset($deleteform)) {
     $logoimg = html_writer::img($url, 'Logo'); // TODO: translate
     echo html_writer::tag('div', $logoimg, array('class' => 'logo'));
   }
-    
-  // TODO: Check rights
+
+  // View for teachers and non-editing teachers: all submitted articles
+  if(has_capability('mod/uniljournal:viewallarticles', $context)) {
+  
+    // Display table of my articles
+    $userattrssql = get_all_user_name_fields(true, 'u');
+    $userarticles = $DB->get_records_sql('SELECT ai.userid, '.$userattrssql.', MAX(ai.timemodified) as timemodified, COUNT(ai.id) as narticles
+           FROM {uniljournal_articleinstances} ai
+      LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
+           JOIN {user} u ON u.id = ai.userid WHERE uniljournalid = :ujid
+      GROUP BY ai.userid, '.$userattrssql, array('ujid' => $uniljournal->id));
+  
+    if(count($userarticles) > 0) {
+      $table = new html_table();
+      $table->head = array(
+          get_string('name'),
+          get_string('articles_num', 'uniljournal'),
+          get_string('articles_uncorrected', 'uniljournal'),
+          get_string('lastmodified'),
+      );
+      
+      foreach($userarticles as $ua) {
+        $row = new html_table_row();
+        $row->cells[] = fullname($ua, has_capability('moodle/site:viewfullnames', $context)); // TODO: Link
+        $row->cells[] = $ua->narticles; // TODO: Link
+        $row->cells[] = "TODO"; // TODO
+        $row->cells[] = strftime('%c', $ua->timemodified);
+
+        $table->data[] = $row;
+      }
+      
+      echo html_writer::table($table);
+    }
+  }
+  
+  if(has_capability('mod/uniljournal:managetemplates', $context) && count($articlemodels) == 0) {
+    echo html_writer::link(new moodle_url('/mod/uniljournal/manage_templates.php', array('id'=>$PAGE->cm->id)), get_string("managetemplates", "mod_uniljournal"));
+  }
+  
   if(count($articleinstances) > 0) {
     $table = new html_table();
     $table->head = array(
@@ -188,7 +230,7 @@ if(isset($deleteform)) {
       
       $actionarray = array();
       $actionarray[] = 'edit';
-      $actionarray[] = 'delete';
+      if (has_capability('mod/uniljournal:deletearticle', $context)) $actionarray[] = 'delete';
       
       $actions = "";
       foreach($actionarray as $actcode) {
@@ -209,24 +251,28 @@ if(isset($deleteform)) {
     }
     echo html_writer::table($table);
   }
+  
+  // Creating new article is only allowed for students
+  if(has_capability('mod/uniljournal:createarticle', $context)) {
+    if(count($articlemodels) > 1) {
+      require_once('view_choose_template_form.php');
+      $customdata = array();
+      $customdata['options'] = $templatesoptions;
 
-  if(count($articlemodels) > 1) {
-    require_once('view_choose_template_form.php');
-    $customdata = array();
-    $customdata['options'] = $templatesoptions;
-
-    $mform = new choose_template_form(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id)), $customdata);
-    //displays the form, with an auto-submitter and no change checker
-    $mform->display();
-    $PAGE->requires->yui_module('moodle-mod_uniljournal-viewsubmitonchange', 'M.mod_uniljournal.viewsubmitonchange.init');
-  } else {
-    $am = array_pop($articlemodels);
-    if($am) {
-      echo html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id, 'amid' => $am->id)), get_string('addarticletempl', 'mod_uniljournal', $templatesoptions[$am->id]));
+      $mform = new choose_template_form(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id)), $customdata);
+      //displays the form, with an auto-submitter and no change checker
+      $mform->display();
+      $PAGE->requires->yui_module('moodle-mod_uniljournal-viewsubmitonchange', 'M.mod_uniljournal.viewsubmitonchange.init');
     } else {
-      echo $OUTPUT->error_text(get_string('notemplates', 'mod_uniljournal'));
+      $am = array_pop($articlemodels);
+      if($am) {
+        echo html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id, 'amid' => $am->id)), get_string('addarticletempl', 'mod_uniljournal', $templatesoptions[$am->id]));
+      } else {
+        echo $OUTPUT->error_text(get_string('notemplates', 'mod_uniljournal'));
+      }
     }
   }
 }
+
 // Finish the page.
 echo $OUTPUT->footer();

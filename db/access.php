@@ -70,13 +70,31 @@ $capabilities = array(
         )
     ),
 
-    'mod/uniljournal:submit' => array(
+    'mod/uniljournal:createarticle' => array(
         'riskbitmask' => RISK_SPAM,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
+        'archetypes' => array(
             'student' => CAP_ALLOW
         )
+    ),
+
+    'mod/uniljournal:deletearticle' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'student' => CAP_ALLOW
+        )
+    ),
+
+    'mod/uniljournal:viewallarticles' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
     ),
 
     'mod/uniljournal:managetemplates' => array(
