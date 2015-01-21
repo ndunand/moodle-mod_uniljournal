@@ -66,37 +66,16 @@ require_once('locallib.php');
 $articlemodels = $DB->get_records_select('uniljournal_articlemodels', "uniljournalid = $uniljournal->id AND hidden != '\x31' ORDER BY sortorder ASC");
 
 // Creating new article is only allowed for students
-if(has_capability('mod/uniljournal:createarticle', $context)) {
-  $articleelements = $DB->get_records_sql("
-      SELECT ae.id as aeid, am.id as id, am.title, am.sortorder as sortorder, ae.element_type, ae.sortorder as aesortorder
-          FROM {uniljournal_articlemodels} am
-      INNER JOIN {uniljournal_articleelements} ae ON ae.articlemodelid = am.id
-      WHERE am.hidden != '\x31' AND am.uniljournalid = :uniljournalid
-      ORDER BY am.sortorder ASC, ae.sortorder ASC", array('uniljournalid' => $uniljournal->id));
-
-  $articleelementsgroups = array();
-  foreach($articleelements as $aeid => $aehybrid) {
-    if(!array_key_exists($aehybrid->id, $articleelementsgroups)) {
-      $articleelementsgroups[$aehybrid->id] = array();
-    }
-    if(!array_key_exists($aehybrid->element_type, $articleelementsgroups[$aehybrid->id])) {
-      $articleelementsgroups[$aehybrid->id][$aehybrid->element_type] = 0;
-    }
-    $articleelementsgroups[$aehybrid->id][$aehybrid->element_type]++;
-  }
-
+if(has_capability('mod/uniljournal:createarticle', $context)) {  
   $templatesoptions = array();
   $templatesoptions[-1] = get_string('addarticle', 'mod_uniljournal');
-  function translate_templatedesc(&$item, $key) {
-    $item = get_string('element_'.$key.'_desc', 'mod_uniljournal', $item);
-  }
-  foreach($articlemodels as $amid => $am)  {
 
+  $templdescs = uniljournal_get_template_descriptions($uniljournal);
+  
+  foreach($articlemodels as $amid => $am)  {
     $templatesoptions[$amid] = $am->title;
-    if(array_key_exists($amid, $articleelementsgroups)) {
-      array_walk($articleelementsgroups[$amid], 'translate_templatedesc');
-      
-      $templatesoptions[$amid] .= " (".implode($articleelementsgroups[$amid],", ").")";
+    if(array_key_exists($amid, $templdescs)) {
+      $templatesoptions[$amid] .= " (".implode($templdescs[$amid], ',').")";
     }
   }
 }

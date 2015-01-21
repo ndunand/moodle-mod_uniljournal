@@ -136,8 +136,11 @@ if (isset($deleteform)) {
     $table = new html_table();
     $table->head = array(
         get_string('template', 'mod_uniljournal'),
+        '',
         get_string('actions'),
     );
+    require_once('locallib.php');
+    $templdescs = uniljournal_get_template_descriptions($uniljournal, false);
 
     $aiter = 0;
     foreach($amodels as $amodel) {
@@ -148,14 +151,27 @@ if (isset($deleteform)) {
       }
       $script = 'edit_template.php';
       $args = array('cmid'=> $cm->id, 'id' => $amodel->id);
-      $row->cells[0] = html_writer::link(new moodle_url('/mod/uniljournal/' . $script, $args), $amodel->title);
       
+      if($amodel->articleinstancescount == 0) {
+        $row->cells[0] = html_writer::link(new moodle_url('/mod/uniljournal/' . $script, $args), $amodel->title);
+      } else {
+        $row->cells[0] = $amodel->title.' ('.get_string('n_articleinstances', 'uniljournal', $amodel->articleinstancescount).')';
+      }
+
+      if(array_key_exists($amodel->id, $templdescs)) {
+        $row->cells[1] = '<ul><li>'.implode($templdescs[$amodel->id],'</li><li>').'</li></ul>';
+      } else {
+        $row->cells[1] = '';
+      }
+
       $actionarray = array();
       $actionarray[] = $amodel->hidden ? 'show' : 'hide';
       if($aiter != 1) $actionarray[] = 'up';
       if($aiter != count($amodels)) $actionarray[] = 'down';
-      $actionarray[] = 'edit';
-      if($amodel->articleinstancescount == 0) $actionarray[] = 'delete';
+      if($amodel->articleinstancescount == 0) {
+        $actionarray[] = 'edit';
+        $actionarray[] = 'delete';
+      }
       
       $actions = "";
       foreach($actionarray as $actcode) {
@@ -173,7 +189,7 @@ if (isset($deleteform)) {
         $img = html_writer::img($OUTPUT->pix_url('t/'. $actcode), get_string($actcode));
         $actions .= html_writer::link($url, $img)."\t";
       }
-      $row->cells[1] = $actions;
+      $row->cells[2] = $actions;
       $table->data[] = $row;
     }
     echo html_writer::table($table);

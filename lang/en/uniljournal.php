@@ -108,3 +108,5 @@ $string['category_context'] = 'This category only';
 $string['user_context'] = 'This user only';
 $string['system_context'] = 'Everywhere';
 $string['themebank_contextid_help'] = '(TO BE COMPLETED !) This where this bank will be available.';
+
+$string['n_articleinstances'] = '{$a} articles';

@@ -51,6 +51,14 @@ if ($id) { // if entry is specified
         print_error('invalidentry');
     }
     $elements = $DB->get_records('uniljournal_articleelements', array('articlemodelid' => $id), 'sortorder');
+    // Exctract the ids only
+    $elementsids = $elements;
+    array_walk($elementsids, function (&$item) { $item =  $item->id;});
+    list ($inequal, $values) = $DB->get_in_or_equal($elementsids);
+    if($DB->count_records_sql('SELECT COUNT(id) FROM {uniljournal_aeinstances} WHERE elementid '.$inequal, $values) > 0) {
+      // Elements are already in use
+      print_error('invalidentry');
+    }
 } else { // new entry
     $entry = new stdClass();
     $entry->id = null;

@@ -73,3 +73,45 @@ function uniljournal_get_elements_array() {
 function uniljournal_startswith($elementstr, $prefix = 'attachment_') {
   return (substr_compare($elementstr, $prefix, 0, strlen($prefix)) === 0);
 }
+
+function uniljournal_translate_templatedesc(&$item, $key) {
+   $item = get_string('element_'.$key.'_desc', 'mod_uniljournal', $item);
+}
+
+function uniljournal_get_template_descriptions($uniljournal, $onlyhidden=true) {
+  global $DB;
+  
+  $hiddenSQL = '';
+  if($onlyhidden) $hiddenSQL = "am.hidden != '\x31' AND ";
+  
+  $articleelements = $DB->get_records_sql("
+      SELECT ae.id as aeid, am.id as id, am.title, am.sortorder as sortorder, ae.element_type, ae.sortorder as aesortorder
+          FROM {uniljournal_articlemodels} am
+      INNER JOIN {uniljournal_articleelements} ae ON ae.articlemodelid = am.id
+      WHERE am.uniljournalid = :uniljournalid"
+      .$hiddenSQL.
+      "ORDER BY am.sortorder ASC, ae.sortorder ASC", array('uniljournalid' => $uniljournal->id));
+
+  $articleelementsgroups = array();
+  foreach($articleelements as $aeid => $aehybrid) {
+    if(!array_key_exists($aehybrid->id, $articleelementsgroups)) {
+      $articleelementsgroups[$aehybrid->id] = array();
+    }
+    if(!array_key_exists($aehybrid->element_type, $articleelementsgroups[$aehybrid->id])) {
+      $articleelementsgroups[$aehybrid->id][$aehybrid->element_type] = 0;
+    }
+    $articleelementsgroups[$aehybrid->id][$aehybrid->element_type]++;
+  }
+
+  $templatesoptions = array();
+
+  foreach($articleelements as $aeid => $am)  {
+    if(array_key_exists($am->id, $articleelementsgroups) && !array_key_exists($am->id, $templatesoptions)) {
+      array_walk($articleelementsgroups[$am->id], 'uniljournal_translate_templatedesc');
+      
+      $templatesoptions[$am->id] = $articleelementsgroups[$am->id];
+    }
+  }
+  
+  return $templatesoptions;
+}
