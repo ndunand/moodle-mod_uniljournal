@@ -140,7 +140,7 @@ if (isset($deleteform)) {
         get_string('actions'),
     );
     require_once('locallib.php');
-    $templdescs = uniljournal_get_template_descriptions($uniljournal, false);
+    $templdescs = uniljournal_get_template_descriptions($uniljournal->id, false);
 
     $aiter = 0;
     foreach($amodels as $amodel) {

@@ -78,19 +78,19 @@ function uniljournal_translate_templatedesc(&$item, $key) {
    $item = get_string('element_'.$key.'_desc', 'mod_uniljournal', $item);
 }
 
-function uniljournal_get_template_descriptions($uniljournal, $onlyhidden=true) {
+function uniljournal_get_template_descriptions($uniljournalid, $onlyhidden=true) {
   global $DB;
   
   $hiddenSQL = '';
-  if($onlyhidden) $hiddenSQL = "am.hidden != '\x31' AND ";
+  if($onlyhidden) $hiddenSQL = " AND am.hidden != '\x31' ";
   
   $articleelements = $DB->get_records_sql("
       SELECT ae.id as aeid, am.id as id, am.title, am.sortorder as sortorder, ae.element_type, ae.sortorder as aesortorder
           FROM {uniljournal_articlemodels} am
       INNER JOIN {uniljournal_articleelements} ae ON ae.articlemodelid = am.id
-      WHERE am.uniljournalid = :uniljournalid"
+      WHERE am.uniljournalid = :uniljournalid "
       .$hiddenSQL.
-      "ORDER BY am.sortorder ASC, ae.sortorder ASC", array('uniljournalid' => $uniljournal->id));
+      "ORDER BY am.sortorder ASC, ae.sortorder ASC", array('uniljournalid' => $uniljournalid));
 
   $articleelementsgroups = array();
   foreach($articleelements as $aeid => $aehybrid) {

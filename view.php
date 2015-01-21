@@ -70,7 +70,7 @@ if(has_capability('mod/uniljournal:createarticle', $context)) {
   $templatesoptions = array();
   $templatesoptions[-1] = get_string('addarticle', 'mod_uniljournal');
 
-  $templdescs = uniljournal_get_template_descriptions($uniljournal);
+  $templdescs = uniljournal_get_template_descriptions($uniljournal->id);
   
   foreach($articlemodels as $amid => $am)  {
     $templatesoptions[$amid] = $am->title;
