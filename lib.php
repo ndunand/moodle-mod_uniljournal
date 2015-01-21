@@ -463,4 +463,8 @@ function uniljournal_extend_settings_navigation(settings_navigation $settingsnav
     if (has_capability('mod/uniljournal:managetemplates', $PAGE->cm->context)) {
          $uniljournalnode->add(get_string("managetemplates", "mod_uniljournal"), new moodle_url('/mod/uniljournal/manage_templates.php', array('id'=>$PAGE->cm->id)));
     }
+
+    if (has_capability('mod/uniljournal:managethemes', $PAGE->cm->context)) {
+        $uniljournalnode->add(get_string("managethemebanks", "mod_uniljournal"), new moodle_url('/mod/uniljournal/manage_themebanks.php', array('id'=>$PAGE->cm->id)));
+    }
 }
