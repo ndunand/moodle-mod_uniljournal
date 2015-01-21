@@ -254,6 +254,70 @@ function xmldb_uniljournal_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015011900, 'uniljournal');
     }
 
+    if ($oldversion < 2015012108) {
+        $themebank_table = new xmldb_table('uniljournal_themebanks');
+        $themebank_table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $themebank_table->add_field('contextid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
+        $themebank_table->add_field('title', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'contextid');
+        $themebank_table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $themebank_table->add_index('contextid', XMLDB_INDEX_NOTUNIQUE, array('contextid'));
+        if (!$dbman->table_exists($themebank_table)) {
+            $dbman->create_table($themebank_table);
+        }
+
+        $theme_table = new xmldb_table('uniljournal_themes');
+        $theme_table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $theme_table->add_field('themeid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
+        $theme_table->add_field('title', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'contextid');
+        $theme_table->add_field('instructions', XMLDB_TYPE_TEXT, null, null, null, null, null, 'title');
+        $theme_table->add_field('instructionsformat', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'instructions');
+        $theme_table->add_field('hidden', XMLDB_TYPE_BINARY, null, null, XMLDB_NOTNULL, null, null, 'instructionsformat');
+        $theme_table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $theme_table->add_key('fk_themeid', XMLDB_KEY_FOREIGN, array('themeid'), 'uniljournal_themes', array('id'));
+        if (!$dbman->table_exists($theme_table)) {
+            $dbman->create_table($theme_table);
+        }
+
+        $aei_table = new xmldb_table('uniljournal_aeinstances');
+        $elementid_idx = new xmldb_index('elementid', XMLDB_INDEX_NOTUNIQUE, array('elementid'));
+        $instanceid_idx = new xmldb_index('instanceid', XMLDB_INDEX_NOTUNIQUE, array('instanceid'));
+        $dbman->drop_index($aei_table, $elementid_idx);
+        $dbman->drop_index($aei_table, $instanceid_idx);
+        $fk_elementid = new xmldb_key('fk_elementid', XMLDB_KEY_FOREIGN, array('elementid'), 'uniljournal_articleelements', array('id'));
+        $fk_instanceid = new xmldb_key('fk_instanceid', XMLDB_KEY_FOREIGN, array('instanceid'), 'uniljournal_articleinstances', array('id'));
+        $dbman->add_key($aei_table, $fk_elementid);
+        $dbman->add_key($aei_table, $fk_instanceid);
+
+        $ai_table = new xmldb_table('uniljournal_articleinstances');
+        $articlemodelid_idx = new xmldb_index('articlemodelid', XMLDB_INDEX_NOTUNIQUE, array('articlemodelid'));
+        $userid_idx = new xmldb_index('userid', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+        $dbman->drop_index($ai_table, $articlemodelid_idx);
+        $dbman->drop_index($ai_table, $userid_idx);
+        $fk_articlemodelid = new xmldb_key('fk_articlemodelid', XMLDB_KEY_FOREIGN, array('articlemodelid'), 'uniljournal_articlemodels', array('id'));
+        $fk_userid = new xmldb_key('fk_userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+        $dbman->add_key($ai_table, $fk_articlemodelid);
+        $dbman->add_key($ai_table, $fk_userid);
+
+        $ae_table = new xmldb_table('uniljournal_articleelements');
+        $articlemodelid_idx = new xmldb_index('articlemodelid', XMLDB_INDEX_NOTUNIQUE, array('articlemodelid'));
+        $dbman->drop_index($ae_table, $articlemodelid_idx);
+        $dbman->add_key($ae_table, $fk_articlemodelid);
+
+        $am_table = new xmldb_table('uniljournal_articlemodels');
+        $uniljournalid_idx = new xmldb_index('uniljournalid', XMLDB_INDEX_NOTUNIQUE, array('uniljournalid'));
+        $dbman->drop_index($am_table, $uniljournalid_idx);
+        $fk_uniljournalid = new xmldb_key('fk_uniljournalid', XMLDB_KEY_FOREIGN, array('uniljournalid'), 'uniljournal', array('id'));
+        $dbman->add_key($am_table, $fk_uniljournalid);
+
+        $uj_table = new xmldb_table('uniljournal');
+        $course_idx = new xmldb_index('course', XMLDB_INDEX_NOTUNIQUE, array('course'));
+        $dbman->drop_index($uj_table, $course_idx);
+        $fk_courseid = new xmldb_key('fk_courseid', XMLDB_KEY_FOREIGN, array('course'), 'course', array('id'));
+        $dbman->add_key($uj_table, $fk_courseid);
+
+        upgrade_mod_savepoint(true, 2015012108, 'uniljournal');
+    }
+
 
     return true;
 }

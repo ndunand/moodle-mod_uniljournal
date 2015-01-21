@@ -19,10 +19,8 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_courseid" TYPE="foreign" FIELDS="course" REFTABLE="course" REFFIELDS="id"/>
       </KEYS>
-      <INDEXES>
-        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
-      </INDEXES>
     </TABLE>
     <TABLE NAME="uniljournal_articlemodels" COMMENT="Article models within a uniljournal instance">
       <FIELDS>
@@ -38,10 +36,8 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_uniljournalid" TYPE="foreign" FIELDS="uniljournalid" REFTABLE="uniljournal" REFFIELDS="id"/>
       </KEYS>
-      <INDEXES>
-        <INDEX NAME="uniljournalid" UNIQUE="false" FIELDS="uniljournalid"/>
-      </INDEXES>
     </TABLE>
     <TABLE NAME="uniljournal_articleelements" COMMENT="Article elements">
       <FIELDS>
@@ -52,10 +48,8 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_articlemodelid" TYPE="foreign" FIELDS="articlemodelid" REFTABLE="uniljournal_articlemodels" REFFIELDS="id"/>
       </KEYS>
-      <INDEXES>
-        <INDEX NAME="articlemodelid" UNIQUE="false" FIELDS="articlemodelid"/>
-      </INDEXES>
     </TABLE>
     <TABLE NAME="uniljournal_articleinstances" COMMENT="Article instances">
       <FIELDS>
@@ -67,11 +61,9 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_articlemodelid" TYPE="foreign" FIELDS="articlemodelid" REFTABLE="uniljournal_articlemodels" REFFIELDS="id"/>
+        <KEY NAME="fk_userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
-      <INDEXES>
-        <INDEX NAME="articlemodelid" UNIQUE="false" FIELDS="articlemodelid"/>
-        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
-      </INDEXES>
     </TABLE>
     <TABLE NAME="uniljournal_aeinstances" COMMENT="Article element instances">
       <FIELDS>
@@ -85,12 +77,39 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_elementid" TYPE="foreign" FIELDS="elementid" REFTABLE="uniljournal_articleelements" REFFIELDS="id"/>
+        <KEY NAME="fk_instanceid" TYPE="foreign" FIELDS="instanceid" REFTABLE="uniljournal_articleinstances" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="instanceid" UNIQUE="false" FIELDS="instanceid"/>
-        <INDEX NAME="elementid" UNIQUE="false" FIELDS="elementid"/>
         <INDEX NAME="version" UNIQUE="false" FIELDS="version"/>
       </INDEXES>
+    </TABLE>
+    <TABLE NAME="uniljournal_themebanks" COMMENT="Article themes">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Theme title"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="contextid" UNIQUE="false" FIELDS="contextid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="uniljournal_themes" COMMENT="Article themes">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="themebankid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Theme instance title"/>
+        <FIELD NAME="instructions" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="instructionsformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="hidden" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="Determine whether the theme instance is available for students"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_themeid" TYPE="foreign" FIELDS="themeid" REFTABLE="uniljournal_themes" REFFIELDS="id"/>
+      </KEYS>
     </TABLE>
   </TABLES>
 </XMLDB>
