@@ -43,7 +43,7 @@ class edit_article_form extends moodleform {
         $textfieldoptions  = $this->_customdata['textfieldoptions'];
         $textonlyoptions   = $this->_customdata['textonlyoptions'];
         $attachmentoptions = $this->_customdata['attachmentoptions'];
-        $imageoptions      = $attachmentoptions;
+        
         $imageoptions['accepted_types'] = array('web_image');
         
         $context         = context_module::instance($cm->id);
@@ -67,13 +67,13 @@ class edit_article_form extends moodleform {
           $id = 'element_'.$ae->id;
           $desc = get_string('element_'.$ae->element_type, 'uniljournal');
           
+          if(substr_compare($ae->element_type, 'attachment_', 0, 11) === 0) {
+            $attoptions = $attachmentoptions;
+            $attoptions['accepted_types'] = substr($ae->element_type, 11);
+            $mform->addElement('filemanager', $id, $desc, null, $attoptions);
+          }
+          
           switch($ae->element_type) {
-            case "attachment":
-              $mform->addElement('filemanager', $id, $desc, null, $attachmentoptions);
-              break;
-            case "image":
-              $mform->addElement('filemanager', $id, $desc, null, $imageoptions);
-              break;
             case "text":
               $id .= '_editor';
               $mform->addElement('editor', $id, $desc, null, $textfieldoptions);

@@ -26,6 +26,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+require_once("$CFG->dirroot/mod/uniljournal/lib.php");
 
 function uniljournal_set_logo($data) {
     global $DB;
@@ -53,8 +54,17 @@ function uniljournal_get_logo($context) {
 }
 
 function uniljournal_get_elements_array() {
+  global $CFG;
+
   $options = array();
-  foreach(array('subtitle', 'textonly', 'text', 'image', 'attachment') as $elem) {
+  $types = array('subtitle', 'textonly', 'text');
+  foreach(explode(',',get_config('uniljournal','allowedmimegroups')) as $allowedmime) {
+    // Exclude the web_.* types anyway
+    if(substr_compare($allowedmime, 'web_', 0, 4) !== 0) {
+      $types[] = 'attachment_'.$allowedmime;
+    }
+  }
+  foreach($types as $elem) {
     $options[$elem] = get_string('element_'.$elem, 'uniljournal');
   }
   return $options;

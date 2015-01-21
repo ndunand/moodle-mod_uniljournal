@@ -84,24 +84,26 @@ foreach($articleelements as $ae) {
         $content .= html_writer::tag('h4', $aeinstance->value);
         break;
       case "text":
+      case "textonly":
         $aeinstance->value = file_rewrite_pluginfile_urls($aeinstance->value, 'pluginfile.php', $context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
         $content .= html_writer::tag('div', $aeinstance->value);
         break;
-      case "attachment":
-      case "image":
-        $fs = get_file_storage();
-        $files = $fs->get_area_files($context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
-        if(count($files) > 0) {
-          $file = array_pop($files);
-          $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
-          if($file->is_valid_image()) {
-            $attachments .= html_writer::tag('div', html_writer::img($url, $file->get_filename()));
-          } else {
-            $attachments .= html_writer::tag('div', html_writer::link($url, $file->get_filename()));
-          }
-        }
-        break;
     }
+    
+    if (substr_compare($ae->element_type, 'attachment_', 0, 11) === 0 ) { // begins with
+      $fs = get_file_storage();
+      $files = $fs->get_area_files($context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
+      if(count($files) > 0) {
+        $file = array_pop($files);
+        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+        if($file->is_valid_image()) {
+          $attachments .= html_writer::tag('div', html_writer::img($url, $file->get_filename()));
+        } else {
+          $attachments .= html_writer::tag('div', html_writer::link($url, $file->get_filename()));
+        }
+      }
+    }
+    
     $actualversion = max($actualversion, $aeinstance->version);
   }
 }

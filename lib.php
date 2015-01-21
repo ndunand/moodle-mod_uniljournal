@@ -337,7 +337,7 @@ function uniljournal_get_file_areas($course, $cm, $context) {
  * @param file_browser $browser
  * @param array $areas
  * @param stdClass $course
- * @param stdClass $cm
+ * @param stdClass $cmget_mimetypes_array
  * @param stdClass $context
  * @param string $filearea
  * @param int $itemid
@@ -439,7 +439,7 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
  * Extends the global navigation tree by adding uniljournal nodes if there is a relevant content
  *
  * This can be called by an AJAX request so do not rely on $PAGE as it might not be set up properly.
- *
+ *get_mimetypes_array
  * @param navigation_node $navref An object representing the navigation tree node of the uniljournal module instance
  * @param stdClass $course
  * @param stdClass $module

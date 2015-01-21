@@ -37,7 +37,7 @@ if ($ADMIN->fulltree) {
     }
     $keyvalgroups = array();
     foreach($groups as $gid => $group) {
-        $keyvalgroups[$group] = $group;
+        $keyvalgroups[$group] = $group; //' ('.get_string('element_attachment_'.$group, 'uniljournal').')';
     }
     ksort($keyvalgroups);
     
