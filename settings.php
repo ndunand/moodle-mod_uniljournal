@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
     require_once("$CFG->libdir/resourcelib.php");
+    require_once("$CFG->dirroot/mod/uniljournal/locallib.php");
 
     // Get available mimetype groups from the mimetype arrays.
     $groups = array();
@@ -37,7 +38,10 @@ if ($ADMIN->fulltree) {
     }
     $keyvalgroups = array();
     foreach($groups as $gid => $group) {
-        $keyvalgroups[$group] = $group; //' ('.get_string('element_attachment_'.$group, 'uniljournal').')';
+      // Exclude the web_ groups
+      if(!uniljournal_startswith($group, 'web_')) {
+        $keyvalgroups[$group] = $group;
+      }
     }
     ksort($keyvalgroups);
     

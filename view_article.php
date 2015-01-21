@@ -90,7 +90,7 @@ foreach($articleelements as $ae) {
         break;
     }
     
-    if (substr_compare($ae->element_type, 'attachment_', 0, 11) === 0 ) { // begins with
+    if( uniljournal_startswith($ae->element_type, 'attachment_') ) { // begins with
       $fs = get_file_storage();
       $files = $fs->get_area_files($context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
       if(count($files) > 0) {

@@ -93,7 +93,7 @@ if ($id) { // if entry is specified
       
       if($ae->element_type == 'text') {
         $articleinstance = file_prepare_standard_editor($articleinstance, $property_name, $textfieldoptions, $context, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
-      } elseif (substr_compare($ae->element_type, 'attachment_', 0, 11) === 0 ) { // begins with
+      } elseif (uniljournal_startswith($ae->element_type, 'attachment_')) { // begins with
         $attoptions = $attachmentoptions;
         $attoptions['accepted_types'] = substr($ae->element_type, 11);
         $articleinstance = file_prepare_standard_filemanager($articleinstance, $property_name, $attoptions, $context, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
@@ -163,7 +163,7 @@ if ($mform->is_cancelled()) {
           $element->valueformat = $articleinstance->$property_format;
           $DB->update_record('uniljournal_aeinstances', $element);
 
-        } elseif (substr_compare($ae->element_type, 'attachment_', 0, 11) === 0 ) { // begins with
+        } elseif (uniljournal_startswith($ae->element_type, 'attachment_')) {
           $draftitemid = $articleinstance->$property_name;
           $context = context_module::instance($cmid);
           if ($draftitemid) {

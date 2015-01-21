@@ -60,7 +60,7 @@ function uniljournal_get_elements_array() {
   $types = array('subtitle', 'textonly', 'text');
   foreach(explode(',',get_config('uniljournal','allowedmimegroups')) as $allowedmime) {
     // Exclude the web_.* types anyway
-    if(substr_compare($allowedmime, 'web_', 0, 4) !== 0) {
+    if(!uniljournal_startswith($allowedmime, 'web_')) {
       $types[] = 'attachment_'.$allowedmime;
     }
   }
@@ -68,4 +68,8 @@ function uniljournal_get_elements_array() {
     $options[$elem] = get_string('element_'.$elem, 'uniljournal');
   }
   return $options;
+}
+
+function uniljournal_startswith($elementstr, $prefix = 'attachment_') {
+  return (substr_compare($elementstr, $prefix, 0, strlen($prefix)) === 0);
 }
