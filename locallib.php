@@ -115,3 +115,20 @@ function uniljournal_get_template_descriptions($uniljournalid, $onlyhidden=true)
   
   return $templatesoptions;
 }
+
+function uniljournal_article_status($id = null) {
+  $statuses = array();
+  $statuses[0] = '-';
+  $statuses[10] = '◯'; // Started
+  $statuses[20] = '◐'; // In progress
+  $statuses[30] = '⬤'; // Finished
+  $statuses[40] = '✓'; // Finished
+  
+  if(is_null($id)) {
+    return $statuses;
+  } else if (array_key_exists($id, $statuses)) {
+    return $statuses[$id];
+  } else {
+    return false;
+  }
+}

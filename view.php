@@ -81,17 +81,34 @@ if(has_capability('mod/uniljournal:createarticle', $context)) {
 }
 
 // Display table of my articles
-$articleinstances = $DB->get_records_sql('SELECT ai.id, ai.timemodified, ai.title, am.id as amid, am.title as amtitle, am.freetitle as freetitle
+$articleinstances = $DB->get_records_sql('SELECT ai.id, ai.timemodified, ai.title, ai.status, am.id as amid, am.title as amtitle, am.freetitle as freetitle
        FROM {uniljournal_articleinstances} ai
   LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
   WHERE uniljournalid = :ujid AND userid = :uid
   ORDER BY ai.timemodified DESC', array('ujid' => $uniljournal->id, 'uid' => $USER->id));
 
+$uniljournal_statuses = uniljournal_article_status();
+// Status modifier forms
+$smforms = array();
+foreach($articleinstances as $ai) {
+  require_once('view_choose_template_form.php');
+  $currententry = new stdClass();
+  $currententry->aid = $ai->id;
+  $statuskey = 'status_'.$ai->id;
+  $currententry->statuskey = $statuskey;
+  $currententry->$statuskey = $ai->status;
+  $smforms[$ai->id] = new status_change_form(new moodle_url('/mod/uniljournal/view.php', array('id' => $cm->id, 'aid' => $ai->id, 'action' => 'change_state')),
+        array(
+          'options' => $uniljournal_statuses,
+          'currententry' => $currententry,
+        ));
+}
+
 if ($action && $aid) {
   if (!$ai  = $articleinstances[$aid]) {
     error('Must exist!');
   }
-  if($action == "delete" && has_capability('mod/uniljournal:deletearticle', $context)) {
+  if($action == "delete" && has_capability('mod/uniljournal:deletearticle', $context) && array_key_exists($aid, $articleinstances)) {
     require_once('edit_article_form.php');
     $customdata = array();
     $customdata['course'] = $course;
@@ -111,6 +128,16 @@ if ($action && $aid) {
       unset($deleteform);
     }
 
+  } else if($action == "change_state" && has_capability('mod/uniljournal:createarticle', $context) && array_key_exists($aid, $articleinstances)) {
+    $ai = $articleinstances[$aid];
+    $smform = $smforms[$aid];
+    $smid = 'status_'.$aid; // Don't take it from the form, out of 'security'
+    if ($smform->is_cancelled()) {
+      // Should not happen!
+    } elseif ($entry = $smform->get_data()) {
+      $ai->status = $entry->$smid;
+      $DB->update_record('uniljournal_articleinstances', $ai);
+    }
   }
 }
 
@@ -191,6 +218,7 @@ if(isset($deleteform)) {
         get_string('myarticles', 'uniljournal'),
         get_string('lastmodified'),
         get_string('template', 'uniljournal'),
+        get_string('articlestate', 'uniljournal'),
         get_string('actions'),
     );
 
@@ -207,6 +235,12 @@ if(isset($deleteform)) {
       $row->cells[] = strftime('%c', $ai->timemodified);
       $row->cells[] = $ai->amtitle;
       
+      $PAGE->requires->yui_module('moodle-core-formautosubmit',
+            'M.core.init_formautosubmit',
+            array(array('selectid' => 'id_status_'.$ai->id, 'nothing' => false))
+        );
+      $row->cells[] = $smforms[$ai->id]->render();
+
       $actionarray = array();
       $actionarray[] = 'edit';
       if (has_capability('mod/uniljournal:deletearticle', $context)) $actionarray[] = 'delete';

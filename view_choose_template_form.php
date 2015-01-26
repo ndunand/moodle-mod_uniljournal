@@ -42,3 +42,23 @@ class choose_template_form extends moodleform {
         $mform->disable_form_change_checker();
     }
 }
+
+class status_change_form extends moodleform {
+    protected $course;
+
+    public function definition() {
+
+        global $CFG;
+        $options      = $this->_customdata['options'];
+        $currententry = $this->_customdata['currententry'];
+
+        $mform = $this->_form;
+        $mform->addElement('select', $currententry->statuskey, '', $options, array('class' => 'autosubmit'));
+
+        $mform->disable_form_change_checker();
+        
+        $this->set_data($currententry);
+        
+    }
+
+}

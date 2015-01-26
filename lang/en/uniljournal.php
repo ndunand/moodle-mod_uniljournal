@@ -117,3 +117,4 @@ $string['theme_title_help'] = '(TO BE COMPLETED !) This is the title of the them
 $string['theme_instructions'] = 'Instructions';
 $string['theme_instructions_help'] = '(TO BE COMPLETED !) These are the theme instructions';
 $string['n_articleinstances'] = '{$a} articles';
+$string['articlestate'] = 'State';
