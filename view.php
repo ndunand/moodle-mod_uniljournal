@@ -241,7 +241,11 @@ if(isset($deleteform)) {
       $mform = new choose_template_form(new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cm->id)), $customdata);
       //displays the form, with an auto-submitter and no change checker
       $mform->display();
-      $PAGE->requires->yui_module('moodle-mod_uniljournal-viewsubmitonchange', 'M.mod_uniljournal.viewsubmitonchange.init');
+
+      $PAGE->requires->yui_module('moodle-core-formautosubmit',
+            'M.core.init_formautosubmit',
+            array(array('selectid' => 'id_amid', 'nothing' => false))
+        );
     } else {
       $am = array_pop($articlemodels);
       if($am) {

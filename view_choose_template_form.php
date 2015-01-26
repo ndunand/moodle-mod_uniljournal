@@ -38,7 +38,7 @@ class choose_template_form extends moodleform {
         $options = $this->_customdata['options'];
         
         $mform = $this->_form;
-        $mform->addElement('select', 'amid', '', $options);
+        $mform->addElement('select', 'amid', '', $options, array('class' => 'autosubmit'));
         $mform->disable_form_change_checker();
     }
 }
