@@ -71,7 +71,7 @@ $attachmentoptions = array(
 );
 
 if ($id) { // if entry is specified
-  if (!$articleinstance = $DB->get_record('uniljournal_articleinstances', array('id' => $id))) {
+  if (!$articleinstance = $DB->get_record('uniljournal_articleinstances', array('id' => $id, 'articlemodelid' => $amid))) {
     print_error('invalidentry');
   }
   
