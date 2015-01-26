@@ -330,6 +330,16 @@ function xmldb_uniljournal_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015012109, 'uniljournal');
     }
 
+    if ($oldversion < 2015012600) {
+        $table = new xmldb_table('uniljournal_articleinstances');
+        $field = new xmldb_field('status', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, '0', 'title');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2015012600, 'uniljournal');
+    }
+
 
     return true;
 }
