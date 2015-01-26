@@ -196,7 +196,8 @@ if(isset($deleteform)) {
       
       foreach($userarticles as $ua) {
         $row = new html_table_row();
-        $row->cells[] = fullname($ua, has_capability('moodle/site:viewfullnames', $context)); // TODO: Link
+        $ualink = new moodle_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id, 'uid' => $ua->userid));
+        $row->cells[] = html_writer::link($ualink,fullname($ua, has_capability('moodle/site:viewfullnames', $context))); // TODO: Link
         $row->cells[] = $ua->narticles; // TODO: Link
         $row->cells[] = "TODO"; // TODO
         $row->cells[] = strftime('%c', $ua->timemodified);
