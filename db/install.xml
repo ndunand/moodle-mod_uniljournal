@@ -61,11 +61,13 @@
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Article instance title"/>
         <FIELD NAME="status" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Article status (according to writer)"/>
+        <FIELD NAME="themeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="fk_articlemodelid" TYPE="foreign" FIELDS="articlemodelid" REFTABLE="uniljournal_articlemodels" REFFIELDS="id"/>
         <KEY NAME="fk_userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="fk_themeid" TYPE="foreign" FIELDS="themeid" REFTABLE="uniljournal_themes" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="uniljournal_aeinstances" COMMENT="Article element instances">
