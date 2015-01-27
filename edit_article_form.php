@@ -166,8 +166,9 @@ class article_delete_form extends moodleform {
         $mform = $this->_form;
         
         $a = new stdClass();
-        $a->type = get_string('templatelower', 'mod_uniljournal');
-        $a->name = $currententry->freetitle == 1 ? $currententry->title : 'TODO: Theme title';
+        $a->type = get_string('articlelower', 'mod_uniljournal');
+        require_once('locallib.php');
+        $a->name = uniljournal_articletitle($currententry);
         
         $mform->addElement('html', '<div>'.get_string('deletechecktypename', 'core', $a).'</div>');
 
