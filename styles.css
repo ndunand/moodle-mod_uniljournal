@@ -37,3 +37,53 @@
     float: left;
     width: 45%;
 }
+
+.article {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.article-edit {
+    position: relative;
+    display: block;
+    float: left;
+    width: 70%;
+}
+
+.article-comments {
+    position: relative;
+    display: block;
+    float: left;
+    width: 28%;
+}
+
+.article-comments .mform .fitem div.fitemtitle {
+    width: inherit;
+    float: none;
+    text-align: left;
+    padding: 0;
+}
+
+.article-comments .mform .fitem {
+    margin-bottom: 0;
+}
+
+.article-comments .mform .fitem .felement {
+    margin-left: 0;
+}
+.article-comments .mform .fitem .felement textarea {
+    width: 100%;
+    margin: 0;
+    padding: 5px;
+}
+
+#region-main .article-comments .mform:not(.unresponsive) .fitem .fitemtitle label {
+    margin: 0;
+}
+
+.article-comments #fitem_id_submitbutton {
+    padding: 0;
+    margin: 0;
+    background: none;
+}

@@ -14,26 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Defines the version of uniljournal
+ * Edits a particular instance of a uniljournal instance
  *
- * This code fragment is called by moodle_needs_upgrading() and
- * /admin/index.php
  *
  * @package    mod_uniljournal
- * @copyright  2014 Liip AG {@link http://www.liip.ch/}
+ * @copyright  2015 Liip AG {@link http://www.liip.ch/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(__FILE__).'/locallib.php');
+require_once(dirname(__FILE__).'/add_article_comment_form.php');
 
-$plugin->version   = 2015012700;               // The current module version (Date: YYYYMMDDXX).
-                                      // If version == 0 then module will not be installed.
-$plugin->requires  = 2014051200;      // Requires this Moodle version.
-$plugin->cron      = 0;               // Period for cron to check this module (secs).
-$plugin->component = 'mod_uniljournal'; // To check on upgrade, that module sits in correct place.
+$articleinstanceid  = optional_param('articleinstanceid', 0, PARAM_INT); // Course_module ID, or
+$articleinstanceversion = optional_param('articleinstanceversion', 0, PARAM_INT);  // template ID
 
-$plugin->dependencies = array(
-  'atto_corrections' => 2015010100,
-);
+$form_data = $mform->get_data();
+
+redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid)));

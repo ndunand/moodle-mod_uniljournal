@@ -340,6 +340,24 @@ function xmldb_uniljournal_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015012600, 'uniljournal');
     }
 
+    if ($oldversion < 2015012700) {
+        $table = new xmldb_table('uniljournal_article_comments');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $table->add_field('articleinstanceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('articleinstanceversion', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'articleinstanceid');
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'articleinstanceversion');
+        $table->add_field('text', XMLDB_TYPE_TEXT, null, null, null, null, null, 'userid');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0','text');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('fk_articleinstanceid', XMLDB_KEY_FOREIGN, array('articleinstanceid'), 'uniljournal_aeinstances', array('id'));
+        $table->add_key('fk_userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_mod_savepoint(true, 2015012700, 'uniljournal');
+    }
+
 
     return true;
 }
