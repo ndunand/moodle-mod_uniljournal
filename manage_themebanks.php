@@ -46,6 +46,7 @@ if ($id) {
 }
 
 require_login($course, true, $cm);
+require_capability('mod/uniljournal:managethemes', $module_context);
 require_once('locallib.php');
 $themebanks = uniljournal_get_theme_banks($cm, $course);
 

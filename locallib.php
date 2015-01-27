@@ -146,7 +146,6 @@ function uniljournal_get_theme_banks($cm, $course) {
       'category_context' => $category_context->id,
       'system_context' => $system_context->id,
       'user_context' => $user_context->id);
-  require_capability('mod/uniljournal:managethemes', $module_context);
 
   return $DB->get_records_sql('
         SELECT tb.*, COUNT(t.id) as themescount
