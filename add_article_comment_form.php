@@ -33,13 +33,10 @@ class add_article_comment_form extends moodleform {
     public function definition() {
         global $CFG;
 
+        $cmid = $this->_customdata['cmid'];
         $articleinstanceid = $this->_customdata['articleinstanceid'];
         $articleinstanceversion = $this->_customdata['articleinstanceversion'];
         $user = $this->_customdata['user'];
-        $currententry = new stdClass();
-        $currententry->articleinstanceid = $articleinstanceid;
-        $currententry->articleinstanceversion = $articleinstanceversion;
-        $currententry->userid = $user->id;
 
         $mform = $this->_form;
 
@@ -56,16 +53,12 @@ class add_article_comment_form extends moodleform {
         $mform->addElement('hidden', 'userid');
         $mform->setType('userid', PARAM_INT);
         $mform->setConstant('userid', $user->id);
+        $mform->addElement('hidden', 'cmid');
+        $mform->setType('cmid', PARAM_INT);
+        $mform->setConstant('cmid', $cmid);
 
-        $mform->setAttributes(array('action' => new moodle_url('/mod/uniljournal/add_article_comment.php',
-            array(
-                'articleinstanceid' =>$articleinstanceid,
-                'articleinstanceversion' => $articleinstanceversion,
-            )
-        )));
+        $mform->setAttributes(array('action' => new moodle_url('/mod/uniljournal/add_article_comment.php'), 'method' => 'post'));
 
         $this->add_action_buttons(false, get_string('sendcomment', 'mod_uniljournal'));
-
-        $this->set_data($currententry);
     }
 }

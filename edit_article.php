@@ -27,8 +27,9 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 require_once(dirname(__FILE__).'/locallib.php');
 
-$cmid = $_POST['cmid'];  // Course_module ID, or
-$id   = $_POST['articleinstanceid'];    // Article instance ID
+$cmid = optional_param('cmid', 0, PARAM_INT);  // Course_module ID, or
+$amid = optional_param('amid', 0, PARAM_INT);  // template ID
+$id   = optional_param('id', 0, PARAM_INT);    // Article instance ID
 
 if ($cmid) {
     $cm         = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
@@ -194,7 +195,7 @@ echo $OUTPUT->heading(get_string('writearticletempl', 'mod_uniljournal', $articl
 echo '<div class="article"><div class="article-edit">';
 $mform->display();
 echo '</div><div class="article-comments">';
-echo $uniljournal_renderer->display_comments($id, $version, $USER->id);
+echo $uniljournal_renderer->display_comments($cmid, $id, $version, $USER->id);
 echo '</div>';
 
 echo $OUTPUT->footer();

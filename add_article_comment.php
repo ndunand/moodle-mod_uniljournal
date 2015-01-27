@@ -28,9 +28,31 @@ require_once(dirname(__FILE__).'/lib.php');
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/add_article_comment_form.php');
 
-$articleinstanceid  = optional_param('articleinstanceid', 0, PARAM_INT); // Course_module ID, or
-$articleinstanceversion = optional_param('articleinstanceversion', 0, PARAM_INT);  // template ID
+require_login();
+
+$cmid  = optional_param('cmid', 0, PARAM_INT); // Course_module ID, or
+$articleinstanceid  = optional_param('articleinstanceid', 0, PARAM_INT); // article instance ID, or
+$articleinstanceversion = optional_param('articleinstanceversion', 0, PARAM_INT);  // article instance version
+
+$customdata = array();
+$customdata['cmid'] = $cmid;
+$customdata['articleinstanceid'] = $articleinstanceid;
+$customdata['articleinstanceversion'] = $articleinstanceversion;
+$customdata['currententry'] = new stdClass();
+$customdata['user'] = $USER;
+$mform = new add_article_comment_form(null, $customdata);
 
 $form_data = $mform->get_data();
 
-redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid)));
+$context = context_module::instance($cmid);
+
+$comment = new stdClass();
+$comment->articleinstanceid = $articleinstanceid;
+$comment->articleinstanceversion = $articleinstanceversion;
+$comment->userid = $USER->id;
+$comment->text = $form_data->text;
+$comment->timecreated = time();
+
+$DB->insert_record('uniljournal_article_comments', $comment);
+
+redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid, 'id' => $articleinstanceid)));

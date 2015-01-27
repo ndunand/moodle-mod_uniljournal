@@ -31,15 +31,15 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
     function display_comments($cmid, $articleinstanceid, $articleinstanceversion, $userid, $editable=false) {
         global $DB, $USER;
 
-        $comments = $DB->get_record_sql('
+        $comments = $DB->get_records_sql('
           SELECT c.*, u.firstname AS firstname, u.lastname AS lastname FROM {uniljournal_article_comments} c
           JOIN {user} u ON c.userid = u.id
           WHERE articleinstanceid = :articleinstanceid
           ORDER BY timecreated ASC', array(
-            'articleinstanceid' =>$articleinstanceid
+            'articleinstanceid' => $articleinstanceid
         ));
         $output = '';
-        if ($comments) {
+        if (count($comments) > 0) {
             foreach($comments as $comment) {
                 $userClass = '';
                 $versionClass = '';
@@ -52,16 +52,14 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                 if ($articleinstanceversion == $comment->articleinstanceversion) {
                     $versionClass = ' current';
                 }
-                if (!$editable) {
-                    $disabled = 'disabled';
-                }
                 $output .= '<div class="article-comments-item'. $userClass . $versionClass . '">';
                 $output .= '<label for="comment' . $comment->id . '">' . $comment->firstname . ' ' . $comment->lastname . '</label>';
-                $output .= '<textarea id ="comment' . $comment->id . '"' . $disabled . '>' . $comment->text . '</textarea></div>';
+                $output .= '<textarea id ="comment' . $comment->id . '" disabled>' . $comment->text . '</textarea></div>';
             }
         }
         if ($editable) {
             $customdata = array();
+            $customdata['cmid'] = $cmid;
             $customdata['articleinstanceid'] = $articleinstanceid;
             $customdata['articleinstanceversion'] = $articleinstanceversion;
             $customdata['currententry'] = new stdClass();
@@ -70,8 +68,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
             $output .= '<div class="article-comments-item">';
             $output .= $mform->render();
             $output .= '</div>';
-        }
-        else {
+        } else if (count($comments) < 1) {
             $output .= get_string('no_comment', 'mod_uniljournal');
         }
 
