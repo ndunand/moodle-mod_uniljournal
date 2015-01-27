@@ -70,6 +70,12 @@ if ($id) { // if entry is specified
 $entry = file_prepare_standard_editor($entry, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'articletemplates', $entry->id);
 $entry->cmid = $cm->id;
 
+require_once('locallib.php');
+$themebanks = uniljournal_get_theme_banks($cm, $course, $USER);
+array_walk($themebanks, function (&$item) { $item =  $item->title;});
+$themebanks[-1] = get_string('template_nothemebank', 'uniljournal');
+ksort($themebanks);
+
 require_once('edit_template_form.php');
 $customdata = array();
 $customdata['current'] = $entry;
@@ -77,6 +83,7 @@ $customdata['course'] = $course;
 $customdata['instructionsoptions'] = $instructionsoptions;
 $customdata['cm'] = $cm;
 $customdata['elements'] = $elements;
+$customdata['themebanks'] = $themebanks;
 $customdata['elementsoptions'] = uniljournal_get_elements_array();
 
 $mform = new template_edit_form(null, $customdata);
@@ -92,7 +99,11 @@ if ($mform->is_cancelled()) {
     $entry->sortorder = 0; // TODO: See if it's needed to put it up last.
     $entry->hidden = false;
     $entry->uniljournalid = $uniljournal->id;
-    $entry->freetitle = (isset($entry->freetitle) && $entry->freetitle == 1);
+    if($entry->themebankid == -1) { // Force freetitle as there's no themebank
+      $entry->freetitle = true;
+    } else {
+      $entry->freetitle = (isset($entry->freetitle) && $entry->freetitle == 1);
+    }
 
     if ($isnewentry) {
         // Add new entry.

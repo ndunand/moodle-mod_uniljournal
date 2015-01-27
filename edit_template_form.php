@@ -41,6 +41,7 @@ class template_edit_form extends moodleform {
         $currententry        = $this->_customdata['current'];
         $elements            = $this->_customdata['elements'];
         $elementsoptions     = $this->_customdata['elementsoptions'];
+        $themebanks          = $this->_customdata['themebanks'];
         $context  = context_module::instance($cm->id);
 
         $this->course  = $course;
@@ -62,9 +63,14 @@ class template_edit_form extends moodleform {
         $mform->setType('instructions_editor', PARAM_RAW);
         $mform->addHelpButton('instructions_editor', 'template_instructions', 'uniljournal');
 
+        $mform->addElement('select', 'themebankid', get_string('template_themebank', 'uniljournal'), $themebanks);
+        $mform->setType('themebankid', PARAM_INT);
+        
         $mform->addElement('checkbox', 'freetitle', get_string('template_freetitle', 'uniljournal'));
         $mform->setType('freetitle', PARAM_BOOL);
         $mform->addHelpButton('freetitle', 'template_freetitle', 'uniljournal');
+        $mform->setDefault('freetitle', true);
+        $mform->disabledIf('freetitle', 'themebankid', 'eq', -1);
 
         $mform->addElement('html', '<div class="fitem fitem_dragdrop">');
         $mform->addElement('html', '<div class="fitemtitle"><label>' . get_string('template_element', 'uniljournal') . '</label></div>');

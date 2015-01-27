@@ -40,8 +40,8 @@ if ($cmid && $tbid) {
     error('You must specify a course_module ID and a theme bank ID');
 }
 
-$context = context::instance_by_id($themebank->contextid);
 require_login($course, true, $cm);
+$context = context_module::instance($cm->id);
 require_capability('mod/uniljournal:managethemes', $context);
 
 if ($id) { // if entry is specified
