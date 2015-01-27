@@ -229,7 +229,12 @@ if(isset($deleteform)) {
       $row = new html_table_row();
       $script = 'edit.php';
       // Set the article title based on the theme
-      $title = $ai->freetitle == 1 ? $ai->title : 'TODO: Theme title';
+      if($ai->freetitle == 1 && !empty($ai->title)) {
+        $title = $ai->title;
+      } else {
+        $title = 'TODO: Theme title';
+      }
+
       $row->cells[] = html_writer::link(
                         new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ai->id, 'cmid' => $cm->id)),
                         $title);

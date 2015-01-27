@@ -341,6 +341,19 @@ function xmldb_uniljournal_upgrade($oldversion) {
     }
 
     if ($oldversion < 2015012700) {
+        $table = new xmldb_table('uniljournal_articlemodels');
+        $field = new xmldb_field('themebankid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'freetitle');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        $fk_themebankid = new xmldb_key('fk_themebankid', XMLDB_KEY_FOREIGN, array('themebankid'), 'uniljournal_themebanks', array('id'));
+        $dbman->add_key($table, $fk_themebankid);
+
+        upgrade_mod_savepoint(true, 2015012700, 'uniljournal');
+    }
+
+    if ($oldversion < 2015012701) {
         $table = new xmldb_table('uniljournal_article_comments');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
         $table->add_field('articleinstanceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
@@ -355,9 +368,8 @@ function xmldb_uniljournal_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        upgrade_mod_savepoint(true, 2015012700, 'uniljournal');
+        upgrade_mod_savepoint(true, 2015012701, 'uniljournal');
     }
-
 
     return true;
 }

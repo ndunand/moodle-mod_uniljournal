@@ -31,12 +31,14 @@
         <FIELD NAME="instructions" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="instructionsformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="freetitle" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="Determine whether the articles can have a freely chosen title"/>
+        <FIELD NAME="themebankid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Defines the order of the models"/>
         <FIELD NAME="hidden" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="Determine whether the article model is available for students"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="fk_uniljournalid" TYPE="foreign" FIELDS="uniljournalid" REFTABLE="uniljournal" REFFIELDS="id"/>
+        <KEY NAME="fk_themebankid" TYPE="foreign" FIELDS="themebankid" REFTABLE="uniljournal_themebanks" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="uniljournal_articleelements" COMMENT="Article elements">

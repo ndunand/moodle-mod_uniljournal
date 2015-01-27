@@ -42,6 +42,8 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/uniljournal:createarticle', $context);
 
+$PAGE->requires->jquery();
+
 // Get the model we're editing
 if (!$articlemodel = $DB->get_record_select('uniljournal_articlemodels', "id = $amid AND hidden != '\x31'")) {
        print_error('invalidentry');
@@ -108,7 +110,6 @@ if ($id) { // if entry is specified
 $articleinstance->cmid = $cmid;
 $articleinstance->amid = $amid;
 
-require_once('edit_article_form.php');
 $customdata = array();
 $customdata['current'] = $articleinstance;
 $customdata['course'] = $course;
@@ -119,6 +120,11 @@ $customdata['textfieldoptions'] = $textfieldoptions;
 $customdata['textonlyoptions'] = $textonlyoptions;
 $customdata['cm'] = $cm;
 
+if($articlemodel->themebankid) {
+  $customdata['themes'] = $DB->get_records_select('uniljournal_themes', "themebankid = ".$articlemodel->themebankid." AND hidden != '\x31'");
+}
+
+require_once('edit_article_form.php');
 $mform = new edit_article_form(null, $customdata);
 
 //Form processing and displaying is done here

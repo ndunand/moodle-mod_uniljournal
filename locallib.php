@@ -132,3 +132,29 @@ function uniljournal_article_status($id = null) {
     return false;
   }
 }
+
+function uniljournal_get_theme_banks($cm, $course) {
+  global $DB, $USER;
+
+  $module_context      = context_module::instance($cm->id);
+  $course_context      = context_course::instance($course->id);
+  $category_context    = context_coursecat::instance($course->category);
+  $system_context      = context_system::instance();
+  $user_context        = context_user::instance($USER->id);
+  $contexts = array('module_context' => $module_context->id,
+      'course_context' => $course_context->id,
+      'category_context' => $category_context->id,
+      'system_context' => $system_context->id,
+      'user_context' => $user_context->id);
+
+  return $DB->get_records_sql('
+        SELECT tb.*, COUNT(t.id) as themescount
+          FROM {uniljournal_themebanks} tb
+          LEFT JOIN {uniljournal_themes} t ON t.themebankid = tb.id
+          WHERE contextid = :module_context
+          OR contextid = :course_context
+          OR contextid = :category_context
+          OR contextid = :system_context
+          OR contextid = :user_context
+          GROUP BY tb.id', $contexts);
+}
