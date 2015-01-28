@@ -56,37 +56,65 @@ class edit_article_form extends moodleform {
 
         if($articlemodel->themebankid and array_key_exists('themes', $this->_customdata)) {
           $themes = $this->_customdata['themes'];
-          $themeselect = array();
-          $themeselect[-1] = get_string('article_theme_unpicked', 'uniljournal');
-          foreach($themes as $tid => $themedata) {
-            $themeselect[$tid] = $themedata->title;
-          }
-          $mform->addElement('select', 'themeid', get_string('article_theme', 'uniljournal'), $themeselect);
-          $mform->setType('themeid', PARAM_INT);
-          $firstlabel = get_string('article_instructions', 'uniljournal');
-          $mform->addElement('html', "\n\t".'<div class="fitem" id="instructions_block" style="display: none;">');
-          $mform->addElement('html', "\n\t\t".'<div class="fitemtitle"><div class="fstaticlabel"><label>'.get_string('article_instructions', 'uniljournal').'</label></div></div><div class="toggled_instructions">');
-          foreach($themes as $tid => $themedata) {
-            $mform->addElement('html', "\n\t\t\t".'<div class="felement fstatic" id="instructions_'.$tid.'">'.$themedata->instructions.'</div>');
-          }
-          $mform->addElement('html', "\n\t".'</div></div>');
-          $mform->addElement('html', '<script>
-            $("#id_themeid").on("change", function() {
-              newid = $(this).val();
-              if( newid == -1 ) {
-                $("#instructions_block").hide();
+          $instructions_visibility = ' style="display: none;"';
+          if(property_exists($currententry, 'themeid') && array_key_exists($currententry->themeid, $themes) ) {
+            $selectedthemeid = $currententry->themeid;
+            // Display a static theme title and instructions
+            $mform->addElement('html', "\n\t".'<div class="fitem"><div class="fitemtitle"><div class="fstaticlabel"><label>'.get_string('article_theme', 'uniljournal').'</label></div></div>');
+            $mform->addElement('html', "\n\t\t".'<div class="felement fstatic">'.$themes[$currententry->themeid]->title.'</div>');
+            $mform->addElement('html', "\n\t".'</div>');
+            $mform->addElement('html', "\n\t".'<div class="fitem"><div class="fitemtitle"><div class="fstaticlabel"><label>'.get_string('article_instructions', 'uniljournal').'</label></div></div>');
+            $mform->addElement('html', "\n\t\t".'<div class="felement fstatic">'.$themes[$currententry->themeid]->instructions.'</div>');
+            $mform->addElement('html', "\n\t".'</div>');
+          } else {
+            $themeselect = array();
+            if($articlemodel->freetitle == 1) {
+                $themeselect[-1] = get_string('article_theme_unpicked', 'uniljournal');
+            }
+            foreach($themes as $tid => $themedata) {
+              $themeselect[$tid] = $themedata->title;
+            }
+
+            $mform->addElement('select', 'themeid', get_string('article_theme', 'uniljournal'), $themeselect);
+            $mform->setType('themeid', PARAM_INT);
+
+            if ($articlemodel->freetitle == 1) {
+                $mform->addElement('html', "\n\t".'<div class="fitem" id="instructions_block" style="display: none;">');
+            } else {
+                $mform->addElement('html', "\n\t".'<div class="fitem" id="instructions_block">');
+            }
+            $mform->addElement('html', "\n\t\t".'<div class="fitemtitle">');
+            $mform->addElement('html', "\n\t\t\t".'<div class="fstaticlabel"><label>'.get_string('article_instructions', 'uniljournal').'</label></div>');
+            $mform->addElement('html', "\n\t\t".'</div>');
+            $mform->addElement('html', "\n\t\t".'<div class="felement fstatic">');
+            $first_count = true;
+            foreach($themes as $tid => $themedata) {
+              if ($first_count) {
+                  $instructions_visibility = null;
+                  $first_count = false;
               } else {
-                id = "instructions_" + newid;
-                $("#" + id).show().siblings().hide();
-                $("#instructions_block").show()
+                  $instructions_visibility = ' style="display: none;"';
               }
-            })
-            </script>');
-            if($articlemodel->freetitle != 1) {
-              $mform->addRule('themeid', get_string('article_theme_mandatory', 'uniljournal'), 'compare', '>=', 0);
+              if (isset($selectedthemeid) && $selectedthemeid == $tid) {
+                  $instructions_visibility = null;
+              }
+              $mform->addElement('html', "\n\t\t\t".'<div id="instructions_'.$tid.'"'.$instructions_visibility.'>'.$themedata->instructions.'</div>');
+            }
+            $mform->addElement('html', "\n\t".'</div></div>');
+            $mform->addElement('html', '<script>
+              $("#id_themeid").on("change", function() {
+                newid = $(this).val();
+                if( newid == -1 ) {
+                  $("#instructions_block").hide();
+                } else {
+                  $("#instructions_block").show()
+                  id = "instructions_" + newid;
+                  $("#" + id).show().siblings().hide();
+                }
+              })
+              </script>');
             }
         }
-        
         if($articlemodel->freetitle == 1) {
           $mform->addElement('text', 'title', get_string('article_title', 'uniljournal'), array('size' => '64'));
           $mform->setType('title', PARAM_TEXT);
@@ -152,8 +180,9 @@ class article_delete_form extends moodleform {
         $mform = $this->_form;
         
         $a = new stdClass();
-        $a->type = get_string('templatelower', 'mod_uniljournal');
-        $a->name = $currententry->freetitle == 1 ? $currententry->title : 'TODO: Theme title';
+        $a->type = get_string('articlelower', 'mod_uniljournal');
+        require_once('locallib.php');
+        $a->name = uniljournal_articletitle($currententry);
         
         $mform->addElement('html', '<div>'.get_string('deletechecktypename', 'core', $a).'</div>');
 

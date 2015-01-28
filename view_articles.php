@@ -66,12 +66,9 @@ $event->add_record_snapshot('course', $PAGE->course);
 $event->trigger();
 
 // Display table of articles for that user
-$userarticles = $DB->get_records_sql('SELECT ai.id, ai.timemodified, ai.title, ai.status, am.id as amid, am.title as amtitle, am.freetitle as freetitle
-       FROM {uniljournal_articleinstances} ai
-  LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
-  WHERE uniljournalid = :ujid AND userid = :uid
-  ORDER BY ai.timemodified DESC', array('ujid' => $uniljournal->id, 'uid' => $foreign_user->id));
-
+require_once('locallib.php');
+$userarticles = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $foreign_user->id));
+  
 $articlemaxversions = array();
 if(count($userarticles) > 0) {
   // Extract the ids only
@@ -112,7 +109,7 @@ $table->head = array(
 
 foreach($userarticles as $ua) {
   $row = new html_table_row();
-  $title = $ua->freetitle == 1 ? $ua->title : 'TODO: Theme title';
+  $title = uniljournal_articletitle($ua);
   $row->cells[] = html_writer::link(
                     new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ua->id, 'cmid' => $cm->id)),
                     $title);

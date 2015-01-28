@@ -36,7 +36,8 @@ if ($cmid and $id) {
     $cm              = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
     $course          = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $uniljournal     = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
-    $articleinstance = $DB->get_record('uniljournal_articleinstances', array('id' => $id), '*', MUST_EXIST);
+    $articleinstances = uniljournal_get_article_instances(array('id' => $id));
+    $articleinstance = array_pop($articleinstances);
 } else {
     error('You must specify a course_module and an article instance ID');
 
@@ -51,7 +52,7 @@ if($articleinstance->userid == $USER->id) {
 }
 
 // Get all elements of the model
-$articleelements = $DB->get_records_select('uniljournal_articleelements', "articlemodelid = $articleinstance->articlemodelid ORDER BY sortorder ASC");
+$articleelements = $DB->get_records_select('uniljournal_articleelements', "articlemodelid = $articleinstance->amid ORDER BY sortorder ASC");
 
 $table = new html_table();
 // Table has two cols: one for content, one for the attachements and other stuffs
@@ -111,7 +112,7 @@ foreach($articleelements as $ae) {
 $maxversionsql = $DB->get_record_sql('SELECT max(version) as maxversion FROM {uniljournal_aeinstances} WHERE instanceid = :instanceid', array('instanceid' => $articleinstance->id));
 
 // Build article title if it doesn't exist
-$articletitle = !empty($articleinstance->title) ? $articleinstance->title : 'TODO: Theme title';
+$articletitle = uniljournal_articletitle($articleinstance);
 
 $titlecell = new html_table_cell(html_writer::tag('h3', $articletitle));
 $titlecell->colspan = 2;

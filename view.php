@@ -81,11 +81,8 @@ if(has_capability('mod/uniljournal:createarticle', $context)) {
 }
 
 // Display table of my articles
-$articleinstances = $DB->get_records_sql('SELECT ai.id, ai.timemodified, ai.title, ai.status, am.id as amid, am.title as amtitle, am.freetitle as freetitle
-       FROM {uniljournal_articleinstances} ai
-  LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
-  WHERE uniljournalid = :ujid AND userid = :uid
-  ORDER BY ai.timemodified DESC', array('ujid' => $uniljournal->id, 'uid' => $USER->id));
+require_once('locallib.php');
+$articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $USER->id));
 
 $uniljournal_statuses = uniljournal_article_status();
 // Status modifier forms
@@ -228,12 +225,8 @@ if(isset($deleteform)) {
       $aiter++;
       $row = new html_table_row();
       $script = 'edit.php';
-      // Set the article title based on the theme
-      if($ai->freetitle == 1 && !empty($ai->title)) {
-        $title = $ai->title;
-      } else {
-        $title = 'TODO: Theme title';
-      }
+      require_once('locallib.php');
+      $title = uniljournal_articletitle($ai);
 
       $row->cells[] = html_writer::link(
                         new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ai->id, 'cmid' => $cm->id)),

@@ -158,3 +158,33 @@ function uniljournal_get_theme_banks($cm, $course) {
           OR contextid = :user_context
           GROUP BY tb.id', $contexts);
 }
+
+function uniljournal_get_article_instances($query_args = array('id' => '0')) {
+  global $DB;
+  $where = array();
+  foreach($query_args as $key => $v) {
+    if($key == 'id') {
+      $where[] = "ai.id = :id";
+    } else {
+      $where[] = "$key = :$key";
+    }
+  }
+  return $DB->get_records_sql('SELECT ai.id as id, ai.timemodified, ai.userid, ai.title, t.title as themetitle, ai.status, am.id as amid, am.title as amtitle, am.freetitle as freetitle
+       FROM {uniljournal_articleinstances} ai
+  LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
+  LEFT JOIN {uniljournal_themes} t ON ai.themeid = t.id WHERE '
+  .implode($where, ' AND ').
+  ' ORDER BY ai.timemodified DESC', $query_args);
+}
+
+function uniljournal_articletitle($articleinstance) {
+  // Set the article title based on the theme
+  if($articleinstance->freetitle == 1 && !empty($articleinstance->title)) {
+    $title = $articleinstance->title;
+  } elseif(property_exists($articleinstance, 'themetitle') && !empty($articleinstance->themetitle)) {
+    $title = $articleinstance->themetitle;
+  } else {
+    $title = 'ERROR: no title set';
+  }
+  return $title;
+}

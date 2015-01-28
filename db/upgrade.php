@@ -352,6 +352,28 @@ function xmldb_uniljournal_upgrade($oldversion) {
 
         upgrade_mod_savepoint(true, 2015012700, 'uniljournal');
     }
+    
+    if ($oldversion < 2015012702) {
+        $table = new xmldb_table('uniljournal_articleinstances');
+        $field = new xmldb_field('themeid', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'status');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        $fk_themeid = new xmldb_key('fk_themeid', XMLDB_KEY_FOREIGN, array('themeid'), 'uniljournal_themes', array('id'));
+        $dbman->add_key($table, $fk_themeid);
 
+        // Changing nullability of field themebankid on table uniljournal_articlemodels to not null.
+        $table = new xmldb_table('uniljournal_articlemodels');
+        $field = new xmldb_field('themebankid', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'freetitle');
+
+        $fk_themeid = new xmldb_key('fk_themebankid', XMLDB_KEY_FOREIGN, array('themebankid'), 'uniljournal_themebanks', array('id'));
+        $dbman->drop_key($table, $fk_themeid);
+        $dbman->change_field_notnull($table, $field);
+        $dbman->add_key($table, $fk_themeid);
+
+        upgrade_mod_savepoint(true, 2015012702, 'uniljournal');
+    }
+    
     return true;
 }
