@@ -127,3 +127,5 @@ $string['n_articleinstances'] = '{$a} articles';
 $string['articlestate'] = 'State';
 $string['revisions'] = 'Revisions';
 $string['corrected_status'] = 'Corrected';
+$string['no_comment'] = 'No comment';
+$string['sendcomment'] = 'Send comment';

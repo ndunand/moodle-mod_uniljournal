@@ -38,7 +38,84 @@
     width: 45%;
 }
 
+
 #page-mod-uniljournal-view .logo>img {
     max-height: 500px;
     max-width: 100%;
+}
+
+.article {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.article-edit {
+    position: relative;
+    display: block;
+    float: left;
+    width: 70%;
+}
+
+.article-comments {
+    position: relative;
+    display: block;
+    float: right;
+    width: 28%;
+    background: lightgray;
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+.article-comments .mform .fitem div.fitemtitle {
+    width: inherit;
+    float: none;
+    text-align: left;
+    padding: 0;
+}
+
+.article-comments .mform .fitem {
+    margin-bottom: 0;
+}
+
+.article-comments .mform .fitem .felement {
+    margin-left: 0;
+}
+.article-comments .mform .fitem .felement textarea {
+    width: 100%;
+    margin: 0;
+    padding: 5px;
+}
+
+#region-main .article-comments .mform:not(.unresponsive) .fitem .fitemtitle label {
+    margin: 0;
+}
+
+.article-comments #fitem_id_submitbutton {
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+}
+
+.article-comments-item {
+    color: lightslategray;
+    background: white;
+    padding: 5px 10px;
+    margin: 10px 0;
+}
+
+.article-comments-item.current {
+    color: black;
+}
+
+.article-comments-item h5 {
+    margin: 0;
+    padding: 0;
+}
+
+.article-comments-item>a>img {
+    position: absolute;
+    right: 30px;
+    margin: 5px 0;
 }

@@ -93,7 +93,7 @@ if ($id) { // if entry is specified
       $articleinstance->$property_format = $aeinstance->valueformat;
       $version = max($version, $aeinstance->version);
       
-      if($ae->element_type == 'text') {
+      if($ae->element_type == 'text' || $ae->element_type == 'textonly') {
         $articleinstance = file_prepare_standard_editor($articleinstance, $property_name, $textfieldoptions, $context, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
       } elseif (uniljournal_startswith($ae->element_type, 'attachment_')) { // begins with
         $attoptions = $attachmentoptions;
@@ -183,6 +183,7 @@ if ($mform->is_cancelled()) {
 
 
 $url = new moodle_url('/mod/uniljournal/edit_article.php', array('cmid'=>$cm->id, 'articlemodelid' => $amid));
+$uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
 $PAGE->set_url($url);
 $PAGE->set_title(format_string(get_string('writearticletempl', 'mod_uniljournal', $articlemodel->title)));
 $PAGE->set_heading(format_string($course->fullname));
@@ -191,6 +192,10 @@ $PAGE->set_context($context);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('writearticletempl', 'mod_uniljournal', $articlemodel->title));
 
+echo '<div class="article"><div class="article-edit">';
 $mform->display();
+echo '</div><div class="article-comments">';
+echo $uniljournal_renderer->display_comments($cmid, $id, $version, $USER->id);
+echo '</div>';
 
 echo $OUTPUT->footer();

@@ -127,6 +127,7 @@ $PAGE->set_url('/mod/uniljournal/view_article.php', array('id' => $articleinstan
 $PAGE->set_title(format_string($articletitle));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
+$uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
 
 /*
  * Other things you may want to set - remove if not needed.
@@ -151,7 +152,13 @@ if($actualversion < $maxversionsql->maxversion) {
   echo html_writer::tag('span', html_writer::link(new moodle_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id, 'version'=> $actualversion+1)), '→'));
 }
 
+echo '<div class="article"><div class="article-edit">';
+
 echo html_writer::table($table);
+
+echo '</div><div class="article-comments">';
+echo $uniljournal_renderer->display_comments($cmid, $id, $actualversion, $USER->id, ($actualversion == $maxversionsql->maxversion));
+echo '</div>';
 
 // Finish the page.
 echo $OUTPUT->footer();
