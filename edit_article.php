@@ -93,7 +93,7 @@ if ($id) { // if entry is specified
       $articleinstance->$property_format = $aeinstance->valueformat;
       $version = max($version, $aeinstance->version);
       
-      if($ae->element_type == 'text') {
+      if($ae->element_type == 'text' || $ae->element_type == 'textonly') {
         $articleinstance = file_prepare_standard_editor($articleinstance, $property_name, $textfieldoptions, $context, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
       } elseif (uniljournal_startswith($ae->element_type, 'attachment_')) { // begins with
         $attoptions = $attachmentoptions;
