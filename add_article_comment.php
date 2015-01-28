@@ -33,27 +33,37 @@ require_login();
 $cmid  = optional_param('cmid', 0, PARAM_INT); // Course_module ID, or
 $articleinstanceid  = optional_param('articleinstanceid', 0, PARAM_INT); // article instance ID, or
 $articleinstanceversion = optional_param('articleinstanceversion', 0, PARAM_INT);  // article instance version
+$cid = optional_param('cid', 0, PARAM_INT);  // comment ID
+$action = optional_param('action', '', PARAM_TEXT);  // action
 
 $context = context_module::instance($cmid);
 $PAGE->set_context($context);
 
-$customdata = array();
-$customdata['cmid'] = $cmid;
-$customdata['articleinstanceid'] = $articleinstanceid;
-$customdata['articleinstanceversion'] = $articleinstanceversion;
-$customdata['currententry'] = new stdClass();
-$customdata['user'] = $USER;
-$mform = new add_article_comment_form(null, $customdata);
+if ($cid && $action == 'delete') {
+    require_capability('mod_uniljournal:deletecomment', $context);
+    $DB->delete_records('uniljournal_article_comments', array('id' => $cid));
 
-$form_data = $mform->get_data();
+    redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid, 'id' => $articleinstanceid)));
+} else {
+    require_capability('mod_uniljournal:addcomment', $context);
+    $customdata = array();
+    $customdata['cmid'] = $cmid;
+    $customdata['articleinstanceid'] = $articleinstanceid;
+    $customdata['articleinstanceversion'] = $articleinstanceversion;
+    $customdata['currententry'] = new stdClass();
+    $customdata['user'] = $USER;
+    $mform = new add_article_comment_form(null, $customdata);
 
-$comment = new stdClass();
-$comment->articleinstanceid = $articleinstanceid;
-$comment->articleinstanceversion = $articleinstanceversion;
-$comment->userid = $USER->id;
-$comment->text = $form_data->text;
-$comment->timecreated = time();
+    $form_data = $mform->get_data();
 
-$DB->insert_record('uniljournal_article_comments', $comment);
+    $comment = new stdClass();
+    $comment->articleinstanceid = $articleinstanceid;
+    $comment->articleinstanceversion = $articleinstanceversion;
+    $comment->userid = $USER->id;
+    $comment->text = $form_data->text;
+    $comment->timecreated = time();
 
-redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid, 'id' => $articleinstanceid)));
+    $DB->insert_record('uniljournal_article_comments', $comment);
+
+    redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid, 'id' => $articleinstanceid)));
+}

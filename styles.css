@@ -96,3 +96,8 @@
 .article-comments-item.current {
     color: black;
 }
+
+.article-comments-item>a>img {
+    position: absolute;
+    right: 0;
+}

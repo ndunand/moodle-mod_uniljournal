@@ -29,7 +29,9 @@ require('./add_article_comment_form.php');
 
 class mod_uniljournal_renderer extends plugin_renderer_base {
     function display_comments($cmid, $articleinstanceid, $articleinstanceversion, $userid, $editable=false) {
-        global $DB, $USER;
+        global $DB, $USER, $OUTPUT;
+
+        $canDelete = has_capability('mod/uniljournal:deletecomment', context_module::instance($cmid));
 
         $comments = $DB->get_records_sql('
           SELECT c.*, u.firstname AS firstname, u.lastname AS lastname FROM {uniljournal_article_comments} c
@@ -38,7 +40,9 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
           ORDER BY timecreated ASC', array(
             'articleinstanceid' => $articleinstanceid
         ));
+
         $output = '';
+
         if (count($comments) > 0) {
             foreach($comments as $comment) {
                 $userClass = '';
@@ -53,6 +57,16 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                     $versionClass = ' current';
                 }
                 $output .= '<div class="article-comments-item'. $userClass . $versionClass . '">';
+                if ($canDelete) {
+                    $deleteURL = new moodle_url('/mod/uniljournal/add_article_comment.php',
+                        array(
+                            'action' => 'delete',
+                            'cmid' => $cmid,
+                            'cid' => $comment->id,
+                            'articleinstanceid' => $articleinstanceid
+                        ));
+                    $output .= '<a href="' . $deleteURL . '">' . html_writer::img($OUTPUT->pix_url('t/delete'), get_string('delete')) . '</a>';
+                }
                 $output .= '<h5 for="comment' . $comment->id . '">' . $comment->firstname . ' ' . $comment->lastname . '</h5>';
                 $output .= '<p id ="comment' . $comment->id . '">' . $comment->text . '</p></div>';
             }
