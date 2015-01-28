@@ -68,7 +68,9 @@ class edit_article_form extends moodleform {
             $mform->addElement('html', "\n\t".'</div>');
           } else {
             $themeselect = array();
-            if($articlemodel->freetitle == 1) { $themeselect[-1] = get_string('article_theme_unpicked', 'uniljournal'); }
+            if($articlemodel->freetitle == 1) {
+                $themeselect[-1] = get_string('article_theme_unpicked', 'uniljournal');
+            }
             foreach($themes as $tid => $themedata) {
               $themeselect[$tid] = $themedata->title;
             }
@@ -76,14 +78,26 @@ class edit_article_form extends moodleform {
             $mform->addElement('select', 'themeid', get_string('article_theme', 'uniljournal'), $themeselect);
             $mform->setType('themeid', PARAM_INT);
 
-            $mform->addElement('html', "\n\t".'<div class="fitem" id="instructions_block" style="display: none;">');
+            if ($articlemodel->freetitle == 1) {
+                $mform->addElement('html', "\n\t".'<div class="fitem" id="instructions_block" style="display: none;">');
+            } else {
+                $mform->addElement('html', "\n\t".'<div class="fitem" id="instructions_block">');
+            }
             $mform->addElement('html', "\n\t\t".'<div class="fitemtitle">');
             $mform->addElement('html', "\n\t\t\t".'<div class="fstaticlabel"><label>'.get_string('article_instructions', 'uniljournal').'</label></div>');
             $mform->addElement('html', "\n\t\t".'</div>');
             $mform->addElement('html', "\n\t\t".'<div class="felement fstatic">');
+            $first_count = true;
             foreach($themes as $tid => $themedata) {
-              $instructions_visibility = null; //' style="display: none;"';
-              if(isset($selectedthemeid) && $selectedthemeid == $tid) $instructions_visibility = null;
+              if ($first_count) {
+                  $instructions_visibility = null;
+                  $first_count = false;
+              } else {
+                  $instructions_visibility = ' style="display: none;"';
+              }
+              if (isset($selectedthemeid) && $selectedthemeid == $tid) {
+                  $instructions_visibility = null;
+              }
               $mform->addElement('html', "\n\t\t\t".'<div id="instructions_'.$tid.'"'.$instructions_visibility.'>'.$themedata->instructions.'</div>');
             }
             $mform->addElement('html', "\n\t".'</div></div>');

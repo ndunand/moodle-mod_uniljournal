@@ -37,3 +37,8 @@
     float: left;
     width: 45%;
 }
+
+#page-mod-uniljournal-view .logo>img {
+    max-height: 500px;
+    max-width: 100%;
+}

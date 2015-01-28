@@ -45,6 +45,8 @@ if ($id) {
     error('You must specify a course_module ID or an instance ID');
 }
 
+$module_context = context_module::instance($cm->id);
+
 require_login($course, true, $cm);
 require_capability('mod/uniljournal:managethemes', $module_context);
 require_once('locallib.php');
