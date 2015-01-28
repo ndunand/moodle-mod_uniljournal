@@ -154,17 +154,21 @@ echo $OUTPUT->header();
 // Replace the following lines with you own code.
 echo $OUTPUT->heading(format_string($articletitle)." - Preview (version: ".$actualversion.")"); // TODO
 
+echo '<div class="article">';
+
+echo '<div class="article-version-toggle">';
 if($actualversion > 1) {
-  echo html_writer::tag('span', html_writer::link(new moodle_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id, 'version'=> $actualversion-1)), '←'));
+  echo link_arrow_left(get_string('version_previous', 'uniljournal'), new moodle_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id, 'version'=> $actualversion-1)), true);
 }
 
 echo html_writer::tag('span', 'Version '.$actualversion." / ".$maxversionsql->maxversion);
 
 if($actualversion < $maxversionsql->maxversion) {
-  echo html_writer::tag('span', html_writer::link(new moodle_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id, 'version'=> $actualversion+1)), '→'));
+  echo link_arrow_right(get_string('version_next', 'uniljournal'), new moodle_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id, 'version'=> $actualversion+1)), true);
 }
 
-echo '<div class="article"><div class="article-edit">';
+echo '</div>';
+echo '<div class="article-edit">';
 
 echo html_writer::table($table);
 

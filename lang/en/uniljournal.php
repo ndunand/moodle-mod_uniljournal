@@ -129,6 +129,8 @@ $string['revisions'] = 'Revisions';
 $string['corrected_status'] = 'Corrected';
 $string['no_comment'] = 'No comment';
 $string['sendcomment'] = 'Send comment';
+$string['version_previous'] = 'Previous version';
+$string['version_next'] = 'Next version';
 
 //Logs
 $string['template_created_name'] = 'Create a template';

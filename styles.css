@@ -119,3 +119,11 @@
     right: 30px;
     margin: 5px 0;
 }
+
+.article-version-toggle {
+   text-align: center;
+}
+
+.article-version-toggle a.arrow_link {
+  margin: 0 0.5em;
+}
