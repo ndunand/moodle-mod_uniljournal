@@ -40,12 +40,12 @@ $context = context_module::instance($cmid);
 $PAGE->set_context($context);
 
 if ($cid && $action == 'delete') {
-    require_capability('mod_uniljournal:deletecomment', $context);
+    require_capability('mod/uniljournal:deletecomment', $context);
     $DB->delete_records('uniljournal_article_comments', array('id' => $cid));
 
     redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid, 'id' => $articleinstanceid)));
 } else {
-    require_capability('mod_uniljournal:addcomment', $context);
+    require_capability('mod/uniljournal:addcomment', $context);
     $customdata = array();
     $customdata['cmid'] = $cmid;
     $customdata['articleinstanceid'] = $articleinstanceid;

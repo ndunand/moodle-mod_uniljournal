@@ -56,6 +56,9 @@
     display: block;
     float: left;
     width: 28%;
+    background: lightgray;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .article-comments .mform .fitem div.fitemtitle {
@@ -91,13 +94,22 @@
 
 .article-comments-item {
     color: lightslategray;
+    background: white;
+    padding: 5px 10px;
+    margin: 10px 0;
 }
 
 .article-comments-item.current {
     color: black;
 }
 
+.article-comments-item h5 {
+    margin: 0;
+    padding: 0;
+}
+
 .article-comments-item>a>img {
     position: absolute;
-    right: 0;
+    right: 30px;
+    margin: 5px 0;
 }
