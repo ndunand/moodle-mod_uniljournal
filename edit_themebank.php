@@ -53,8 +53,7 @@ $contexts = array(
     $module_context->id => get_string('module_context', 'uniljournal'),
     $course_context->id => get_string('course_context', 'uniljournal'),
     $category_context->id => get_string('category_context', 'uniljournal'),
-    $system_context->id => get_string('user_context', 'uniljournal'),
-    $user_context->id => get_string('system_context', 'uniljournal')
+    $system_context->id => get_string('system_context', 'uniljournal')
 );
 
 if ($id) { // if entry is specified

@@ -124,6 +124,10 @@ if (isset($deleteform)) {
         $table = new html_table();
         $table->head = array(
             get_string('themebank', 'mod_uniljournal'),
+            get_string('module_context', 'uniljournal'),
+            get_string('course_context', 'uniljournal'),
+            get_string('category_context', 'uniljournal'),
+            get_string('system_context', 'uniljournal'),
             get_string('actions'),
         );
 
@@ -135,6 +139,13 @@ if (isset($deleteform)) {
             $args = array('cmid'=> $cm->id, 'tbid' => $themebank->id);
             $row->cells[0] = html_writer::link(new moodle_url('/mod/uniljournal/' . $script, $args), $themebank->title);
 
+            $context = context::instance_by_id($themebank->contextid);
+            
+            $row->cells[1] = ($context->contextlevel <= CONTEXT_MODULE) ? '×': '';
+            $row->cells[2] = ($context->contextlevel <= CONTEXT_COURSE) ? '×': '';
+            $row->cells[3] = ($context->contextlevel <= CONTEXT_COURSECAT) ? '×': '';
+            $row->cells[4] = ($context->contextlevel <= CONTEXT_SYSTEM) ? '×': '';
+            
             $actionarray = array();
             if($aiter != 1) $actionarray[] = 'up';
             if($aiter != count($themebanks)) $actionarray[] = 'down';
@@ -157,7 +168,7 @@ if (isset($deleteform)) {
                 $img = html_writer::img($OUTPUT->pix_url('t/'. $actcode), get_string($actcode));
                 $actions .= html_writer::link($url, $img)."\t";
             }
-            $row->cells[1] = $actions;
+            $row->cells[5] = $actions;
             $table->data[] = $row;
         }
         echo html_writer::table($table);
