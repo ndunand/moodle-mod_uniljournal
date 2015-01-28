@@ -124,6 +124,18 @@ if ($action && $aid) {
       $DB->delete_records('uniljournal_articleinstances', array('id' => $ai->id));
       unset($articleinstances[$aid]);
       unset($deleteform);
+
+      // Log the article deletion
+      $event = \mod_uniljournal\event\article_deleted::create(array(
+          'other' => array(
+              'userid' => $USER->id,
+              'articleid' => $ai->id
+          ),
+          'courseid' => $course->id,
+          'objectid' => $ai->id,
+          'context' => $context,
+      ));
+      $event->trigger();
     }
 
   } else if($action == "change_state" && has_capability('mod/uniljournal:createarticle', $context) && array_key_exists($aid, $articleinstances)) {

@@ -144,8 +144,30 @@ if ($mform->is_cancelled()) {
 
     if($isnewentry) {
       $articleinstance->id = $DB->insert_record('uniljournal_articleinstances', $articleinstance);
+        // Log the article creation
+        $event = \mod_uniljournal\event\article_created::create(array(
+            'other' => array(
+                'userid' => $USER->id,
+                'articleid' => $articleinstance->id
+            ),
+            'courseid' => $course->id,
+            'objectid' => $articleinstance->id,
+            'context' => $context,
+        ));
+        $event->trigger();
     } else {
       $DB->update_record('uniljournal_articleinstances', $articleinstance);
+        // Log the article update
+        $event = \mod_uniljournal\event\article_updated::create(array(
+            'other' => array(
+                'userid' => $USER->id,
+                'articleid' => $articleinstance->id
+            ),
+            'courseid' => $course->id,
+            'objectid' => $articleinstance->id,
+            'context' => $context,
+        ));
+        $event->trigger();
     }
     
     foreach($articleelements as $ae) {

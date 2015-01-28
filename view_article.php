@@ -54,6 +54,18 @@ if($articleinstance->userid == $USER->id) {
 // Get all elements of the model
 $articleelements = $DB->get_records_select('uniljournal_articleelements', "articlemodelid = $articleinstance->amid ORDER BY sortorder ASC");
 
+// Log the article read action
+$event = \mod_uniljournal\event\article_read::create(array(
+    'other' => array(
+        'userid' => $USER->id,
+        'articleid' => $articleinstance->id
+    ),
+    'courseid' => $course->id,
+    'objectid' => $articleinstance->id,
+    'context' => $context,
+));
+$event->trigger();
+
 $table = new html_table();
 // Table has two cols: one for content, one for the attachements and other stuffs
 $table->data = array();

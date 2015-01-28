@@ -111,9 +111,33 @@ if ($mform->is_cancelled()) {
     if ($isnewentry) {
         // Add new entry.
         $entry->id = $DB->insert_record('uniljournal_articlemodels', $entry);
+
+        // Log the template creation
+        $event = \mod_uniljournal\event\template_created::create(array(
+            'other' => array(
+                'userid' => $USER->id,
+                'templateid' => $entry->id
+            ),
+            'courseid' => $course->id,
+            'objectid' => $entry->id,
+            'context' => $context,
+        ));
+        $event->trigger();
     } else {
         // Update existing entry.
         $DB->update_record('uniljournal_articlemodels', $entry);
+
+        // Log the template update
+        $event = \mod_uniljournal\event\template_updated::create(array(
+            'other' => array(
+                'userid' => $USER->id,
+                'templateid' => $entry->id
+            ),
+            'courseid' => $course->id,
+            'objectid' => $entry->id,
+            'context' => $context,
+        ));
+        $event->trigger();
     }
     $articleelementorder = 0;
     foreach($mform->getArticleElements() as $articleelementid => $articleelement) {
@@ -154,6 +178,18 @@ if ($mform->is_cancelled()) {
 $url = new moodle_url('/mod/uniljournal/edit_template.php', array('cmid'=>$cm->id));
 if (!empty($id)) {
     $url->param('id', $id);
+
+    // Log the template read action
+    $event = \mod_uniljournal\event\template_read::create(array(
+        'other' => array(
+            'userid' => $USER->id,
+            'templateid' => $id
+        ),
+        'courseid' => $course->id,
+        'objectid' => $id,
+        'context' => $context,
+    ));
+    $event->trigger();
 }
 $PAGE->set_url($url);
 $PAGE->set_title(format_string($uniljournal->name));

@@ -129,3 +129,30 @@ $string['revisions'] = 'Revisions';
 $string['corrected_status'] = 'Corrected';
 $string['no_comment'] = 'No comment';
 $string['sendcomment'] = 'Send comment';
+
+//Logs
+$string['template_created_name'] = 'Create a template';
+$string['template_created_explanation'] = 'Event when a template has been successfully created.';
+$string['template_created_desc'] = 'User {$a->userid} has created the template {$a->templateid}';
+$string['template_updated_name'] = 'Update a template';
+$string['template_updated_explanation'] = 'Event when a template has been successfully updated.';
+$string['template_updated_desc'] = 'User {$a->userid} has updated the template {$a->templateid}';
+$string['template_deleted_name'] = 'Delete a template';
+$string['template_deleted_explanation'] = 'Event when a template has been successfully deleted.';
+$string['template_deleted_desc'] = 'User {$a->userid} has deleted the template {$a->templateid}';
+$string['template_read_name'] = 'Read a template';
+$string['template_read_explanation'] = 'Event when a template has been successfully read.';
+$string['template_read_desc'] = 'User {$a->userid} has read the template {$a->templateid}';
+
+$string['article_created_name'] = 'Create an article';
+$string['article_created_explanation'] = 'Event when an article has been successfully created.';
+$string['article_created_desc'] = 'User {$a->userid} has created the article {$a->articleid}';
+$string['article_updated_name'] = 'Update an article';
+$string['article_updated_explanation'] = 'Event when an article has been successfully updated.';
+$string['article_updated_desc'] = 'User {$a->userid} has updated the article {$a->articleid}';
+$string['article_deleted_name'] = 'Delete an article';
+$string['article_deleted_explanation'] = 'Event when an article has been successfully deleted.';
+$string['article_deleted_desc'] = 'User {$a->userid} has deleted the article {$a->articleid}';
+$string['article_read_name'] = 'Read an article';
+$string['article_read_explanation'] = 'Event when an article has been successfully read.';
+$string['article_read_desc'] = 'User {$a->userid} has read the article {$a->articleid}';

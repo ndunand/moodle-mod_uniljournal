@@ -79,6 +79,18 @@ if ($action && $tid) {
       $DB->delete_records('uniljournal_articleelements', array('articlemodelid' => $tid));
       unset($amodels[$tid]);
       unset($deleteform);
+
+        // Log the template deletion
+        $event = \mod_uniljournal\event\template_deleted::create(array(
+            'other' => array(
+                'userid' => $USER->id,
+                'templateid' => $tid
+            ),
+            'courseid' => $course->id,
+            'objectid' => $tid,
+            'context' => $context,
+        ));
+        $event->trigger();
     }
    } elseif(in_array($action, array('hide', 'show'))) {
     // Manage hide/show status
