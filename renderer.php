@@ -57,7 +57,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                     $versionClass = ' current';
                 }
                 $output .= '<div class="article-comments-item'. $userClass . $versionClass . '">';
-                if ($canDelete) {
+                if ($editable && $canDelete) {
                     $deleteURL = new moodle_url('/mod/uniljournal/add_article_comment.php',
                         array(
                             'action' => 'delete',
