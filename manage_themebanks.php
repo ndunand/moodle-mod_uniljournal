@@ -74,6 +74,18 @@ if ($action && $tbid) {
             $DB->delete_records('uniljournal_themes', array('themebankid' => $tbid));
             unset($themebanks[$tbid]);
             unset($deleteform);
+
+            // Log the theme bank deletion
+            $event = \mod_uniljournal\event\themebank_deleted::create(array(
+                'other' => array(
+                    'userid' => $USER->id,
+                    'themebankid' => $tbid
+                ),
+                'courseid' => $course->id,
+                'objectid' => $tbid,
+                'context' => $module_context,
+            ));
+            $event->trigger();
         }
     } elseif(in_array($action, array('up', 'down'))) {
         // Manage the re-ordering of templates

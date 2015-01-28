@@ -39,9 +39,26 @@ $action = optional_param('action', '', PARAM_TEXT);  // action
 $context = context_module::instance($cmid);
 $PAGE->set_context($context);
 
+$cm         = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
+$course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+$uniljournal  = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
+
 if ($cid && $action == 'delete') {
     require_capability('mod/uniljournal:deletecomment', $context);
     $DB->delete_records('uniljournal_article_comments', array('id' => $cid));
+
+    // Log the comment deletion
+    $event = \mod_uniljournal\event\comment_deleted::create(array(
+        'other' => array(
+            'userid' => $USER->id,
+            'commentid' => $cid,
+            'articleid' => $articleinstanceid
+        ),
+        'courseid' => $course->id,
+        'objectid' => $cid,
+        'context' => $context,
+    ));
+    $event->trigger();
 
     redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid, 'id' => $articleinstanceid)));
 } else {
@@ -63,7 +80,20 @@ if ($cid && $action == 'delete') {
     $comment->text = $form_data->text;
     $comment->timecreated = time();
 
-    $DB->insert_record('uniljournal_article_comments', $comment);
+    $cid = $DB->insert_record('uniljournal_article_comments', $comment);
+
+    // Log the comment creation
+    $event = \mod_uniljournal\event\comment_created::create(array(
+        'other' => array(
+            'userid' => $USER->id,
+            'commentid' => $cid,
+            'articleid' => $articleinstanceid
+        ),
+        'courseid' => $course->id,
+        'objectid' => $cid,
+        'context' => $context,
+    ));
+    $event->trigger();
 
     redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid, 'id' => $articleinstanceid)));
 }

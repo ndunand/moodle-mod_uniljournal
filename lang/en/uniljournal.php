@@ -158,3 +158,30 @@ $string['article_deleted_desc'] = 'User {$a->userid} has deleted the article {$a
 $string['article_read_name'] = 'Read an article';
 $string['article_read_explanation'] = 'Event when an article has been successfully read.';
 $string['article_read_desc'] = 'User {$a->userid} has read the article {$a->articleid}';
+
+$string['comment_created_name'] = 'Create a comment';
+$string['comment_created_explanation'] = 'Event when a comment has been successfully created.';
+$string['comment_created_desc'] = 'User {$a->userid} has created the comment {$a->commentid} in article {$a->articleid}';
+$string['comment_deleted_name'] = 'Delete a comment';
+$string['comment_deleted_explanation'] = 'Event when a comment has been successfully deleted.';
+$string['comment_deleted_desc'] = 'User {$a->userid} has deleted the comment {$a->commentid} from article {$a->articleid}';
+
+$string['themebank_created_name'] = 'Create a theme bank';
+$string['themebank_created_explanation'] = 'Event when a theme bank has been successfully created.';
+$string['themebank_created_desc'] = 'User {$a->userid} has created the theme bank {$a->themebankid}';
+$string['themebank_updated_name'] = 'Update a theme bank';
+$string['themebank_updated_explanation'] = 'Event when a theme bank has been successfully updated.';
+$string['themebank_updated_desc'] = 'User {$a->userid} has updated the theme bank {$a->themebankid}';
+$string['themebank_deleted_name'] = 'Delete a theme bank';
+$string['themebank_deleted_explanation'] = 'Event when a theme bank has been successfully deleted.';
+$string['themebank_deleted_desc'] = 'User {$a->userid} has deleted the theme bank {$a->themebankid}';
+
+$string['theme_created_name'] = 'Create a theme';
+$string['theme_created_explanation'] = 'Event when a theme has been successfully created.';
+$string['theme_created_desc'] = 'User {$a->userid} has created the theme {$a->themeid} in theme bank {$a->themebankid}';
+$string['theme_updated_name'] = 'Update a theme';
+$string['theme_updated_explanation'] = 'Event when a theme has been successfully updated.';
+$string['theme_updated_desc'] = 'User {$a->userid} has updated the theme {$a->themeid} in theme bank {$a->themebankid}';
+$string['theme_deleted_name'] = 'Delete a theme';
+$string['theme_deleted_explanation'] = 'Event when a theme has been successfully deleted.';
+$string['theme_deleted_desc'] = 'User {$a->userid} has deleted the theme {$a->themeid} from theme bank {$a->themebankid}';

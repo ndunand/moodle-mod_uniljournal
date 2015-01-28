@@ -81,9 +81,35 @@ if ($mform->is_cancelled()) {
     if ($isnewentry) {
         // Add new entry.
         $theme->id = $DB->insert_record('uniljournal_themes', $theme);
+
+        // Log the theme creation
+        $event = \mod_uniljournal\event\theme_created::create(array(
+            'other' => array(
+                'userid' => $USER->id,
+                'themeid' => $theme->id,
+                'themebankid' => $tbid
+            ),
+            'courseid' => $course->id,
+            'objectid' => $theme->id,
+            'context' => $context,
+        ));
+        $event->trigger();
     } else {
         // Update existing entry.
         $DB->update_record('uniljournal_themes', $theme);
+
+        // Log the theme update
+        $event = \mod_uniljournal\event\theme_updated::create(array(
+            'other' => array(
+                'userid' => $USER->id,
+                'themeid' => $theme->id,
+                'themebankid' => $tbid
+            ),
+            'courseid' => $course->id,
+            'objectid' => $theme->id,
+            'context' => $context,
+        ));
+        $event->trigger();
     }
     redirect(new moodle_url('/mod/uniljournal/manage_themes.php', array('cmid' => $cm->id, 'tbid' => $tbid)));
 }

@@ -85,9 +85,32 @@ if ($mform->is_cancelled()) {
     if ($isnewentry) {
         // Add new entry.
         $entry->id = $DB->insert_record('uniljournal_themebanks', $entry);
+        // Log the theme bank deletion
+        $event = \mod_uniljournal\event\themebank_created::create(array(
+            'other' => array(
+                'userid' => $USER->id,
+                'themebankid' => $entry->id
+            ),
+            'courseid' => $course->id,
+            'objectid' => $entry->id,
+            'context' => $module_context,
+        ));
+        $event->trigger();
     } else {
         // Update existing entry.
         $DB->update_record('uniljournal_themebanks', $entry);
+
+        // Log the theme bank creation
+        $event = \mod_uniljournal\event\themebank_updated::create(array(
+            'other' => array(
+                'userid' => $USER->id,
+                'themebankid' => $entry->id
+            ),
+            'courseid' => $course->id,
+            'objectid' => $entry->id,
+            'context' => $module_context,
+        ));
+        $event->trigger();
     }
 
     redirect(new moodle_url('/mod/uniljournal/manage_themebanks.php', array('id' => $cm->id)));

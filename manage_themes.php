@@ -81,6 +81,19 @@ if ($action && $tid) {
             $DB->delete_records('uniljournal_themes', array('id' => $tid));
             unset($themes[$tid]);
             unset($deleteform);
+
+            // Log the theme deletion
+            $event = \mod_uniljournal\event\theme_deleted::create(array(
+                'other' => array(
+                    'userid' => $USER->id,
+                    'themeid' => $tid,
+                    'themebankid' => $tbid
+                ),
+                'courseid' => $course->id,
+                'objectid' => $tid,
+                'context' => $module_context,
+            ));
+            $event->trigger();
         }
     } elseif(in_array($action, array('hide', 'show'))) {
         // Manage hide/show status
