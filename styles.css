@@ -67,11 +67,8 @@
     box-sizing: border-box;
 }
 
-.article-comments .mform .fitem div.fitemtitle {
-    width: inherit;
-    float: none;
-    text-align: left;
-    padding: 0;
+#page-mod-uniljournal-view_article #region-main .mform:not(.unresponsive) .femptylabel .fitemtitle {
+    display: none;
 }
 
 .article-comments .mform .fitem {
@@ -79,12 +76,16 @@
 }
 
 .article-comments .mform .fitem .felement {
+    width: 100%;
     margin-left: 0;
 }
-.article-comments .mform .fitem .felement textarea {
+.article-comments-item .mform .fitem .felement textarea {
     width: 100%;
     margin: 0;
     padding: 5px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 #region-main .article-comments .mform:not(.unresponsive) .fitem .fitemtitle label {
@@ -101,7 +102,7 @@
 .article-comments-item {
     color: lightslategray;
     background: white;
-    padding: 5px 10px;
+    padding: 10px 10px;
     margin: 10px 0;
 }
 
@@ -126,4 +127,21 @@
 
 .article-version-toggle a.arrow_link {
   margin: 0 0.5em;
+}
+
+@media screen and (max-width: 767px) {
+    .article-edit {
+        float:none;
+        width: 100%;
+    }
+
+    .article-comments {
+        float: none;
+        width: 100%;
+    }
+
+    #page-mod-uniljournal-view_article #region-main .mform:not(.unresponsive) .femptylabel .felement {
+        width: 100%;
+        margin-left: 0;
+    }
 }

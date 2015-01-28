@@ -57,7 +57,7 @@ class add_article_comment_form extends moodleform {
         $mform->setType('cmid', PARAM_INT);
         $mform->setConstant('cmid', $cmid);
 
-        $mform->setAttributes(array('action' => new moodle_url('/mod/uniljournal/add_article_comment.php'), 'method' => 'post'));
+        $mform->setAttributes(array('action' => new moodle_url('/mod/uniljournal/add_article_comment.php'), 'method' => 'post', 'class' => 'mform'));
 
         $this->add_action_buttons(false, get_string('sendcomment', 'mod_uniljournal'));
     }
