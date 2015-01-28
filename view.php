@@ -122,6 +122,7 @@ if ($action && $aid) {
     } elseif ( ($entry = $deleteform->get_data()) && $entry->confirm == 1) {
       // Delete the record in question
       // TODO: Confirm that the deletion of associated files is done with garbage collection
+      $DB->delete_records('uniljournal_article_comments', array('articleinstanceid' => $ai->id));
       $DB->delete_records('uniljournal_aeinstances', array('instanceid' => $ai->id));
       $DB->delete_records('uniljournal_articleinstances', array('id' => $ai->id));
       unset($articleinstances[$aid]);
