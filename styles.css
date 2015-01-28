@@ -54,7 +54,7 @@
 .article-comments {
     position: relative;
     display: block;
-    float: left;
+    float: right;
     width: 28%;
     background: lightgray;
     padding: 10px 20px;
