@@ -34,6 +34,9 @@ $cmid  = optional_param('cmid', 0, PARAM_INT); // Course_module ID, or
 $articleinstanceid  = optional_param('articleinstanceid', 0, PARAM_INT); // article instance ID, or
 $articleinstanceversion = optional_param('articleinstanceversion', 0, PARAM_INT);  // article instance version
 
+$context = context_module::instance($cmid);
+$PAGE->set_context($context);
+
 $customdata = array();
 $customdata['cmid'] = $cmid;
 $customdata['articleinstanceid'] = $articleinstanceid;
@@ -43,8 +46,6 @@ $customdata['user'] = $USER;
 $mform = new add_article_comment_form(null, $customdata);
 
 $form_data = $mform->get_data();
-
-$context = context_module::instance($cmid);
 
 $comment = new stdClass();
 $comment->articleinstanceid = $articleinstanceid;

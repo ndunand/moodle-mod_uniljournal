@@ -53,8 +53,8 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                     $versionClass = ' current';
                 }
                 $output .= '<div class="article-comments-item'. $userClass . $versionClass . '">';
-                $output .= '<label for="comment' . $comment->id . '">' . $comment->firstname . ' ' . $comment->lastname . '</label>';
-                $output .= '<textarea id ="comment' . $comment->id . '" disabled>' . $comment->text . '</textarea></div>';
+                $output .= '<h5 for="comment' . $comment->id . '">' . $comment->firstname . ' ' . $comment->lastname . '</h5>';
+                $output .= '<p id ="comment' . $comment->id . '">' . $comment->text . '</p></div>';
             }
         }
         if ($editable) {

@@ -88,3 +88,11 @@
     background: none;
     border: none;
 }
+
+.article-comments-item {
+    color: lightslategray;
+}
+
+.article-comments-item.current {
+    color: black;
+}

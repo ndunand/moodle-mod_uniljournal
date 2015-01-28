@@ -40,7 +40,7 @@ class add_article_comment_form extends moodleform {
 
         $mform = $this->_form;
 
-        $mform->addElement('textarea', 'text', $user->firstname . ' ' . $user->lastname, array('size' => '64'));
+        $mform->addElement('textarea', 'text', '', array('size' => '64'));
         $mform->setType('text', PARAM_TEXT);
 
 
