@@ -68,13 +68,6 @@ $event->trigger();
 // Display table of articles for that user
 require_once('locallib.php');
 $userarticles = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $foreign_user->id));
-  
-$articlemaxversions = array();
-if(count($userarticles) > 0) {
-  // Extract the ids only
-  list ($inequal, $values) = $DB->get_in_or_equal(array_keys($userarticles));
-  $articlemaxversions = $DB->get_records_sql('SELECT instanceid as id, max(version) as maxversion FROM {uniljournal_aeinstances} WHERE instanceid '.$inequal.' GROUP BY instanceid', $values);
-}
 
 // Print the page header.
 $PAGE->set_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id));
@@ -114,8 +107,13 @@ foreach($userarticles as $ua) {
                     new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ua->id, 'cmid' => $cm->id)),
                     $title);
   $row->cells[] = strftime('%c', $ua->timemodified);
-  $row->cells[] = $articlemaxversions[$ua->id]->maxversion; // No check needed, no article should be available without element instances
-  $row->cells[] = 'TODO';
+  $row->cells[] = $ua->maxversion; // No check needed, no article should be available without element instances
+  // Determine the 'corrected' status: true if:
+  // a) was edited last by a foreign user OR
+  // b) last version was commented by a foreign user
+  $corrected = !in_array($ua->edituserid, array($USER->id, 0)) || !in_array($ua->commentuserid, array($USER->id, 0));
+  
+  $row->cells[] = $corrected?html_writer::img($OUTPUT->pix_url('t/check'), get_string('yes')):'';
   $row->cells[] = $ua->amtitle;
 
   // Add actions
