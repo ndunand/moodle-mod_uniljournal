@@ -362,6 +362,8 @@ function xmldb_uniljournal_upgrade($oldversion) {
         
         $fk_themeid = new xmldb_key('fk_themeid', XMLDB_KEY_FOREIGN, array('themeid'), 'uniljournal_themes', array('id'));
         $dbman->add_key($table, $fk_themeid);
+        
+        upgrade_mod_savepoint(true, 2015012702, 'uniljournal');
     }
     
     if ($oldversion < 2015012803) {
@@ -391,6 +393,20 @@ function xmldb_uniljournal_upgrade($oldversion) {
 
         upgrade_mod_savepoint(true, 2015012803, 'uniljournal');
     }
+    
+    if ($oldversion < 2015012900) {
+        $table = new xmldb_table('uniljournal_aeinstances');
+        $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'elementid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        $fk_userid = new xmldb_key('fk_userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
+        $dbman->add_key($table, $fk_userid);
+        
+        upgrade_mod_savepoint(true, 2015012900, 'uniljournal');
+    }
+    
 
     return true;
 }

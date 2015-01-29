@@ -180,6 +180,7 @@ if ($mform->is_cancelled()) {
         $element->elementid = $ae->id;
         $element->version = $version + 1;
         $element->timemodified = time();
+        $element->userid = $USER->id;
         if(isset($articleinstance->$property_name)) {
           $element->value = $articleinstance->$property_name;
         }
