@@ -102,8 +102,8 @@ foreach($articleelements as $ae) {
         $content .= html_writer::tag('div', $aeinstance->value);
         break;
     }
-    
-    if( uniljournal_startswith($ae->element_type, 'attachment_') ) { // begins with
+
+    if( uniljournal_startswith($ae->element_type, 'attachment_') ) {
       $fs = get_file_storage();
       $files = $fs->get_area_files($context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
       if(count($files) > 0) {

@@ -75,17 +75,7 @@ $PAGE->set_title(format_string($uniljournal->name.' - '.fullname($foreign_user, 
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
-/*
- * Other things you may want to set - remove if not needed.
- * $PAGE->set_cacheable(false);
- * $PAGE->set_focuscontrol('some-html-id');
- * $PAGE->add_body_class('uniljournal-'.$somevar);
- */
-
-// Output starts here.
 echo $OUTPUT->header();
-
-// Replace the following lines with you own code.
 echo $OUTPUT->heading(format_string($uniljournal->name));
 
 echo html_writer::tag('h3', fullname($foreign_user, has_capability('moodle/site:viewfullnames', $context)));
