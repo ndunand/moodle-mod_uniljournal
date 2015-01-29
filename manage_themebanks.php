@@ -87,31 +87,6 @@ if ($action && $tbid) {
             ));
             $event->trigger();
         }
-    } elseif(in_array($action, array('up', 'down'))) {
-        // Manage the re-ordering of templates
-        // Create three arrays, one for the actual keys (origs), one for the next ones (nexts), one for the previous ones (prevs)
-        $origs = array_keys($themebanks);
-        $nexts = array_keys($themebanks);
-        array_shift($nexts);
-        array_push($nexts, false);
-        $prevs = array_keys($themebanks);
-        array_unshift($prevs, false);
-
-        $ordering = array_flip($origs);
-        if($action == "down" && array_key_exists($ordering[$tid], $nexts) && $nexts[$ordering[$tid]] !== false) {
-            $ordering[$nexts[$ordering[$tid]]]--;
-            $ordering[$tid]++;
-        } elseif($action == "up" && array_key_exists($ordering[$tid], $prevs) && $prevs[$ordering[$tid]] !== false) {
-            $ordering[$prevs[$ordering[$tid]]]++;
-            $ordering[$tid]--;
-        }
-
-        // On-purpose refresh them all, to set the initial sortorder.
-        foreach($ordering as $themebankid => $newsortorder) {
-            $themebanks[$themebankid]->sortorder = $newsortorder;
-            $DB->update_record('uniljournal_themebanks', $themebanks[$themebankid]);
-        }
-        redirect(new moodle_url('/mod/uniljournal/manage_themebanks.php', array('id' => $cm->id)));
     }
 
 }
@@ -159,8 +134,6 @@ if (isset($deleteform)) {
             $row->cells[4] = ($context->contextlevel <= CONTEXT_SYSTEM) ? '×': '';
             
             $actionarray = array();
-            if($aiter != 1) $actionarray[] = 'up';
-            if($aiter != count($themebanks)) $actionarray[] = 'down';
             $actionarray[] = 'edit';
             if($themebank->themescount == 0) $actionarray[] = 'delete';
 
