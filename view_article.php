@@ -121,8 +121,6 @@ foreach($articleelements as $ae) {
   }
 }
 
-$maxversionsql = $DB->get_record_sql('SELECT max(version) as maxversion FROM {uniljournal_aeinstances} WHERE instanceid = :instanceid', array('instanceid' => $articleinstance->id));
-
 // Build article title if it doesn't exist
 $articletitle = uniljournal_articletitle($articleinstance);
 
@@ -161,9 +159,9 @@ if($actualversion > 1) {
   echo link_arrow_left(get_string('version_previous', 'uniljournal'), new moodle_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id, 'version'=> $actualversion-1)), true);
 }
 
-echo html_writer::tag('span', 'Version '.$actualversion." / ".$maxversionsql->maxversion);
+echo html_writer::tag('span', get_string('version').' '.$actualversion." / ".$articleinstance->maxversion);
 
-if($actualversion < $maxversionsql->maxversion) {
+if($actualversion < $articleinstance->maxversion) {
   echo link_arrow_right(get_string('version_next', 'uniljournal'), new moodle_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id, 'version'=> $actualversion+1)), true);
 }
 
@@ -173,7 +171,7 @@ echo '<div class="article-edit">';
 echo html_writer::table($table);
 
 echo '</div><div class="article-comments">';
-echo $uniljournal_renderer->display_comments($cmid, $id, $actualversion, $USER->id, ($actualversion == $maxversionsql->maxversion));
+echo $uniljournal_renderer->display_comments($cmid, $id, $actualversion, $USER->id, ($actualversion == $articleinstance->maxversion));
 echo '</div>';
 
 // Finish the page.
