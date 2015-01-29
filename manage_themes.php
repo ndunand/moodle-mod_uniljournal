@@ -67,7 +67,7 @@ $themes = $DB->get_records_sql('
          ORDER BY t.sortorder ASC', array('themebankid' => $tbid));
 
 if ($action && $tid) {
-    if (!$model = $themes[$tid]) {
+    if (!$theme = $themes[$tid]) {
         error('Must exist!');
     }
 
