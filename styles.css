@@ -129,6 +129,12 @@
   margin: 0 0.5em;
 }
 
+.state_form .fitemtitle {
+  display: none;
+}
+.state_form .felement {
+  margin-left: 0 !important;
+}
 @media screen and (max-width: 767px) {
     .article-edit {
         float:none;

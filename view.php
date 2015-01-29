@@ -251,7 +251,10 @@ if(isset($deleteform)) {
             'M.core.init_formautosubmit',
             array(array('selectid' => 'id_status_'.$ai->id, 'nothing' => false))
         );
-      $row->cells[] = $smforms[$ai->id]->render();
+      // Add class to the form, to hint CSS for label hiding
+      $statecell = new html_table_cell($smforms[$ai->id]->render());
+      $statecell->attributes['class'] = 'state_form';
+      $row->cells[] = $statecell;
 
       $actionarray = array();
       $actionarray[] = 'edit';
