@@ -69,10 +69,10 @@ if ($action && $tid) {
         require_once('edit_theme_form.php');
         $customdata = array();
         $customdata['course'] = $course;
-        $customdata['cm'] = $cm;
-        $customdata['theme'] = $themes[$tid];
+        $customdata['themebank'] = $DB->get_record('uniljournal_themebanks', array('id' => $tbid));
+        $customdata['current'] = $themes[$tid];
 
-        $deleteform = new template_delete_form(new moodle_url('/mod/uniljournal/manage_themes.php', array('id'=> $cm->id, 'tid' => $tid, 'action' => 'delete')), $customdata);
+        $deleteform = new theme_delete_form(new moodle_url('/mod/uniljournal/manage_themes.php', array('cmid'=> $cm->id, 'tbid' => $tbid, 'tid' => $tid, 'action' => 'delete')), $customdata);
 
         if ($deleteform->is_cancelled()) {
             unset($deleteform);
