@@ -89,7 +89,7 @@ $head = array(
     get_string('template', 'uniljournal'),
 );
 
-if(has_capability('mod/uniljournal:createarticle', $context)) {
+if(has_capability('mod/uniljournal:createarticle', $context) || has_capability('mod/uniljournal:editallarticles', $context)) {
     $head[] = get_string('actions');
 }
 
@@ -114,7 +114,7 @@ foreach($userarticles as $ua) {
   
   // Add actions
   $actionarray = array();
-  if(has_capability('mod/uniljournal:createarticle', $context)) {
+  if(has_capability('mod/uniljournal:createarticle', $context) || has_capability('mod/uniljournal:editallarticles', $context)) {
     $actionarray[] = 'edit';
   }
   

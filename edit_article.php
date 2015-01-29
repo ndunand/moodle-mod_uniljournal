@@ -41,9 +41,9 @@ if ($cmid) {
 
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
-require_capability('mod/uniljournal:createarticle', $context);
-
-$PAGE->requires->jquery();
+if(! has_capability('mod/uniljournal:createarticle', $context) && ! has_capability('mod/uniljournal:editallarticles', $context) ) {
+  error('You can\'t edit this article');
+}
 
 // Get the model we're editing
 if (!$articlemodel = $DB->get_record_select('uniljournal_articlemodels', "id = $amid AND hidden != '\x31'")) {
@@ -133,8 +133,6 @@ if ($mform->is_cancelled()) {
     redirect(new moodle_url('/mod/uniljournal/view.php', array('id' => $cm->id)));
 } else if ($articleinstance = $mform->get_data()) {
     $isnewentry = empty($articleinstance->id);
-    
-    $articleinstance->userid = $USER->id;// TODO: What happens when a teacher creates or edits a content for a student ?
     $articleinstance->articlemodelid = $amid;
     $articleinstance->timemodified = time();
     
@@ -143,6 +141,7 @@ if ($mform->is_cancelled()) {
     }
 
     if($isnewentry) {
+      $articleinstance->userid = $USER->id; // A new article is always owned by its creator
       $articleinstance->id = $DB->insert_record('uniljournal_articleinstances', $articleinstance);
         // Log the article creation
         $event = \mod_uniljournal\event\article_created::create(array(
@@ -156,6 +155,7 @@ if ($mform->is_cancelled()) {
         ));
         $event->trigger();
     } else {
+      unset($articleinstance->userid); // Don't let a teacher take over an article
       $DB->update_record('uniljournal_articleinstances', $articleinstance);
         // Log the article update
         $event = \mod_uniljournal\event\article_updated::create(array(
@@ -211,6 +211,7 @@ $PAGE->set_url($url);
 $PAGE->set_title(format_string(get_string('writearticletempl', 'mod_uniljournal', $articlemodel->title)));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
+$PAGE->requires->jquery();
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('writearticletempl', 'mod_uniljournal', $articlemodel->title));
