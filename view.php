@@ -181,27 +181,36 @@ if(isset($deleteform)) {
     $userattrssql = get_all_user_name_fields(true, 'u');
     require_once('locallib.php');
     $allarticles = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id), true);
-    $userarticles = array();
-    foreach($allarticles as $article) {
-      if(!array_key_exists($article->userid, $userarticles)) {
+    if(count($allarticles) > 0) {
+      $userarticles = array();
+      $sumuncorrected = 0;
+      foreach($allarticles as $article) {
+        if(!array_key_exists($article->userid, $userarticles)) {
+          $a = new stdClass();
+          $a->userid = $article->userid;
+          $a->timemodified = $article->timemodified;
+          $a->narticles = 0;
+          $a->ncorrected = 0;
+          $a->user = $DB->get_record('user', array('id' => $article->userid));
+          $userarticles[$article->userid] = $a;
+        }
+
+        $userarticles[$article->userid]->narticles++;
+        $userarticles[$article->userid]->timemodified = max($userarticles[$article->userid]->timemodified, $article->timemodified);
+
+        if($article->userid == $article->edituserid && (is_null($article->commentuserid) || $article->userid == $article->commentuserid)) {
+          $userarticles[$article->userid]->ncorrected++;
+          $sumuncorrected++;
+        }
+      }
+
+      if($sumuncorrected > 0) {
         $a = new stdClass();
-        $a->userid = $article->userid;
-        $a->timemodified = $article->timemodified;
-        $a->narticles = 0;
-        $a->ncorrected = 0;
-        $a->user = $DB->get_record('user', array('id' => $article->userid));
-        $userarticles[$article->userid] = $a;
+        $a->students = count($userarticles);
+        $a->uncorrected = $sumuncorrected;
+        echo html_writer::tag('div', get_string('uncorrected_articles', 'uniljournal', $a));
       }
-
-      $userarticles[$article->userid]->narticles++;
-      $userarticles[$article->userid]->timemodified = max($userarticles[$article->userid]->timemodified, $article->timemodified);
-
-      if($article->userid == $article->edituserid && (is_null($article->commentuserid) || $article->userid == $article->commentuserid)) {
-        $userarticles[$article->userid]->ncorrected++;
-      }
-    }
-
-    if(count($userarticles) > 0) {
+      
       $table = new html_table();
       $table->head = array(
           get_string('name'),
