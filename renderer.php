@@ -28,7 +28,7 @@ require('../../user/lib.php');
 require('./add_article_comment_form.php');
 
 class mod_uniljournal_renderer extends plugin_renderer_base {
-    function display_comments($cmid, $articleinstanceid, $articleinstanceversion, $userid, $maxversion) {
+    function display_comments($cmid, $articleinstanceid, $articleinstanceversion, $userid, $maxversion = -1) {
         global $DB, $USER, $OUTPUT;
 
         $context = context_module::instance($cmid);
