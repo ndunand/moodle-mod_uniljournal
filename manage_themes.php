@@ -175,7 +175,7 @@ if (isset($deleteform)) {
             $actions = "";
             foreach($actionarray as $actcode) {
                 $script = 'manage_themes.php';
-                $args = array('cmid'=> $cm->id, 'tbid' => $theme->themebankid, 'id' => $theme->id, 'action' => $actcode);
+                $args = array('cmid'=> $cm->id, 'tbid' => $theme->themebankid, 'tid' => $theme->id, 'action' => $actcode);
 
                 switch($actcode) {
                     case "edit":
