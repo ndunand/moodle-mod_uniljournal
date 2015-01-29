@@ -159,7 +159,7 @@ function uniljournal_get_theme_banks($cm, $course) {
           GROUP BY tb.id', $contexts);
 }
 
-function uniljournal_get_article_instances($query_args = array('id' => '0')) {
+function uniljournal_get_article_instances($query_args = array('id' => '0'), $status = false) {
   global $DB;
   $where = array();
   foreach($query_args as $key => $v) {
@@ -169,20 +169,39 @@ function uniljournal_get_article_instances($query_args = array('id' => '0')) {
       $where[] = "$key = :$key";
     }
   }
-  // MONSTER query to get a list of articles, with all relevant informations concerning comments, max versions, etc
-  return $DB->get_records_sql('SELECT ai.id as id, ai.timemodified, ai.userid, ai.title, t.title as themetitle, ai.status,
-                                      am.id as amid, am.title as amtitle, am.freetitle as freetitle,
-                                      astatus.maxversion, astatus.edituserid, astatus.commentuserid
-       FROM {uniljournal_articleinstances} ai
-  LEFT JOIN (
+  
+  $attributes = array(
+    'ai.id as id',
+    'ai.timemodified',
+    'ai.userid',
+    'ai.title',
+    't.title as themetitle',
+    'ai.status',
+    'am.id as amid',
+    'am.title as amtitle',
+    'am.freetitle as freetitle');
+  
+  $statusrequest = '';
+  if($status) {
+    // Fetch the article instance status. Make that an option as that's an expensive request
+    array_push($attributes,
+      'astatus.maxversion',
+      'astatus.edituserid',
+      'astatus.commentuserid');
+    $statusrequest = 'LEFT JOIN (
               SELECT DISTINCT instanceid as id, version as maxversion, aei.userid as edituserid, c.userid as commentuserid
                          FROM {uniljournal_aeinstances} aei
-                    LEFT JOIN {uniljournal_article_comments} c ON c.articleinstanceid = aei.instanceid
+                    LEFT JOIN {uniljournal_article_comments} c ON c.articleinstanceid = aei.instanceid AND c.articleinstanceversion = aei.version
                         WHERE (instanceid, version) IN (
-                                                        SELECT instanceid as id, max(version) as maxversion
+                                                        SELECT instanceid, max(version) as maxversion
                                                           FROM {uniljournal_aeinstances} GROUP BY instanceid
                                                         )
-            ) astatus ON astatus.id = ai.id
+            ) astatus ON astatus.id = ai.id';
+  }
+  // MONSTER query to get a list of articles, with all relevant informations concerning comments, max versions, etc
+  return $DB->get_records_sql('SELECT '.implode($attributes, ', ').'
+       FROM {uniljournal_articleinstances} ai
+            '.$statusrequest.'
   LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
   LEFT JOIN {uniljournal_themes} t ON ai.themeid = t.id
       WHERE '.implode($where, ' AND ').'

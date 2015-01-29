@@ -157,17 +157,7 @@ $PAGE->set_title(format_string($uniljournal->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
-/*
- * Other things you may want to set - remove if not needed.
- * $PAGE->set_cacheable(false);
- * $PAGE->set_focuscontrol('some-html-id');
- * $PAGE->add_body_class('uniljournal-'.$somevar);
- */
-
-// Output starts here.
 echo $OUTPUT->header();
-
-// Replace the following lines with you own code.
 echo $OUTPUT->heading(format_string($uniljournal->name));
 
 if(isset($deleteform)) {
@@ -189,12 +179,28 @@ if(isset($deleteform)) {
   
     // Display table of my articles
     $userattrssql = get_all_user_name_fields(true, 'u');
-    $userarticles = $DB->get_records_sql('SELECT ai.userid, '.$userattrssql.', MAX(ai.timemodified) as timemodified, COUNT(ai.id) as narticles
-           FROM {uniljournal_articleinstances} ai
-      LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
-           JOIN {user} u ON u.id = ai.userid WHERE uniljournalid = :ujid
-      GROUP BY ai.userid, '.$userattrssql, array('ujid' => $uniljournal->id));
-  
+    require_once('locallib.php');
+    $allarticles = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id), true);
+    $userarticles = array();
+    foreach($allarticles as $article) {
+      if(!array_key_exists($article->userid, $userarticles)) {
+        $a = new stdClass();
+        $a->userid = $article->userid;
+        $a->timemodified = $article->timemodified;
+        $a->narticles = 0;
+        $a->ncorrected = 0;
+        $a->user = $DB->get_record('user', array('id' => $article->userid));
+        $userarticles[$article->userid] = $a;
+      }
+
+      $userarticles[$article->userid]->narticles++;
+      $userarticles[$article->userid]->timemodified = max($userarticles[$article->userid]->timemodified, $article->timemodified);
+
+      if($article->userid == $article->edituserid && (is_null($article->commentuserid) || $article->userid == $article->commentuserid)) {
+        $userarticles[$article->userid]->ncorrected++;
+      }
+    }
+
     if(count($userarticles) > 0) {
       $table = new html_table();
       $table->head = array(
@@ -207,9 +213,9 @@ if(isset($deleteform)) {
       foreach($userarticles as $ua) {
         $row = new html_table_row();
         $ualink = new moodle_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id, 'uid' => $ua->userid));
-        $row->cells[] = html_writer::link($ualink,fullname($ua, has_capability('moodle/site:viewfullnames', $context))); // TODO: Link
-        $row->cells[] = $ua->narticles; // TODO: Link
-        $row->cells[] = "TODO"; // TODO
+        $row->cells[] = html_writer::link($ualink,fullname($ua->user, has_capability('moodle/site:viewfullnames', $context))); // TODO: Link
+        $row->cells[] = html_writer::link($ualink, $ua->narticles);
+        $row->cells[] = html_writer::link($ualink, $ua->ncorrected);
         $row->cells[] = strftime('%c', $ua->timemodified);
 
         $table->data[] = $row;

@@ -36,7 +36,7 @@ if ($cmid and $id) {
     $cm              = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
     $course          = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $uniljournal     = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
-    $articleinstances = uniljournal_get_article_instances(array('id' => $id));
+    $articleinstances = uniljournal_get_article_instances(array('id' => $id), true);
     $articleinstance = array_pop($articleinstances);
 } else {
     error('You must specify a course_module and an article instance ID');

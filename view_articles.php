@@ -67,7 +67,7 @@ $event->trigger();
 
 // Display table of articles for that user
 require_once('locallib.php');
-$userarticles = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $foreign_user->id));
+$userarticles = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $foreign_user->id), true);
 
 // Print the page header.
 $PAGE->set_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id));
@@ -81,14 +81,19 @@ echo $OUTPUT->heading(format_string($uniljournal->name));
 echo html_writer::tag('h3', fullname($foreign_user, has_capability('moodle/site:viewfullnames', $context)));
 
 $table = new html_table();
-$table->head = array(
+$head = array(
     get_string('name'),
     get_string('lastmodified'),
     get_string('revisions', 'uniljournal'),
     get_string('corrected_status', 'uniljournal'),
     get_string('template', 'uniljournal'),
-    get_string('actions'),
 );
+
+if(has_capability('mod/uniljournal:createarticle', $context)) {
+    $head[] = get_string('actions');
+}
+
+$table->head = $head;
 
 foreach($userarticles as $ua) {
   $row = new html_table_row();
@@ -101,14 +106,17 @@ foreach($userarticles as $ua) {
   // Determine the 'corrected' status: true if:
   // a) was edited last by a foreign user OR
   // b) last version was commented by a foreign user
-  $corrected = !in_array($ua->edituserid, array($USER->id, 0)) || !in_array($ua->commentuserid, array($USER->id, 0));
+  $corrected = !in_array($ua->edituserid, array($ua->userid, 0)) || !in_array($ua->commentuserid, array($ua->userid, 0));
   
   $row->cells[] = $corrected?html_writer::img($OUTPUT->pix_url('t/check'), get_string('yes')):'';
   $row->cells[] = $ua->amtitle;
 
+  
   // Add actions
   $actionarray = array();
-  $actionarray[] = 'edit';
+  if(has_capability('mod/uniljournal:createarticle', $context)) {
+    $actionarray[] = 'edit';
+  }
   
   $actions = "";
   foreach($actionarray as $actcode) {
@@ -121,7 +129,9 @@ foreach($userarticles as $ua) {
     $img = html_writer::img($OUTPUT->pix_url('t/'. $actcode), get_string($actcode));
     $actions .= html_writer::link($url, $img)."\t";
   }
-  $row->cells[] = $actions;
+  if(!empty($actions)) {
+    $row->cells[] = $actions;
+  }
 
   $table->data[] = $row;
 }
