@@ -76,6 +76,7 @@ if ($mform->is_cancelled()) {
 
     $theme->themebankid = $tbid;
     $theme->hidden = false;
+    $theme->sortorder = 0;
     $instructions = file_postupdate_standard_editor($theme, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'theme', $theme->id);
 
     if ($isnewentry) {

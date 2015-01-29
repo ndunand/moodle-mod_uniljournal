@@ -56,16 +56,22 @@ $contexts = array('module_context' => $module_context->id,
 require_capability('mod/uniljournal:managethemes', $module_context);
 
 $themes = $DB->get_records_sql('
-       SELECT t.*
-         FROM {uniljournal_themes} t
-         WHERE t.themebankid = :themebankid', array('themebankid' => $tbid));
+        SELECT t.*, tc.count
+          FROM {uniljournal_themes} t
+     LEFT JOIN (
+                SELECT themeid, COUNT(id) as count
+                  FROM {uniljournal_articleinstances}
+              GROUP BY themeid
+               ) tc ON tc.themeid = t.id
+         WHERE t.themebankid = :themebankid
+         ORDER BY t.sortorder ASC', array('themebankid' => $tbid));
 
 if ($action && $tid) {
     if (!$model = $themes[$tid]) {
         error('Must exist!');
     }
 
-    if($action == "delete") {
+    if($action == "delete" && (is_null($theme->count) || $theme->count == 0)) {
         require_once('edit_theme_form.php');
         $customdata = array();
         $customdata['course'] = $course;
@@ -170,7 +176,7 @@ if (isset($deleteform)) {
             if($aiter != 1) $actionarray[] = 'up';
             if($aiter != count($themes)) $actionarray[] = 'down';
             $actionarray[] = 'edit';
-            $actionarray[] = 'delete';
+            if(is_null($theme->count) || $theme->count == 0) $actionarray[] = 'delete';
 
             $actions = "";
             foreach($actionarray as $actcode) {

@@ -111,6 +111,7 @@
         <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Theme instance title"/>
         <FIELD NAME="instructions" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="instructionsformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Defines the order of the themes"/>
         <FIELD NAME="hidden" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="Determine whether the theme instance is available for students"/>
       </FIELDS>
       <KEYS>

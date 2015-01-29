@@ -122,7 +122,7 @@ $customdata['textonlyoptions'] = $textonlyoptions;
 $customdata['cm'] = $cm;
 
 if($articlemodel->themebankid) {
-  $customdata['themes'] = $DB->get_records_select('uniljournal_themes', "themebankid = ".$articlemodel->themebankid." AND hidden != '\x31'");
+  $customdata['themes'] = $DB->get_records_select('uniljournal_themes', "themebankid = ".$articlemodel->themebankid." AND hidden != '\x31' ORDER BY sortorder ASC");
 }
 
 require_once('edit_article_form.php');
