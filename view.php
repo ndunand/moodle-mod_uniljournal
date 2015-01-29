@@ -178,7 +178,6 @@ if(isset($deleteform)) {
   if(has_capability('mod/uniljournal:viewallarticles', $context)) {
   
     // Display table of my articles
-    $userattrssql = get_all_user_name_fields(true, 'u');
     require_once('locallib.php');
     $allarticles = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id), true);
     if(count($allarticles) > 0) {

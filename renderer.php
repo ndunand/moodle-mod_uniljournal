@@ -31,10 +31,12 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
     function display_comments($cmid, $articleinstanceid, $articleinstanceversion, $userid, $editable=false) {
         global $DB, $USER, $OUTPUT;
 
-        $canDelete = has_capability('mod/uniljournal:deletecomment', context_module::instance($cmid));
+        $context = context_module::instance($cmid);
+        $canDelete = has_capability('mod/uniljournal:deletecomment', $context);
 
+        $userattrssql = get_all_user_name_fields(true, 'u');
         $comments = $DB->get_records_sql('
-          SELECT c.*, u.firstname AS firstname, u.lastname AS lastname FROM {uniljournal_article_comments} c
+          SELECT c.*, '.$userattrssql.' FROM {uniljournal_article_comments} c
           JOIN {user} u ON c.userid = u.id
           WHERE articleinstanceid = :articleinstanceid
           ORDER BY timecreated ASC', array(
@@ -67,7 +69,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                         ));
                     $output .= '<a href="' . $deleteURL . '">' . html_writer::img($OUTPUT->pix_url('t/delete'), get_string('delete')) . '</a>';
                 }
-                $output .= '<h5 for="comment' . $comment->id . '">' . $comment->firstname . ' ' . $comment->lastname . '</h5>';
+                $output .= '<h5 for="comment' . $comment->id . '">' . fullname($comment, has_capability('moodle/site:viewfullnames', $context)). '</h5>';
                 $output .= '<p id ="comment' . $comment->id . '">' . $comment->text . '</p></div>';
             }
         }
