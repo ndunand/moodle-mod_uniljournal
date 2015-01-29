@@ -26,7 +26,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-require_once("$CFG->dirroot/mod/uniljournal/lib.php");
+require_once("lib.php");
 
 function uniljournal_set_logo($data) {
     global $DB;
