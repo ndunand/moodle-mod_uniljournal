@@ -218,7 +218,7 @@ echo $OUTPUT->heading(get_string('writearticletempl', 'mod_uniljournal', $articl
 echo '<div class="article"><div class="article-edit">';
 $mform->display();
 echo '</div><div class="article-comments">';
-echo $uniljournal_renderer->display_comments($cmid, $id, $version, $USER->id);
+echo $uniljournal_renderer->display_comments($cmid, $id, $version, $USER->id, $version);
 echo '</div>';
 
 echo $OUTPUT->footer();

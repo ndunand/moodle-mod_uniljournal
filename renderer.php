@@ -28,7 +28,7 @@ require('../../user/lib.php');
 require('./add_article_comment_form.php');
 
 class mod_uniljournal_renderer extends plugin_renderer_base {
-    function display_comments($cmid, $articleinstanceid, $articleinstanceversion, $userid, $editable=false) {
+    function display_comments($cmid, $articleinstanceid, $articleinstanceversion, $userid, $maxversion) {
         global $DB, $USER, $OUTPUT;
 
         $context = context_module::instance($cmid);
@@ -59,7 +59,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                     $versionClass = ' current';
                 }
                 $output .= '<div class="article-comments-item'. $userClass . $versionClass . '">';
-                if ($editable && $canDelete) {
+                if (($articleinstanceversion == $comment->articleinstanceversion) && $canDelete) {
                     $deleteURL = new moodle_url('/mod/uniljournal/add_article_comment.php',
                         array(
                             'action' => 'delete',
@@ -73,7 +73,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                 $output .= '<p id ="comment' . $comment->id . '">' . $comment->text . '</p></div>';
             }
         }
-        if ($editable) {
+        if ($articleinstanceversion == $maxversion) {
             $customdata = array();
             $customdata['cmid'] = $cmid;
             $customdata['articleinstanceid'] = $articleinstanceid;

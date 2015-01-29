@@ -171,7 +171,7 @@ echo '<div class="article-edit">';
 echo html_writer::table($table);
 
 echo '</div><div class="article-comments">';
-echo $uniljournal_renderer->display_comments($cmid, $id, $actualversion, $USER->id, ($actualversion == $articleinstance->maxversion));
+echo $uniljournal_renderer->display_comments($cmid, $id, $actualversion, $USER->id, $articleinstance->maxversion);
 echo '</div>';
 
 // Finish the page.
