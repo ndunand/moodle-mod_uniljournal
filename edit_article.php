@@ -184,6 +184,7 @@ if ($mform->is_cancelled()) {
         if(isset($articleinstance->$property_name)) {
           $element->value = $articleinstance->$property_name;
         }
+        // TODO: Avoid re-writing records that haven't changed !
         $element->id = $DB->insert_record('uniljournal_aeinstances', $element);
 
         if($ae->element_type == 'text' or $ae->element_type == 'textonly') {
