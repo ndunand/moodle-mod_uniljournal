@@ -164,7 +164,11 @@ function uniljournal_get_article_instances($query_args = array('id' => '0'), $st
   $where = array();
   foreach($query_args as $key => $v) {
     if($key == 'id') {
-      $where[] = "ai.id = :id";
+        if (is_array($v)) {
+            $where[] = "ai.id IN (" . implode(',', $v) . ")";
+        } else {
+            $where[] = "ai.id = :id";
+        }
     } else {
       $where[] = "$key = :$key";
     }
