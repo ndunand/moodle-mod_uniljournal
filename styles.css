@@ -165,16 +165,22 @@
 }
 
 .article-view-content {
-    width: 75%;
-    float: left;
+    vertical-align: top;
+    width: 65%;
     display: inline-block;
 }
 
 .article-view-attachment {
-    width: 25%;
+    vertical-align: top;
+    width: 35%;
     display: inline-block;
 }
 
 .article-view-attachment img {
     max-width: 100%;
+}
+
+.article-view-attachment-doc {
+    text-align: center;
+    margin: 0 0 20px 0;
 }

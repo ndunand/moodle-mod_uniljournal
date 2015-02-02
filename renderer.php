@@ -92,7 +92,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
     }
 
     function display_article($article, $articleelements, $context) {
-        global $DB;
+        global $DB, $OUTPUT;
 
         $output = '';
 
@@ -115,6 +115,8 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
 
         $contents = '';
         $attachments = '';
+
+        $file_extensions = get_mimetypes_array();
 
         $actualversion = 0;
         foreach($articleelements as $ae) {
@@ -160,7 +162,12 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                             $attachments .= html_writer::end_div();
                         } else {
                             $attachments .= html_writer::start_div('article-view-attachment-doc');
+                            $attachments .= html_writer::start_div('article-view-attachment-doc-icon');
+                            $attachments .= $OUTPUT->pix_icon('f/' . mimeinfo('icon128', $file->get_filename()), $file->get_filename());
+                            $attachments .= html_writer::end_div();
+                            $attachments .= html_writer::start_div('article-view-attachment-doc-text');
                             $attachments .= html_writer::link($url, $file->get_filename());
+                            $attachments .= html_writer::end_div();
                             $attachments .= html_writer::end_div();
                         }
                     }
