@@ -164,6 +164,16 @@
     color: #bbb;
 }
 
+.article-view-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.article-view-content-subtitle {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
 .article-view-content {
     vertical-align: top;
     width: 65%;

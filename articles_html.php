@@ -74,6 +74,9 @@ foreach($articleinstances as $articleinstance) {
     ));
     $event->trigger();
 
+    $articletitle = uniljournal_articletitle($articleinstance);
+    $articleinstance->title = $articletitle;
+
     $article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context);
 
     $articles .= $article_html;

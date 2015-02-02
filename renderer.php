@@ -91,7 +91,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
         return $output;
     }
 
-    function display_article($article, $articleelements, $context) {
+    function display_article($article, $articleelements, $context, $version=0, &$actualversion=0) {
         global $DB, $OUTPUT;
 
         $output = '';
@@ -118,7 +118,6 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
 
         $file_extensions = get_mimetypes_array();
 
-        $actualversion = 0;
         foreach($articleelements as $ae) {
             $property_name = 'element_' . $ae->id;
             $property_edit = $property_name . '_editor';
@@ -129,6 +128,10 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
               SELECT * FROM {uniljournal_aeinstances}
               WHERE instanceid = :instanceid
               AND elementid  = :elementid ';
+            if ($version != 0) {
+                $sql .= 'AND version <= :version';
+                $sqlargs['version'] = $version;
+            }
             $sql .= 'ORDER BY version DESC LIMIT 1';
             $aeinstance = $DB->get_record_sql($sql, $sqlargs);
             if ($aeinstance !== false) {

@@ -66,78 +66,18 @@ $event = \mod_uniljournal\event\article_read::create(array(
 ));
 $event->trigger();
 
-$table = new html_table();
-// Table has two cols: one for content, one for the attachements and other stuffs
-$table->data = array();
-
-$content = "";
-$attachments = "";
-
-// Get the existing article elements for display
-$actualversion = 0;
-foreach($articleelements as $ae) {
-  $property_name   = 'element_'.$ae->id;
-  $property_edit   = $property_name.'_editor';
-  $property_format = $property_name.'format';
-  
-  $sqlargs = array('instanceid' => $articleinstance->id, 'elementid' => $ae->id);
-  $sql = '
-    SELECT * FROM {uniljournal_aeinstances} 
-      WHERE instanceid = :instanceid
-        AND elementid  = :elementid ';
-  if ($version != 0) {
-    $sql .= 'AND version <= :version';
-    $sqlargs['version'] = $version;
-  }
-  $sql .= 'ORDER BY version DESC LIMIT 1';
-  $aeinstance = $DB->get_record_sql($sql, $sqlargs);
-  if($aeinstance !== false) {
-    switch($ae->element_type) {
-      case "subtitle":
-        $content .= html_writer::tag('h4', $aeinstance->value);
-        break;
-      case "text":
-      case "textonly":
-        $aeinstance->value = file_rewrite_pluginfile_urls($aeinstance->value, 'pluginfile.php', $context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
-        $content .= html_writer::tag('div', $aeinstance->value);
-        break;
-    }
-
-    if( uniljournal_startswith($ae->element_type, 'attachment_') ) {
-      $fs = get_file_storage();
-      $files = $fs->get_area_files($context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
-      if(count($files) > 0) {
-        $file = array_pop($files);
-        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
-        if($file->is_valid_image()) {
-          $attachments .= html_writer::tag('div', html_writer::img($url, $file->get_filename()));
-        } else {
-          $attachments .= html_writer::tag('div', html_writer::link($url, $file->get_filename()));
-        }
-      }
-    }
-    
-    $actualversion = max($actualversion, $aeinstance->version);
-  }
-}
-
-// Build article title if it doesn't exist
 $articletitle = uniljournal_articletitle($articleinstance);
-
-$titlecell = new html_table_cell(html_writer::tag('h3', $articletitle));
-$titlecell->colspan = 2;
-$table->data[] = new html_table_row(array($titlecell));
-$table->data[] = new html_table_row(
-  array(
-    new html_table_cell($content),
-    new html_table_cell($attachments),
-    ));
+$articleinstance->title = $articletitle;
 
 $PAGE->set_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id));
 $PAGE->set_title(format_string($articletitle));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 $uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
+$actualversion = 0;
+
+
+$article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, $version, $actualversion);
 
 /*
  * Other things you may want to set - remove if not needed.
@@ -168,7 +108,7 @@ if($actualversion < $articleinstance->maxversion) {
 echo '</div>';
 echo '<div class="article-edit">';
 
-echo html_writer::table($table);
+echo $article_html;
 
 echo '</div><div class="article-comments">';
 echo $uniljournal_renderer->display_comments($cmid, $id, $actualversion, $USER->id, $articleinstance->maxversion);
