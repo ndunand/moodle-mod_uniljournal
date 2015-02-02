@@ -183,7 +183,8 @@ function uniljournal_get_article_instances($query_args = array('id' => '0'), $st
     'ai.status',
     'am.id as amid',
     'am.title as amtitle',
-    'am.freetitle as freetitle');
+    'am.freetitle as freetitle',
+    'am.instructions as instructions');
   
   $statusrequest = '';
   if($status) {

@@ -151,3 +151,30 @@
         margin-left: 0;
     }
 }
+
+.article-view {
+    margin: 10px 0;
+}
+
+.article-view-template-title {
+    font-style: italic;
+}
+
+.article-view-template-instructions {
+    color: #bbb;
+}
+
+.article-view-content {
+    width: 75%;
+    float: left;
+    display: inline-block;
+}
+
+.article-view-attachment {
+    width: 25%;
+    display: inline-block;
+}
+
+.article-view-attachment img {
+    max-width: 100%;
+}
