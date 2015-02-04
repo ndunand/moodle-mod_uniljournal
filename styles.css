@@ -61,6 +61,13 @@
     width: 100%;
 }
 
+.article.article-compare {
+    width: 48%;
+    margin-left: 0;
+    margin-right: 0;
+    float: left;
+}
+
 .article-comments {
     position: relative;
     display: block;
@@ -131,6 +138,10 @@
 
 .article-version-toggle a.arrow_link {
   margin: 0 0.5em;
+}
+
+.article-compare {
+  text-align: center;
 }
 
 .state_form .fitemtitle {
