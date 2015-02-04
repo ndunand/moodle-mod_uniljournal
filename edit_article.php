@@ -54,7 +54,7 @@ $articleelements = $DB->get_records_select('uniljournal_articleelements', "artic
 
 $textfieldoptions = array(
   'subdirs'  => false,
-  'maxfiles' => '12',
+  'maxfiles' => '12', // TODO: Fixed!
   'maxbytes' => $articlemodel->maxbytes,
   'context'  => $context
 );

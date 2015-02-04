@@ -110,6 +110,12 @@ echo '<div class="article-edit '.($uniljournal->comments_allowed?'':'nocomments'
 
 echo $article_html;
 
+if(has_capability('mod/uniljournal:createarticle', $context) || has_capability('mod/uniljournal:editallarticles', $context) ) {
+  echo html_writer::link(
+    new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cmid, 'id' => $id, 'amid' => $articleinstance->amid)),
+    html_writer::img($OUTPUT->pix_url('t/edit'), get_string('edit'))); // TODO: Position and see whether we need to add text to it
+}
+
 echo '</div>';
 
 if ($uniljournal->comments_allowed) {
