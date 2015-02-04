@@ -69,17 +69,6 @@ $event->trigger();
 require_once('locallib.php');
 $userarticles = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $foreign_user->id), true);
 
-// Print the page header.
-$PAGE->set_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id));
-$PAGE->set_title(format_string($uniljournal->name.' - '.fullname($foreign_user, has_capability('moodle/site:viewfullnames', $context)))); // TODO
-$PAGE->set_heading(format_string($course->fullname));
-$PAGE->set_context($context);
-
-echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($uniljournal->name));
-
-echo html_writer::tag('h3', fullname($foreign_user, has_capability('moodle/site:viewfullnames', $context)));
-
 $table = new html_table();
 $head = array(
     get_string('name'),
@@ -89,11 +78,18 @@ $head = array(
     get_string('template', 'uniljournal'),
 );
 
+// Add actions
+$actionarray = array();
+
 if(has_capability('mod/uniljournal:createarticle', $context) || has_capability('mod/uniljournal:editallarticles', $context)) {
-    $head[] = get_string('actions');
+  $head[] = get_string('actions');
+  $actionarray[] = 'edit';
 }
 
 $table->head = $head;
+
+// Pile the number of uncorrected articles
+$sumuncorrected = 0;
 
 foreach($userarticles as $ua) {
   $row = new html_table_row();
@@ -108,15 +104,10 @@ foreach($userarticles as $ua) {
   // b) last version was commented by a foreign user
   $corrected = !in_array($ua->edituserid, array($ua->userid, 0)) || !in_array($ua->commentuserid, array($ua->userid, 0));
   
+  if(!$corrected) $sumuncorrected++;
+  
   $row->cells[] = $corrected?html_writer::img($OUTPUT->pix_url('t/check'), get_string('yes')):'';
   $row->cells[] = $ua->amtitle;
-
-  
-  // Add actions
-  $actionarray = array();
-  if(has_capability('mod/uniljournal:createarticle', $context) || has_capability('mod/uniljournal:editallarticles', $context)) {
-    $actionarray[] = 'edit';
-  }
   
   $actions = "";
   foreach($actionarray as $actcode) {
@@ -134,6 +125,23 @@ foreach($userarticles as $ua) {
   }
 
   $table->data[] = $row;
+}
+
+
+// Print the page header.
+$PAGE->set_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id));
+$PAGE->set_title(format_string($uniljournal->name.' - '.fullname($foreign_user, has_capability('moodle/site:viewfullnames', $context)))); // TODO
+$PAGE->set_heading(format_string($course->fullname));
+$PAGE->set_context($context);
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($uniljournal->name));
+
+echo html_writer::tag('h3', fullname($foreign_user, has_capability('moodle/site:viewfullnames', $context)));
+if($sumuncorrected > 0) {
+  $a = new stdClass();
+  $a->uncorrected = $sumuncorrected;
+  echo html_writer::tag('div', get_string('uncorrected_articles', 'uniljournal', $a));
 }
 
 echo html_writer::table($table);

@@ -207,7 +207,7 @@ if(isset($deleteform)) {
         $a = new stdClass();
         $a->students = count($userarticles);
         $a->uncorrected = $sumuncorrected;
-        echo html_writer::tag('div', get_string('uncorrected_articles', 'uniljournal', $a));
+        echo html_writer::tag('div', get_string('student_uncorrected_articles', 'uniljournal', $a));
       }
       
       $table = new html_table();
