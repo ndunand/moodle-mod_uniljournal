@@ -37,7 +37,6 @@ if ($cmid) {
     $uniljournal     = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
 } else {
     error('You must specify a course_module');
-
 }
 
 require_login($course, true, $cm);
