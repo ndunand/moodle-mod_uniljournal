@@ -394,7 +394,7 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
         send_file_not_found();
     }
 
-    require_login($course, true, $cm);
+    //require_login($course, true, $cm);
 
     if (!$uniljournal = $DB->get_record('uniljournal', array('id' => $cm->instance))) {
         return false;

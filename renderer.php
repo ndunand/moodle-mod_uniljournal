@@ -142,12 +142,13 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                         $contents .= html_writer::end_div();
                         break;
                     case "text":
-                        $contents .= html_writer::start_div('article-view-content-text');
-                        $contents .= $aeinstance->value;
-                        $contents .= html_writer::end_div();
-                    case "textonly":
                         $aeinstance->value = file_rewrite_pluginfile_urls($aeinstance->value, 'pluginfile.php', $context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
                         $contents .= html_writer::start_div('article-view-content-text');
+                        $contents .= format_text($aeinstance->value, FORMAT_HTML);
+                        $contents .= html_writer::end_div();
+                        break;
+                    case "textonly":
+                        $contents .= html_writer::start_div('article-view-content-text-only');
                         $contents .= $aeinstance->value;
                         $contents .= html_writer::end_div();
                         break;

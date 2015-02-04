@@ -51,7 +51,7 @@ foreach($articleinstances as $ai) {
         ));
 }
 echo '<a href="#" id="selectall" data-select="none">' . get_string('selectallornone', 'form') . '</a>';
-echo '<form action="' . new moodle_url('/mod/uniljournal/articles_html.php', array('cmid' => $cm->id)) . '" method="post">';
+echo '<form id="exportForm" method="post">';
 
 if(count($articleinstances) > 0) {
     $table = new html_table();
@@ -110,30 +110,34 @@ if(count($articleinstances) > 0) {
     }
     echo html_writer::table($table);
 }
-echo '</form><button id="showArticles" type="submit" disabled="true">Display articles</button>';
+echo '</form><button class="showArticles" id="showHTMLArticles" type="submit" disabled="true" onclick="actionForm(\'' . new moodle_url('/mod/uniljournal/articles_to_html_or_pdf.php', array('cmid' => $cm->id, 'format' => 'html')) . '\')">Display articles</button>
+<button class="showArticles" id="showPDFArticles" type="submit" disabled="true" onclick="actionForm(\'' . new moodle_url('/mod/uniljournal/articles_to_html_or_pdf.php', array('cmid' => $cm->id, 'format' => 'pdf')) . '\')">Export articles to PDF</button>';
 
 echo "<script>
+    function actionForm(action) {
+        $('#exportForm').prop('action', action);
+    }
     $('#selectall').on('click', function (e) {
         if ($('#selectall').data('select') == 'none') {
             $('input[name=\"articles[]\"]').prop('checked', true);
             $('#selectall').data('select', 'all');
-            $('#showArticles').prop('disabled', false);
+            $('.showArticles').prop('disabled', false);
         } else {
             $('input[name=\"articles[]\"]').prop('checked', false);
             $('#selectall').data('select', 'none');
-            $('#showArticles').prop('disabled', true);
+            $('.showArticles').prop('disabled', true);
         }
     });
 
     $('input[name=\"articles[]\"]').on('change', function (e) {
         if ($('input[name=\"articles[]\"]:checked').length > 0) {
-            $('#showArticles').prop('disabled', false);
+            $('.showArticles').prop('disabled', false);
                 $('#selectall').data('select', 'none');
             if ($('input[name=\"articles[]\"]:checked').length == $('input[name=\"articles[]\"]').length) {
                 $('#selectall').data('select', 'all');
             }
         } else {
-            $('#showArticles').prop('disabled', true);
+            $('.showArticles').prop('disabled', true);
             $('#selectall').data('select', 'none');
         }
     });

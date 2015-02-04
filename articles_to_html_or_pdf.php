@@ -27,9 +27,12 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 require_once(dirname(__FILE__).'/locallib.php');
+require_once(dirname(dirname(dirname(__FILE__))).'/lib/pdflib.php');
 
 $cmid    = optional_param('cmid', 0, PARAM_INT);  // Course_module ID
 $articleinstanceids = $_POST['articles'];
+$pdf = optional_param('format', 'html', PARAM_TEXT);
+$pdf = ($pdf == 'pdf') ? true : false;
 
 if ($cmid) {
     $cm              = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
@@ -41,17 +44,18 @@ if ($cmid) {
 
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
-
-$PAGE->set_url('/mod/uniljournal/export_articles.php', array('id' => $cm->id));
-$PAGE->set_title(get_string('exportarticles', 'mod_uniljournal'));
-$PAGE->set_heading(format_string($course->fullname));
-$PAGE->set_context($context);
 $uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
 
 $articleinstances = uniljournal_get_article_instances(array('id' => $articleinstanceids), true);
 
 $articles = '';
 
+if ($pdf) {
+    $articles = '<html><head><style>' . file_get_contents('pdf_CSS.css') . '</style></head><body>';
+}
+
+$count = 1;
+$numarticles = count($articleinstances);
 foreach($articleinstances as $articleinstance) {
 
     if ($articleinstance->userid == $USER->id) {
@@ -78,20 +82,44 @@ foreach($articleinstances as $articleinstance) {
 
     $article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context);
 
+    if ($pdf && ($count != $numarticles)) {
+        $article_html .= '<br pagebreak="true"/>';
+    }
+
+    $count++;
+
     $articles .= $article_html;
 }
 
-/*
- * Other things you may want to set - remove if not needed.
- * $PAGE->set_cacheable(false);
- * $PAGE->set_focuscontrol('some-html-id');
- * $PAGE->add_body_class('uniljournal-'.$somevar);
- */
+if ($pdf) {
+
+//  Create PDF
+    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf->setFontSubsetting(FALSE);
+    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+    $pdf->setPrintHeader(FALSE);
+    $pdf->setPrintFooter(FALSE);
+
+    $pdf->AddPage();
+
+    //$pdf->writeHTML($articles . '</body></html>');
+
+    $pdf->writeHTMLCell(0, 0, '', '', $articles . '</body></html>', 0, 1, 0, true, '', false);
+    $pdf->Output('name.pdf', 'D');
+} else {
+    $PAGE->set_url('/mod/uniljournal/export_articles.php', array('id' => $cm->id));
+    $PAGE->set_title(get_string('exportarticles', 'mod_uniljournal'));
+    $PAGE->set_heading(format_string($course->fullname));
+    $PAGE->set_context($context);
 
 // Output starts here.
-echo $OUTPUT->header();
+    echo $OUTPUT->header();
 
-echo $articles;
+    echo $articles;
 
 // Finish the page.
-echo $OUTPUT->footer();
+    echo $OUTPUT->footer();
+
+}
