@@ -57,6 +57,10 @@
     width: 70%;
 }
 
+.article-edit.nocomments {
+    width: 100%;
+}
+
 .article-comments {
     position: relative;
     display: block;
@@ -150,4 +154,47 @@
         width: 100%;
         margin-left: 0;
     }
+}
+
+.article-view {
+    margin: 10px 0;
+}
+
+.article-view-template-title {
+    font-style: italic;
+}
+
+.article-view-template-instructions {
+    color: #bbb;
+}
+
+.article-view-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.article-view-content-subtitle {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.article-view-content {
+    vertical-align: top;
+    width: 65%;
+    display: inline-block;
+}
+
+.article-view-attachment {
+    vertical-align: top;
+    width: 35%;
+    display: inline-block;
+}
+
+.article-view-attachment img {
+    max-width: 100%;
+}
+
+.article-view-attachment-doc {
+    text-align: center;
+    margin: 0 0 20px 0;
 }

@@ -90,4 +90,106 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
 
         return $output;
     }
+
+    function display_article($article, $articleelements, $context, $version=0, &$actualversion=0) {
+        global $DB, $OUTPUT;
+
+        $output = '';
+
+        $output .= html_writer::start_div('article-view');
+
+        $output .= html_writer::start_div('article-view-template');
+        $output .= html_writer::start_div('article-view-template-title');
+        $output .= $article->amtitle . ' (' . date_format_string($article->timemodified, '%d %B %Y') . ')';
+        $output .= html_writer::end_div();
+
+        $output .= html_writer::start_div('article-view-template-instructions');
+        $output .= $article->instructions;
+        $output .= html_writer::end_div();
+
+        $output .= html_writer::end_div();
+
+        $output .= html_writer::start_div('article-view-title');
+        $output .= $article->title;
+        $output .= html_writer::end_div();
+
+        $contents = '';
+        $attachments = '';
+
+        $file_extensions = get_mimetypes_array();
+
+        foreach($articleelements as $ae) {
+            $property_name = 'element_' . $ae->id;
+            $property_edit = $property_name . '_editor';
+            $property_format = $property_name . 'format';
+
+            $sqlargs = array('instanceid' => $article->id, 'elementid' => $ae->id);
+            $sql = '
+              SELECT * FROM {uniljournal_aeinstances}
+              WHERE instanceid = :instanceid
+              AND elementid  = :elementid ';
+            if ($version != 0) {
+                $sql .= 'AND version <= :version';
+                $sqlargs['version'] = $version;
+            }
+            $sql .= 'ORDER BY version DESC LIMIT 1';
+            $aeinstance = $DB->get_record_sql($sql, $sqlargs);
+            if ($aeinstance !== false) {
+                switch ($ae->element_type) {
+                    case "subtitle":
+                        $contents .= html_writer::start_div('article-view-content-subtitle');
+                        $contents .= $aeinstance->value;
+                        $contents .= html_writer::end_div();
+                        break;
+                    case "text":
+                        $contents .= html_writer::start_div('article-view-content-text');
+                        $contents .= $aeinstance->value;
+                        $contents .= html_writer::end_div();
+                    case "textonly":
+                        $aeinstance->value = file_rewrite_pluginfile_urls($aeinstance->value, 'pluginfile.php', $context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
+                        $contents .= html_writer::start_div('article-view-content-text');
+                        $contents .= $aeinstance->value;
+                        $contents .= html_writer::end_div();
+                        break;
+                }
+
+                if (uniljournal_startswith($ae->element_type, 'attachment_')) {
+                    $fs = get_file_storage();
+                    $files = $fs->get_area_files($context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
+                    if (count($files) > 0) {
+                        $file = array_pop($files);
+                        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+                        if ($file->is_valid_image()) {
+                            $attachments .= html_writer::start_div('article-view-attachment-image');
+                            $attachments .= html_writer::img($url, $file->get_filename());
+                            $attachments .= html_writer::end_div();
+                        } else {
+                            $attachments .= html_writer::start_div('article-view-attachment-doc');
+                            $attachments .= html_writer::start_div('article-view-attachment-doc-icon');
+                            $attachments .= $OUTPUT->pix_icon('f/' . mimeinfo('icon128', $file->get_filename()), $file->get_filename());
+                            $attachments .= html_writer::end_div();
+                            $attachments .= html_writer::start_div('article-view-attachment-doc-text');
+                            $attachments .= html_writer::link($url, $file->get_filename());
+                            $attachments .= html_writer::end_div();
+                            $attachments .= html_writer::end_div();
+                        }
+                    }
+                }
+
+                $actualversion = max($actualversion, $aeinstance->version);
+            }
+        }
+
+        $output .= html_writer::start_div('article-view-content');
+        $output .= $contents;
+        $output .= html_writer::end_div();
+
+        $output .= html_writer::start_div('article-view-attachment');
+        $output .= $attachments;
+        $output .= html_writer::end_div();
+
+        $output .= html_writer::end_div();
+
+        return $output;
+    }
 }

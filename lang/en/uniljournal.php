@@ -132,6 +132,7 @@ $string['sendcomment'] = 'Send comment';
 $string['version_previous'] = 'Previous version';
 $string['version_next'] = 'Next version';
 $string['uncorrected_articles'] = '{$a->students} student(s), {$a->uncorrected} uncorrected article(s)';
+$string['exportarticles'] = 'Export my articles';
 
 //Logs
 $string['template_created_name'] = 'Create a template';
