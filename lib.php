@@ -217,7 +217,7 @@ function uniljournal_cron () {
  * @return array
  */
 function uniljournal_get_extra_capabilities() {
-    return array();
+    return array('moodle/site:viewfullnames');
 }
 
 /**
