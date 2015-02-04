@@ -217,10 +217,14 @@ $PAGE->requires->jquery();
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('writearticletempl', 'mod_uniljournal', $articlemodel->title));
 
-echo '<div class="article"><div class="article-edit">';
+echo '<div class="article">';
+echo '<div class="article-edit '.($uniljournal->comments_allowed?'':'nocomments').'">';
 $mform->display();
-echo '</div><div class="article-comments">';
-echo $uniljournal_renderer->display_comments($cmid, $id, $version, $USER->id, -1);
 echo '</div>';
+if ($uniljournal->comments_allowed) {
+  echo '<div class="article-comments">';
+  echo $uniljournal_renderer->display_comments($cmid, $id, $version, $USER->id, -1);
+  echo '</div>';
+}
 
 echo $OUTPUT->footer();

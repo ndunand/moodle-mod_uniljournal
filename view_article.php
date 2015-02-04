@@ -106,13 +106,17 @@ if($actualversion < $articleinstance->maxversion) {
 }
 
 echo '</div>';
-echo '<div class="article-edit">';
+echo '<div class="article-edit '.($uniljournal->comments_allowed?'':'nocomments').'">';
 
 echo $article_html;
 
-echo '</div><div class="article-comments">';
-echo $uniljournal_renderer->display_comments($cmid, $id, $actualversion, $USER->id, $articleinstance->maxversion);
 echo '</div>';
+
+if ($uniljournal->comments_allowed) {
+  echo '<div class="article-comments">';
+  echo $uniljournal_renderer->display_comments($cmid, $id, $actualversion, $USER->id, $articleinstance->maxversion);
+  echo '</div>';
+}
 
 // Finish the page.
 echo $OUTPUT->footer();
