@@ -77,7 +77,7 @@ $uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
 $actualversion = 0;
 
 
-$article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, false, $context, $version, $actualversion);
+$article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, false, $version, $actualversion);
 
 /*
  * Other things you may want to set - remove if not needed.

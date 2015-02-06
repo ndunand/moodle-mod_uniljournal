@@ -105,10 +105,13 @@ if ($pdf) {
 
     $pdf->AddPage();
 
-    //$pdf->writeHTML($articles . '</body></html>');
-
-    $pdf->writeHTMLCell(0, 0, '', '', $articles . '</body></html>', 0, 1, 0, true, '', false);
-    $pdf->Output('name.pdf', 'D');
+    $pdf->writeHTMLCell(0, 0, '', '', $articles . '</body></html>');
+    $pdfname = 'articles';
+    foreach ($articleinstanceids as $id) {
+        $pdfname .= '_' . $id;
+    }
+    $pdfname .= '_' . time() . '.pdf';
+    $pdf->Output($pdfname, 'D');
 } else {
     $PAGE->set_url('/mod/uniljournal/export_articles.php', array('id' => $cm->id));
     $PAGE->set_title(get_string('exportarticles', 'mod_uniljournal'));

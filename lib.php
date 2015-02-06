@@ -393,7 +393,7 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
     if ($context->contextlevel != CONTEXT_MODULE) {
         send_file_not_found();
     }
-    
+
     //hack to make the image readable by TCPDF
     if ($filearea != 'elementinstance_pdf') {
         require_login($course, true, $cm);

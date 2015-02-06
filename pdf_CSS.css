@@ -169,7 +169,8 @@
     margin-bottom: 20px;
 }
 
-.article-view-content-subtitle {
+.article-view-content-subtitle,
+.article-view-attachment-title {
     font-size: 18px;
     margin-bottom: 10px;
 }
@@ -193,4 +194,32 @@
 .article-view-attachment-doc {
     text-align: center;
     margin: 0 0 20px 0;
+}
+
+table {
+    display: table;
+}
+
+caption {
+    display: table-caption;
+}
+
+thead {
+    display: table-header-group;
+}
+
+tr {
+    display: table-row;
+}
+
+th {
+    font-weight: bold;
+}
+
+tbody {
+    display: table-row-group;
+}
+
+td,th {
+    display: table-cell;
 }

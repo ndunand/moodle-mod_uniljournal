@@ -86,6 +86,7 @@ $string['element_attachment_spreadsheet'] = 'Spreadsheet';
 $string['element_attachment_spreadsheet_desc'] = '{$a} spreadsheet(s)';
 $string['element_attachment_video'] = 'Video';
 $string['element_attachment_video_desc'] = '{$a} video(s)';
+$string['attachments'] = 'Attachments';
 $string['myarticles'] = 'My articles';
 $string['addarticle'] = 'Add a new article …';
 $string['addarticletempl'] = 'Add a new article with template \'{$a}\'';
