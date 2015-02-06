@@ -92,6 +92,7 @@ foreach($articleinstances as $articleinstance) {
 }
 
 if ($pdf) {
+    make_cache_directory('tcpdf');
 
 //  Create PDF
     $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
