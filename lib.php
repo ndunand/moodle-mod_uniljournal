@@ -217,7 +217,7 @@ function uniljournal_cron () {
  * @return array
  */
 function uniljournal_get_extra_capabilities() {
-    return array();
+    return array('moodle/site:viewfullnames');
 }
 
 /**
@@ -368,6 +368,12 @@ function uniljournal_get_file_info($browser, $areas, $course, $cm, $context, $fi
               }
           }
           return new file_info_stored($browser, $context, $storedfile, $urlbase, $areas[$filearea], false, true, false, false);
+       case "elementinstance":
+          $urlbase = $CFG->wwwroot.'/pluginfile.php';
+          if (!$storedfile = $fs->get_file($context->id, 'mod_uniljournal', 'elementinstance', $itemid, $filepath, $filename)) {
+              return null;
+          }
+          return new file_info_stored($browser, $context, $storedfile, $urlbase, $areas[$filearea], false, true, false, false);
     }
 
     return false;
@@ -444,7 +450,7 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
  * Extends the global navigation tree by adding uniljournal nodes if there is a relevant content
  *
  * This can be called by an AJAX request so do not rely on $PAGE as it might not be set up properly.
- *get_mimetypes_array
+ *
  * @param navigation_node $navref An object representing the navigation tree node of the uniljournal module instance
  * @param stdClass $course
  * @param stdClass $module

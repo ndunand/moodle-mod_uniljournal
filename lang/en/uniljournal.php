@@ -132,8 +132,10 @@ $string['no_comment'] = 'No comment';
 $string['sendcomment'] = 'Send comment';
 $string['version_previous'] = 'Previous version';
 $string['version_next'] = 'Next version';
-$string['uncorrected_articles'] = '{$a->students} student(s), {$a->uncorrected} uncorrected article(s)';
+$string['student_uncorrected_articles'] = '{$a->students} student(s), {$a->uncorrected} uncorrected article(s)';
+$string['uncorrected_articles'] = '{$a->uncorrected} uncorrected article(s)';
 $string['exportarticles'] = 'Export my articles';
+$string['compare'] = 'Compare';
 
 //Logs
 $string['template_created_name'] = 'Create a template';

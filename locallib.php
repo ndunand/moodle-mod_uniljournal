@@ -225,3 +225,47 @@ function uniljournal_articletitle($articleinstance) {
   }
   return $title;
 }
+
+/*
+  Display a version toggler to be used in articles view
+*/
+function uniljournal_versiontoggle($articleinstance, $cm, $actualversion, $targetfile = 'view_article.php', $targetargument = 'version', $otherargs = array()) {
+
+  $base_args = array(
+    'id' => $articleinstance->id,
+    'cmid' => $cm->id
+  );
+  
+  $args = array_merge($base_args, $otherargs);
+
+  $html = '<div class="article-version-toggle">';
+  if($actualversion > 1) {
+    $html .= link_arrow_left(
+      get_string('version_previous', 'uniljournal'),
+      new moodle_url('/mod/uniljournal/'.$targetfile, array_merge($args, array($targetargument => $actualversion-1))),
+      true);
+  }
+  
+  // Add links to the standalone versions
+  $actualversionlink = html_writer::link(
+      new moodle_url('/mod/uniljournal/view_article.php', array_merge($args, array('version' => $actualversion))),
+      $actualversion);
+      
+  $maxversionlink = html_writer::link(
+      new moodle_url('/mod/uniljournal/view_article.php', array_merge($args, array('version' => $articleinstance->maxversion))),
+      $articleinstance->maxversion);
+
+
+  $html .= html_writer::tag('span', get_string('version').' '.$actualversionlink." / ".$maxversionlink);
+
+  if($actualversion < $articleinstance->maxversion) {
+    $html .= link_arrow_right(
+      get_string('version_next', 'uniljournal'),
+      new moodle_url('/mod/uniljournal/'.$targetfile, array_merge($args, array($targetargument => $actualversion+1))),
+      true);
+  }
+
+  $html .= '</div>';
+
+  return $html;
+}

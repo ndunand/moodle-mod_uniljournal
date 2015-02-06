@@ -28,9 +28,10 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 require_once(dirname(__FILE__).'/locallib.php');
 
-$cmid    = optional_param('cmid', 0, PARAM_INT);  // Course_module ID, or
-$id      = optional_param('id', 0, PARAM_INT);    // Article instance ID
-$version = optional_param('version', 0, PARAM_INT);    // Article instance ID
+$cmid     = optional_param('cmid', 0, PARAM_INT);  // Course_module ID, or
+$id       = optional_param('id', 0, PARAM_INT);    // Article instance ID
+$versionA = optional_param('versionA', 0, PARAM_INT);    // Article instance ID
+$versionB = optional_param('versionB', 0, PARAM_INT);    // Article instance ID
 
 if ($cmid and $id) {
     $cm              = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
@@ -69,62 +70,36 @@ $event->trigger();
 $articletitle = uniljournal_articletitle($articleinstance);
 $articleinstance->title = $articletitle;
 
-$PAGE->set_url('/mod/uniljournal/view_article.php', array('id' => $articleinstance->id, 'cmid' => $cm->id));
+$PAGE->set_url('/mod/uniljournal/compare.php', array('id' => $articleinstance->id, 'cmid' => $cm->id, 'versionA' => $versionA, 'versionB' => $versionB));
 $PAGE->set_title(format_string($articletitle));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 $uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
-$actualversion = 0;
+$actualversionA = 0;
+$actualversionB = 0;
 
-
-$article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, false, $version, $actualversion);
-
-/*
- * Other things you may want to set - remove if not needed.
- * $PAGE->set_cacheable(false);
- * $PAGE->set_focuscontrol('some-html-id');
- * $PAGE->add_body_class('uniljournal-'.$somevar);
- */
+$articleA = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, $versionA, $actualversionA);
+$articleB = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, $versionB, $actualversionB);
 
 // Output starts here.
 echo $OUTPUT->header();
 
 // Replace the following lines with you own code.
-echo $OUTPUT->heading(format_string($articletitle)." - Preview (version: ".$actualversion.")"); // TODO
+echo $OUTPUT->heading(format_string($articletitle)." - Compare"); // TODO
 
-echo '<div class="article">';
-
-require_once('locallib.php');
-echo uniljournal_versiontoggle($articleinstance, $cm, $actualversion);
-
-echo '<div class="article-compare">';
-if($articleinstance->maxversion > 1) {
-  $versionB = ($articleinstance->maxversion==1)?2:($articleinstance->maxversion-1);
-  
-  echo html_writer::link(
-    new moodle_url('/mod/uniljournal/compare.php', array('id' => $id, 'cmid' => $cmid, 'versionA'=> $actualversion, 'versionB' => $versionB)),
-    get_string('compare', 'uniljournal')
-    );
-}
-echo '</div>';
-
-echo '<div class="article-edit '.($uniljournal->comments_allowed?'':'nocomments').'">';
-
-echo $article_html;
-
-if(has_capability('mod/uniljournal:createarticle', $context) || has_capability('mod/uniljournal:editallarticles', $context) ) {
-  echo html_writer::link(
-    new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cmid, 'id' => $id, 'amid' => $articleinstance->amid)),
-    html_writer::img($OUTPUT->pix_url('t/edit'), get_string('edit'))); // TODO: Position and see whether we need to add text to it
-}
-
-echo '</div>';
-
-if ($uniljournal->comments_allowed) {
-  echo '<div class="article-comments">';
-  echo $uniljournal_renderer->display_comments($cmid, $id, $actualversion, $USER->id, $articleinstance->maxversion);
+echo '<div class="article article-compare article-compare-A">';
+  echo uniljournal_versiontoggle($articleinstance, $cm, $actualversionA, 'compare.php', 'versionA', array('versionB' => $versionB));
+  echo '<div class="article-edit nocomments">';
+    echo $articleA;
   echo '</div>';
-}
+echo '</div>';
+
+echo '<div class="article article-compare article-compare-B">';
+  echo uniljournal_versiontoggle($articleinstance, $cm, $actualversionB, 'compare.php', 'versionB', array('versionA' => $versionA));
+  echo '<div class="article-edit nocomments">';
+    echo $articleB;
+  echo '</div>';
+echo '</div>';
 
 // Finish the page.
 echo $OUTPUT->footer();
