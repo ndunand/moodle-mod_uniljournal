@@ -80,7 +80,7 @@ foreach($articleinstances as $articleinstance) {
     $articletitle = uniljournal_articletitle($articleinstance);
     $articleinstance->title = $articletitle;
 
-    $article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context);
+    $article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, $pdf);
 
     if ($pdf && ($count != $numarticles)) {
         $article_html .= '<br pagebreak="true"/>';

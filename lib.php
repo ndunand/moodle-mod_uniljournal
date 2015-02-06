@@ -393,8 +393,13 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
     if ($context->contextlevel != CONTEXT_MODULE) {
         send_file_not_found();
     }
-
-    //require_login($course, true, $cm);
+    
+    //hack to make the image readable by TCPDF
+    if ($filearea != 'elementinstance_pdf') {
+        require_login($course, true, $cm);
+    } else {
+        $filearea = 'elementinstance';
+    }
 
     if (!$uniljournal = $DB->get_record('uniljournal', array('id' => $cm->instance))) {
         return false;

@@ -91,7 +91,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
         return $output;
     }
 
-    function display_article($article, $articleelements, $context, $version=0, &$actualversion=0) {
+    function display_article($article, $articleelements, $context, $pdf, $version=0, &$actualversion=0) {
         global $DB, $OUTPUT;
 
         $output = '';
@@ -119,6 +119,11 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
         $file_extensions = get_mimetypes_array();
 
         foreach($articleelements as $ae) {
+            //hack to make the image readable by TCPDF
+            $filearea = 'elementinstance';
+            if ($pdf) {
+                $filearea = 'elementinstance_pdf';
+            }
             $property_name = 'element_' . $ae->id;
             $property_edit = $property_name . '_editor';
             $property_format = $property_name . 'format';
@@ -142,7 +147,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                         $contents .= html_writer::end_div();
                         break;
                     case "text":
-                        $aeinstance->value = file_rewrite_pluginfile_urls($aeinstance->value, 'pluginfile.php', $context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
+                        $aeinstance->value = file_rewrite_pluginfile_urls($aeinstance->value, 'pluginfile.php', $context->id, 'mod_uniljournal', $filearea, $aeinstance->id);
                         $contents .= html_writer::start_div('article-view-content-text');
                         $contents .= format_text($aeinstance->value, FORMAT_HTML);
                         $contents .= html_writer::end_div();
@@ -159,7 +164,13 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                     $files = $fs->get_area_files($context->id, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
                     if (count($files) > 0) {
                         $file = array_pop($files);
-                        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+                        //hack to make the image readable by TCPDF
+                        if ($file->get_filearea() == 'elementinstance') {
+                            $filearea = 'elementinstance_pdf';
+                        } else {
+                            $filearea = $file->get_filearea();
+                        }
+                        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $filearea, $file->get_itemid(), $file->get_filepath(), $file->get_filename());
                         if ($file->is_valid_image()) {
                             $attachments .= html_writer::start_div('article-view-attachment-image');
                             $attachments .= html_writer::img($url, $file->get_filename());
