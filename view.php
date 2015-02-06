@@ -163,6 +163,7 @@ echo $OUTPUT->heading(format_string($uniljournal->name));
 if(isset($deleteform)) {
   $deleteform->display();
 } else {
+  /*
   if(isset($uniljournal->subtitle)) {
     echo html_writer::tag('h3', $uniljournal->subtitle);
   }
@@ -173,7 +174,7 @@ if(isset($deleteform)) {
     $logoimg = html_writer::img($url, 'Logo'); // TODO: translate
     echo html_writer::tag('div', $logoimg, array('class' => 'logo'));
   }
-
+*/
   // View for teachers and non-editing teachers: all submitted articles
   if(has_capability('mod/uniljournal:viewallarticles', $context)) {
   

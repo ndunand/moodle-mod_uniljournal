@@ -78,8 +78,8 @@ $uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
 $actualversionA = 0;
 $actualversionB = 0;
 
-$articleA = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, $versionA, $actualversionA);
-$articleB = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, $versionB, $actualversionB);
+$articleA = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, false, $versionA, $actualversionA);
+$articleB = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, false, $versionB, $actualversionB);
 
 // Output starts here.
 echo $OUTPUT->header();
@@ -87,14 +87,14 @@ echo $OUTPUT->header();
 // Replace the following lines with you own code.
 echo $OUTPUT->heading(format_string($articletitle)." - Compare"); // TODO
 
-echo '<div class="article article-compare article-compare-A">';
+echo '<div class="article article-comparison article-comparison-A">';
   echo uniljournal_versiontoggle($articleinstance, $cm, $actualversionA, 'compare.php', 'versionA', array('versionB' => $versionB));
   echo '<div class="article-edit nocomments">';
     echo $articleA;
   echo '</div>';
 echo '</div>';
 
-echo '<div class="article article-compare article-compare-B">';
+echo '<div class="article article-comparison article-comparison-B">';
   echo uniljournal_versiontoggle($articleinstance, $cm, $actualversionB, 'compare.php', 'versionB', array('versionA' => $versionA));
   echo '<div class="article-edit nocomments">';
     echo $articleB;

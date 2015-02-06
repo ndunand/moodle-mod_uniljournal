@@ -61,11 +61,22 @@
     width: 100%;
 }
 
-.article.article-compare {
+.article.article-comparison {
     width: 48%;
     margin-left: 0;
     margin-right: 0;
     float: left;
+}
+
+.article.article-comparison .article-view-attachment {
+    width: 100%;
+    border: none;
+}
+
+.article.article-comparison .article-view-content {
+    width: 100%;
+    padding-right: 20px;
+    box-sizing: border-box;
 }
 
 .article-comments {
@@ -196,6 +207,10 @@
 .article-view-attachment-title {
     font-size: 18px;
     margin-bottom: 10px;
+}
+
+.article-view-attachment-title {
+    text-align: center;
 }
 
 .article-view-content {
