@@ -67,7 +67,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                             'cid' => $comment->id,
                             'articleinstanceid' => $articleinstanceid
                         ));
-                    $output .= '<a href="' . $deleteURL . '">' . html_writer::img($OUTPUT->pix_url('t/delete'), get_string('delete')) . '</a>';
+                    $output .= '<a href="' . $deleteURL . '" class="delete-comment">' . html_writer::img($OUTPUT->pix_url('t/delete'), get_string('delete')) . '</a>';
                 }
                 $output .= '<h5 for="comment' . $comment->id . '">' . fullname($comment, has_capability('moodle/site:viewfullnames', $context)). '</h5>';
                 $output .= '<p id ="comment' . $comment->id . '">' . $comment->text . '</p></div>';
@@ -174,6 +174,14 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                         if ($file->is_valid_image()) {
                             $attachments .= html_writer::start_div('article-view-attachment-image');
                             $attachments .= html_writer::img($url, $file->get_filename());
+                            $attachments .= html_writer::end_div();
+                        } elseif (!$pdf && strpos($file->get_mimetype(), 'audio') !== false) {
+                            $attachments .= html_writer::start_div('article-view-attachment-audio');
+                            $attachments .= html_writer::start_tag('audio', array('controls' => ''));
+                            $attachments .= html_writer::start_tag('source', array('type' => $file->get_mimetype(), 'src' => $url));
+                            $attachments .= html_writer::end_tag('source');
+                            $attachments .= html_writer::end_tag('audio');
+                            $attachments .= html_writer::link($url, $file->get_filename());
                             $attachments .= html_writer::end_div();
                         } else {
                             $attachments .= html_writer::start_div('article-view-attachment-doc');

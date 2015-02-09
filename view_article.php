@@ -73,6 +73,7 @@ $PAGE->set_url('/mod/uniljournal/view_article.php', array('id' => $articleinstan
 $PAGE->set_title(format_string($articletitle));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
+$PAGE->requires->jquery();
 $uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
 $actualversion = 0;
 
@@ -124,6 +125,16 @@ if ($uniljournal->comments_allowed) {
   echo '<div class="article-comments">';
   echo $uniljournal_renderer->display_comments($cmid, $id, $actualversion, $USER->id, $articleinstance->maxversion);
   echo '</div>';
+
+  echo '<script>
+    $(\'.delete-comment\').on(\'click\', function (e) {
+        e.preventDefault();
+        var confirmation = confirm(\'' . get_string('comment_deletion_confirmation', 'mod_uniljournal') . '\');
+        if (confirmation) {
+            window.location.href = $(this).prop(\'href\');
+        }
+    });
+</script>';
 }
 
 // Finish the page.

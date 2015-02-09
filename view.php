@@ -66,12 +66,12 @@ require_once('locallib.php');
 $articlemodels = $DB->get_records_select('uniljournal_articlemodels', "uniljournalid = $uniljournal->id AND hidden != '\x31' ORDER BY sortorder ASC");
 
 // Creating new article is only allowed for students
-if(has_capability('mod/uniljournal:createarticle', $context)) {  
+if(has_capability('mod/uniljournal:createarticle', $context)) {
   $templatesoptions = array();
   $templatesoptions[-1] = get_string('addarticle', 'mod_uniljournal');
 
   $templdescs = uniljournal_get_template_descriptions($uniljournal->id);
-  
+
   foreach($articlemodels as $amid => $am)  {
     $templatesoptions[$amid] = $am->title;
     if(array_key_exists($amid, $templdescs)) {
@@ -82,7 +82,7 @@ if(has_capability('mod/uniljournal:createarticle', $context)) {
 
 // Display table of my articles
 require_once('locallib.php');
-$articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $USER->id));
+$articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $USER->id), true);
 
 $uniljournal_statuses = uniljournal_article_status();
 // Status modifier forms
@@ -156,7 +156,6 @@ $PAGE->set_url('/mod/uniljournal/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($uniljournal->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
-$PAGE->requires->jquery_plugin('ddslick');
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($uniljournal->name));
@@ -177,7 +176,7 @@ if(isset($deleteform)) {
 
   // View for teachers and non-editing teachers: all submitted articles
   if(has_capability('mod/uniljournal:viewallarticles', $context)) {
-  
+
     // Display table of my articles
     require_once('locallib.php');
     $allarticles = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id), true);
@@ -210,7 +209,7 @@ if(isset($deleteform)) {
         $a->uncorrected = $sumuncorrected;
         echo html_writer::tag('div', get_string('student_uncorrected_articles', 'uniljournal', $a));
       }
-      
+
       $table = new html_table();
       $table->head = array(
           get_string('name'),
@@ -218,7 +217,7 @@ if(isset($deleteform)) {
           get_string('articles_uncorrected', 'uniljournal'),
           get_string('lastmodified'),
       );
-      
+
       foreach($userarticles as $ua) {
         $row = new html_table_row();
         $ualink = new moodle_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id, 'uid' => $ua->userid));
@@ -229,20 +228,21 @@ if(isset($deleteform)) {
 
         $table->data[] = $row;
       }
-      
+
       echo html_writer::table($table);
     }
   }
-  
+
   if(has_capability('mod/uniljournal:managetemplates', $context) && count($articlemodels) == 0) {
     echo html_writer::link(new moodle_url('/mod/uniljournal/manage_templates.php', array('id'=>$PAGE->cm->id)), get_string("managetemplates", "mod_uniljournal"));
   }
-  
+
   if(count($articleinstances) > 0) {
     $table = new html_table();
     $table->head = array(
         get_string('myarticles', 'uniljournal'),
         get_string('lastmodified'),
+        get_string('corrected_status', 'uniljournal'),
         get_string('template', 'uniljournal'),
         get_string('articlestate', 'uniljournal'),
         get_string('actions'),
@@ -254,14 +254,16 @@ if(isset($deleteform)) {
       $row = new html_table_row();
       $script = 'edit.php';
       require_once('locallib.php');
+      $corrected = !in_array($ai->edituserid, array($ai->userid, 0)) || !in_array($ai->commentuserid, array($ai->userid, 0));
       $title = uniljournal_articletitle($ai);
 
       $row->cells[] = html_writer::link(
                         new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ai->id, 'cmid' => $cm->id)),
                         $title);
       $row->cells[] = strftime('%c', $ai->timemodified);
+      $row->cells[] = $corrected?html_writer::img($OUTPUT->pix_url('t/check'), get_string('yes')):'';
       $row->cells[] = $ai->amtitle;
-      
+
       $PAGE->requires->yui_module('moodle-core-formautosubmit',
             'M.core.init_formautosubmit',
             array(array('selectid' => 'id_status_'.$ai->id, 'nothing' => false))
@@ -274,12 +276,12 @@ if(isset($deleteform)) {
       $actionarray = array();
       $actionarray[] = 'edit';
       if (has_capability('mod/uniljournal:deletearticle', $context)) $actionarray[] = 'delete';
-      
+
       $actions = "";
       foreach($actionarray as $actcode) {
         $script = 'view.php';
         $args = array('id'=> $cm->id, 'aid' => $ai->id, 'action' => $actcode);
-        
+
         if($actcode == 'edit') {
           $script = 'edit_article.php';
           $args = array('cmid'=> $cm->id, 'id' => $ai->id, 'amid' => $ai->amid);
@@ -294,7 +296,7 @@ if(isset($deleteform)) {
     }
     echo html_writer::table($table);
   }
-  
+
   // Creating new article is only allowed for students
   if(has_capability('mod/uniljournal:createarticle', $context)) {
     if(count($articlemodels) > 1) {

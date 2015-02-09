@@ -32,7 +32,7 @@ echo $OUTPUT->heading(format_string($uniljournal->name));
 
 // Display table of my articles
 require_once('locallib.php');
-$articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $USER->id));
+$articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $USER->id), true);
 
 $uniljournal_statuses = uniljournal_article_status();
 // Status modifier forms
@@ -59,6 +59,7 @@ if(count($articleinstances) > 0) {
         get_string('select'),
         get_string('myarticles', 'uniljournal'),
         get_string('lastmodified'),
+        get_string('corrected_status', 'uniljournal'),
         get_string('template', 'uniljournal'),
         get_string('articlestate', 'uniljournal'),
         get_string('actions'),
@@ -70,12 +71,14 @@ if(count($articleinstances) > 0) {
         $row = new html_table_row();
         $script = 'edit.php';
         require_once('locallib.php');
+        $corrected = !in_array($ai->edituserid, array($ai->userid, 0)) || !in_array($ai->commentuserid, array($ai->userid, 0));
         $title = uniljournal_articletitle($ai);
         $row->cells[] = html_writer::start_tag('input', array('type' => 'checkbox', 'value' => $ai->id, 'name' => 'articles[]'));
         $row->cells[] = html_writer::link(
             new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ai->id, 'cmid' => $cm->id)),
             $title);
         $row->cells[] = strftime('%c', $ai->timemodified);
+        $row->cells[] = $corrected?html_writer::img($OUTPUT->pix_url('t/check'), get_string('yes')):'';
         $row->cells[] = $ai->amtitle;
 
         $PAGE->requires->yui_module('moodle-core-formautosubmit',
