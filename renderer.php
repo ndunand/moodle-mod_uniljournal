@@ -198,6 +198,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
 
         $output .= html_writer::start_div('article-view-attachment');
         if ($attachments != '') {
+            $output .= '<br pagebreak="true"/>';
             $output .= html_writer::start_div('article-view-attachment-title');
             $output .= get_string('attachments', 'mod_uniljournal');
             $output .= html_writer::end_div();
