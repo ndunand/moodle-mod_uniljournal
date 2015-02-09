@@ -127,6 +127,10 @@ class edit_article_form extends moodleform {
           $desc = get_string('element_'.$ae->element_type, 'uniljournal');
           
           if(uniljournal_startswith($ae->element_type, 'attachment_')) {
+            $draftitemid = file_get_submitted_draft_itemid($id);
+            file_prepare_draft_area($draftitemid, $context->id, 'mod_uniljournal', 'elementinstance', $currententry->$id, $attachmentoptions);
+            $currententry->$id = $draftitemid;
+
             $attoptions = $attachmentoptions;
             $attoptions['accepted_types'] = substr($ae->element_type, 11);
             $mform->addElement('filemanager', $id, $desc, null, $attoptions);

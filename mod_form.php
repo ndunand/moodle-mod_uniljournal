@@ -74,4 +74,22 @@ class mod_uniljournal_mod_form extends moodleform_mod {
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
     }
+
+    /**
+     * Enforce defaults here
+     *
+     * @param array $default_values Form defaults
+     * @return void
+     **/
+    function data_preprocessing(&$default_values) {
+        if ($this->current->instance) {
+            $filemanager_options = array();
+            $filemanager_options['accepted_types'] = 'web_image';
+            $filemanager_options['subdirs'] = false;
+            $filemanager_options['maxfiles'] = 1;
+            $draftitemid = file_get_submitted_draft_itemid('logo');
+            file_prepare_draft_area($draftitemid, $this->context->id, 'mod_uniljournal', 'logo', 0, $filemanager_options);
+            $default_values['logo'] = $draftitemid;
+        }
+    }
 }

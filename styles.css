@@ -233,8 +233,7 @@
     max-width: 100%;
 }
 
-.article-view-attachment-doc,
-.article-view-attachment-audio {
+[class^="article-view-attachment-"] {
     text-align: center;
     margin: 0 0 20px 0;
 }

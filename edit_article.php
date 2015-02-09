@@ -89,7 +89,7 @@ if ($id) { // if entry is specified
           AND elementid  = :elementid 
      ORDER BY version DESC LIMIT 1', array('instanceid' => $articleinstance->id, 'elementid' => $ae->id));
     if($aeinstance !== false) {
-      $articleinstance->$property_name = $aeinstance->value;
+      $articleinstance->$property_name = $aeinstance->id;
       $articleinstance->$property_format = $aeinstance->valueformat;
       $version = max($version, $aeinstance->version);
       
