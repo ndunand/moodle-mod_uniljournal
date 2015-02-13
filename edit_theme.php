@@ -53,7 +53,12 @@ if ($id) { // if entry is specified
     $theme->id = null;
 }
 
-$instructionsoptions = array('subdirs'  => false, 'maxfiles' => 0, 'context'  => $context);
+$instructionsoptions = array(
+    'subdirs'  => false,
+    'maxfiles' => '12',
+    'maxbytes' => 0,
+    'context'  => $context
+);
 $theme->cmid = $cmid;
 $theme->tbid = $tbid;
 $theme = file_prepare_standard_editor($theme, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'theme', $theme->id);
