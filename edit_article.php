@@ -89,13 +89,14 @@ if ($id) { // if entry is specified
           AND elementid  = :elementid 
      ORDER BY version DESC LIMIT 1', array('instanceid' => $articleinstance->id, 'elementid' => $ae->id));
     if($aeinstance !== false) {
-      $articleinstance->$property_name = $aeinstance->id;
+      $articleinstance->$property_name = $aeinstance->value;
       $articleinstance->$property_format = $aeinstance->valueformat;
       $version = max($version, $aeinstance->version);
       
       if($ae->element_type == 'text' || $ae->element_type == 'textonly') {
         $articleinstance = file_prepare_standard_editor($articleinstance, $property_name, $textfieldoptions, $context, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
       } elseif (uniljournal_startswith($ae->element_type, 'attachment_')) { // begins with
+        $articleinstance->$property_name = $aeinstance->id;
         $attoptions = $attachmentoptions;
         $attoptions['accepted_types'] = substr($ae->element_type, 11);
         $articleinstance = file_prepare_standard_filemanager($articleinstance, $property_name, $attoptions, $context, 'mod_uniljournal', 'elementinstance', $aeinstance->id);
