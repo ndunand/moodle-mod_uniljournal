@@ -32,7 +32,14 @@ echo $OUTPUT->heading(format_string($uniljournal->name));
 
 // Display table of my articles
 require_once('locallib.php');
-$articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $USER->id), true);
+if (has_capability('mod/uniljournal:viewallarticles', $context)) {
+    $articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id), true);
+    foreach($articleinstances as $article) {
+        $article->user = $DB->get_record('user', array('id' => $article->userid));
+    }
+} else {
+    $articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $USER->id), true);
+}
 
 $uniljournal_statuses = uniljournal_article_status();
 // Status modifier forms
@@ -64,6 +71,9 @@ if(count($articleinstances) > 0) {
         get_string('articlestate', 'uniljournal'),
         get_string('actions'),
     );
+    if (has_capability('mod/uniljournal:viewallarticles', $context)) {
+        array_splice($table->head, 1, 0, get_string('author', 'uniljournal'));
+    }
 
     $aiter = 0;
     foreach($articleinstances as $ai) {
@@ -74,6 +84,12 @@ if(count($articleinstances) > 0) {
         $corrected = !in_array($ai->edituserid, array($ai->userid, 0)) || !in_array($ai->commentuserid, array($ai->userid, 0));
         $title = uniljournal_articletitle($ai);
         $row->cells[] = html_writer::start_tag('input', array('type' => 'checkbox', 'value' => $ai->id, 'name' => 'articles[]'));
+
+        if (has_capability('mod/uniljournal:viewallarticles', $context)) {
+            $ualink = new moodle_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id, 'uid' => $ai->userid));
+            $row->cells[] = html_writer::link($ualink, fullname($ai->user, has_capability('moodle/site:viewfullnames', $context))); // TODO: Link
+        }
+
         $row->cells[] = html_writer::link(
             new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ai->id, 'cmid' => $cm->id)),
             $title);

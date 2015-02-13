@@ -482,7 +482,7 @@ function uniljournal_extend_settings_navigation(settings_navigation $settingsnav
         $uniljournalnode->add(get_string("managethemebanks", "mod_uniljournal"), new moodle_url('/mod/uniljournal/manage_themebanks.php', array('id'=>$PAGE->cm->id)));
     }
 
-    if (has_capability('mod/uniljournal:createarticle', $PAGE->cm->context)) {
+    if (has_capability('mod/uniljournal:view', $PAGE->cm->context)) {
         $uniljournalnode->add(get_string("exportarticles", "mod_uniljournal"), new moodle_url('/mod/uniljournal/export_articles.php', array('id' => $PAGE->cm->id)));
     }
 }
