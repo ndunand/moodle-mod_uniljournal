@@ -98,6 +98,7 @@ class edit_article_form extends moodleform {
               if (isset($selectedthemeid) && $selectedthemeid == $tid) {
                   $instructions_visibility = null;
               }
+              $themedata->instructions = file_rewrite_pluginfile_urls($themedata->instructions, 'pluginfile.php', $context->id, 'mod_uniljournal', 'theme', $tid);
               $mform->addElement('html', "\n\t\t\t".'<div id="instructions_'.$tid.'"'.$instructions_visibility.'>'.$themedata->instructions.'</div>');
             }
             $mform->addElement('html', "\n\t".'</div></div>');

@@ -325,6 +325,7 @@ function uniljournal_get_file_areas($course, $cm, $context) {
     return array(
       "logo" => "Activity logo", // TODO: Translate
       "elementinstance" => "Elements uploaded", // TODO: Translate
+      "theme" => "Theme instructions uploaded", // TODO: Translate
       );
 }
 
@@ -431,6 +432,8 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
           $itemid = 0;
         case "elementinstance":
           break;
+        case "theme":
+            break;
         default:
           return false;
     }
