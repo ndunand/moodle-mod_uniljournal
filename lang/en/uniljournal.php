@@ -133,12 +133,18 @@ $string['sendcomment'] = 'Send comment';
 $string['comment_deletion_confirmation'] = 'Are you sure you want to delete this comment?';
 $string['version_previous'] = 'Previous version';
 $string['version_next'] = 'Next version';
+$string['version'] = 'version';
 $string['student_uncorrected_articles'] = '{$a->students} student(s), {$a->uncorrected} uncorrected article(s)';
 $string['uncorrected_articles'] = '{$a->uncorrected} uncorrected article(s)';
 $string['exportarticles'] = 'Export articles';
 $string['compare'] = 'Compare';
 $string['author'] = 'Author';
 $string['all_students']  = 'All students';
+$string['logo'] =  "Activity logo";
+$string['elementinstance'] = "Elements uploaded";
+$string['themeinstructions'] = "Theme instructions uploaded";
+$string['error_notitle'] = "ERROR: no title set";
+$string['preview'] = "Preview";
 
 //Logs
 $string['template_created_name'] = 'Create a template';

@@ -323,9 +323,9 @@ function uniljournal_update_grades(stdClass $uniljournal, $userid = 0) {
  */
 function uniljournal_get_file_areas($course, $cm, $context) {
     return array(
-      "logo" => "Activity logo", // TODO: Translate
-      "elementinstance" => "Elements uploaded", // TODO: Translate
-      "theme" => "Theme instructions uploaded", // TODO: Translate
+      "logo" => get_string('logo', 'mod_uniljournal'),
+      "elementinstance" => get_string('elementinstance', 'mod_uniljournal'),
+      "theme" => get_string('themeinstructions', 'mod_uniljournal'),
       );
 }
 

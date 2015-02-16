@@ -221,7 +221,7 @@ function uniljournal_articletitle($articleinstance) {
   } elseif(property_exists($articleinstance, 'themetitle') && !empty($articleinstance->themetitle)) {
     $title = $articleinstance->themetitle;
   } else {
-    $title = 'ERROR: no title set';
+    $title = get_string('error_notitle', 'mod_uniljournal');
   }
   return $title;
 }

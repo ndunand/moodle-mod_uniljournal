@@ -80,18 +80,11 @@ $actualversion = 0;
 
 $article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, false, $version, $actualversion);
 
-/*
- * Other things you may want to set - remove if not needed.
- * $PAGE->set_cacheable(false);
- * $PAGE->set_focuscontrol('some-html-id');
- * $PAGE->add_body_class('uniljournal-'.$somevar);
- */
-
 // Output starts here.
 echo $OUTPUT->header();
 
 // Replace the following lines with you own code.
-echo $OUTPUT->heading(format_string($articletitle)." - Preview (version: ".$actualversion.")"); // TODO
+echo $OUTPUT->heading(format_string($articletitle)." - " . get_string('preview', 'mod_uniljournal') . " (" . get_string('version', 'mod_uniljournal') . ": ".$actualversion.")");
 
 echo '<div class="article">';
 
@@ -116,7 +109,7 @@ echo $article_html;
 if(has_capability('mod/uniljournal:createarticle', $context) || has_capability('mod/uniljournal:editallarticles', $context) ) {
   echo html_writer::link(
     new moodle_url('/mod/uniljournal/edit_article.php', array('cmid' => $cmid, 'id' => $id, 'amid' => $articleinstance->amid)),
-    html_writer::img($OUTPUT->pix_url('t/edit'), get_string('edit'))); // TODO: Position and see whether we need to add text to it
+    html_writer::img($OUTPUT->pix_url('t/edit'), get_string('edit')));
 }
 
 echo '</div>';

@@ -84,8 +84,7 @@ $articleB = $uniljournal_renderer->display_article($articleinstance, $articleele
 // Output starts here.
 echo $OUTPUT->header();
 
-// Replace the following lines with you own code.
-echo $OUTPUT->heading(format_string($articletitle)." - Compare"); // TODO
+echo $OUTPUT->heading(format_string($articletitle)." - " . get_string('compare', 'mod_uniljournal'));
 
 echo '<div class="article article-comparison article-comparison-A">';
   echo uniljournal_versiontoggle($articleinstance, $cm, $actualversionA, 'compare.php', 'versionA', array('versionB' => $versionB));

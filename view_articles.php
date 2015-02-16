@@ -130,7 +130,7 @@ foreach($userarticles as $ua) {
 
 // Print the page header.
 $PAGE->set_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id));
-$PAGE->set_title(format_string($uniljournal->name.' - '.fullname($foreign_user, has_capability('moodle/site:viewfullnames', $context)))); // TODO
+$PAGE->set_title(format_string($uniljournal->name.' - '.fullname($foreign_user, has_capability('moodle/site:viewfullnames', $context))));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 

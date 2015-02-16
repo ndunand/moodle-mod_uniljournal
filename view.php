@@ -118,7 +118,6 @@ if ($action && $aid) {
       unset($deleteform);
     } elseif ( ($entry = $deleteform->get_data()) && $entry->confirm == 1) {
       // Delete the record in question
-      // TODO: Confirm that the deletion of associated files is done with garbage collection
       $DB->delete_records('uniljournal_article_comments', array('articleinstanceid' => $ai->id));
       $DB->delete_records('uniljournal_aeinstances', array('instanceid' => $ai->id));
       $DB->delete_records('uniljournal_articleinstances', array('id' => $ai->id));
@@ -167,10 +166,9 @@ if(isset($deleteform)) {
     echo html_writer::tag('h3', $uniljournal->subtitle);
   }
 
-  // TODO: Determine what to do with the logo:
   if($logo = uniljournal_get_logo($context)) {
     $url = moodle_url::make_pluginfile_url($logo->get_contextid(), $logo->get_component(), $logo->get_filearea(), $logo->get_itemid(), $logo->get_filepath(), $logo->get_filename());
-    $logoimg = html_writer::img($url, 'Logo'); // TODO: translate
+    $logoimg = html_writer::img($url, 'Logo');
     echo html_writer::tag('div', $logoimg, array('class' => 'logo'));
   }
 
@@ -221,7 +219,7 @@ if(isset($deleteform)) {
       foreach($userarticles as $ua) {
         $row = new html_table_row();
         $ualink = new moodle_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id, 'uid' => $ua->userid));
-        $row->cells[] = html_writer::link($ualink,fullname($ua->user, has_capability('moodle/site:viewfullnames', $context))); // TODO: Link
+        $row->cells[] = html_writer::link($ualink,fullname($ua->user, has_capability('moodle/site:viewfullnames', $context)));
         $row->cells[] = html_writer::link($ualink, $ua->narticles);
         $row->cells[] = html_writer::link($ualink, $ua->ncorrected);
         $row->cells[] = strftime('%c', $ua->timemodified);

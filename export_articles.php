@@ -104,7 +104,7 @@ if(count($articleinstances) > 0) {
 
         if (has_capability('mod/uniljournal:viewallarticles', $context)) {
             $ualink = new moodle_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id, 'uid' => $ai->userid));
-            $row->cells[] = html_writer::link($ualink, fullname($ai->user, has_capability('moodle/site:viewfullnames', $context))); // TODO: Link
+            $row->cells[] = html_writer::link($ualink, fullname($ai->user, has_capability('moodle/site:viewfullnames', $context)));
         }
 
         $row->cells[] = html_writer::link(

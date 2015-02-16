@@ -98,7 +98,7 @@ if ($mform->is_cancelled()) {
 
     $entry->instructions       = '';          // updated later
     $entry->instructionsformat = FORMAT_HTML; // updated later
-    $entry->sortorder = 0; // TODO: See if it's needed to put it up last.
+    $entry->sortorder = 0;
     $entry->hidden = false;
     $entry->uniljournalid = $uniljournal->id;
     if(!array_key_exists($entry->themebankid, $themebanks) || $entry->themebankid == -1) { // Force freetitle as there's no themebank
@@ -163,7 +163,6 @@ if ($mform->is_cancelled()) {
 
     // Delete the elements that were there before and that aren't here anymore (see "unset(" above)
     foreach($elements as $articleelementid => $articleelement) {
-      // TODO: Check if we can really delete it (it is not used anywhere)
       $DB->delete_records('uniljournal_articleelements', array('id' => $articleelementid));
     }
 
