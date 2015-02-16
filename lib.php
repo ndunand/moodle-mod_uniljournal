@@ -123,7 +123,31 @@ function uniljournal_delete_instance($id) {
         return false;
     }
 
-    // Delete any dependent records here.
+    $module = $DB->get_record('modules', array('name' => 'uniljournal'));
+    $course_module = $DB->get_record('course_modules', array('instance' => $id, 'module' => $module->id));
+
+    $context = context_module::instance($course_module->id);
+
+    $templates = $DB->get_records('uniljournal_articlemodels', array('uniljournalid' => $uniljournal->id));
+
+    $theme_banks = $DB->get_records('uniljournal_themebanks', array('contextid' => $context->id));
+    foreach($theme_banks as $theme_bank) {
+        $DB->delete_records('uniljournal_themes', array('themebankid' => $theme_bank->id));
+        $DB->delete_records('uniljournal_themebanks', array('contextid' => $context->id));
+    }
+
+    foreach ($templates as $template) {
+        $DB->delete_records('uniljournal_articleelements', array('articlemodelid' => $template->id));
+        $articles = $DB->get_records('uniljournal_articleinstances', array('articlemodelid' => $template->id));
+
+        foreach($articles as $article) {
+            $DB->delete_records('uniljournal_article_comments', array('articleinstanceid' => $article->id));
+            $DB->delete_records('uniljournal_aeinstances', array('instanceid' => $article->id));
+        }
+        $DB->delete_records('uniljournal_articleinstances', array('articlemodelid' => $template->id));
+    }
+
+    $DB->delete_records('uniljournal_articlemodels', array('uniljournalid' => $uniljournal->id));
 
     $DB->delete_records('uniljournal', array('id' => $uniljournal->id));
 
