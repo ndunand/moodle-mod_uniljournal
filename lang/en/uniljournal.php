@@ -138,6 +138,7 @@ $string['uncorrected_articles'] = '{$a->uncorrected} uncorrected article(s)';
 $string['exportarticles'] = 'Export articles';
 $string['compare'] = 'Compare';
 $string['author'] = 'Author';
+$string['all_students']  = 'All students';
 
 //Logs
 $string['template_created_name'] = 'Create a template';

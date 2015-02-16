@@ -34,9 +34,6 @@ echo $OUTPUT->heading(format_string($uniljournal->name));
 require_once('locallib.php');
 if (has_capability('mod/uniljournal:viewallarticles', $context)) {
     $articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id), true);
-    foreach($articleinstances as $article) {
-        $article->user = $DB->get_record('user', array('id' => $article->userid));
-    }
 } else {
     $articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $USER->id), true);
 }
@@ -44,6 +41,7 @@ if (has_capability('mod/uniljournal:viewallarticles', $context)) {
 $uniljournal_statuses = uniljournal_article_status();
 // Status modifier forms
 $smforms = array();
+$users = array();
 foreach($articleinstances as $ai) {
     require_once('view_choose_template_form.php');
     $currententry = new stdClass();
@@ -56,8 +54,26 @@ foreach($articleinstances as $ai) {
             'options' => $uniljournal_statuses,
             'currententry' => $currententry,
         ));
+
+    if (has_capability('mod/uniljournal:viewallarticles', $context)) {
+        $ai->user = $DB->get_record('user', array('id' => $ai->userid));
+        if (!array_key_exists($ai->userid, $users)) {
+            $users[$ai->userid] = $ai->user;
+        }
+    }
 }
+
+if (has_capability('mod/uniljournal:viewallarticles', $context)) {
+    echo '<select id="selectStudent">';
+    echo '<option value="0">' . get_string('all_students', 'mod_uniljournal') . '</option>';
+    foreach($users as $user) {
+        echo '<option value="' . $user->id . '">' . $user->firstname . ' ' . $user->lastname . '</option>';
+    }
+    echo '</select><br>';
+}
+
 echo '<a href="#" id="selectall" data-select="none">' . get_string('selectallornone', 'form') . '</a>';
+
 echo '<form id="exportForm" method="post">';
 
 if(count($articleinstances) > 0) {
@@ -79,6 +95,7 @@ if(count($articleinstances) > 0) {
     foreach($articleinstances as $ai) {
         $aiter++;
         $row = new html_table_row();
+        $row->attributes['class'] = 'student' . $ai->userid;
         $script = 'edit.php';
         require_once('locallib.php');
         $corrected = !in_array($ai->edituserid, array($ai->userid, 0)) || !in_array($ai->commentuserid, array($ai->userid, 0));
@@ -138,11 +155,13 @@ echo "<script>
     }
     $('#selectall').on('click', function (e) {
         if ($('#selectall').data('select') == 'none') {
-            $('input[name=\"articles[]\"]').prop('checked', true);
+            $('input[name=\"articles[]\"]:not(:disabled)').prop('checked', true);
             $('#selectall').data('select', 'all');
-            $('.showArticles').prop('disabled', false);
+            if ($('input[name=\"articles[]\"]:not(:disabled)').length) {
+                $('.showArticles').prop('disabled', false);
+            }
         } else {
-            $('input[name=\"articles[]\"]').prop('checked', false);
+            $('input[name=\"articles[]\"]:not(:disabled)').prop('checked', false);
             $('#selectall').data('select', 'none');
             $('.showArticles').prop('disabled', true);
         }
@@ -158,6 +177,24 @@ echo "<script>
         } else {
             $('.showArticles').prop('disabled', true);
             $('#selectall').data('select', 'none');
+        }
+    });
+
+    $('#selectStudent').on('change', function(e) {
+        if ($(this).val() == 0) {
+            $('input[name=\"articles[]\"]').prop('checked', false);
+            $('input[name=\"articles[]\"]').prop('disabled', false);
+            $('#selectall').data('select', 'none');
+            $('.showArticles').prop('disabled', true);
+            $('tr[class^=\"student\"]').show();
+        } else {
+            $('input[name=\"articles[]\"]').prop('checked', false);
+            $('input[name=\"articles[]\"]').prop('disabled', true);
+            $('#selectall').data('select', 'none');
+            $('.showArticles').prop('disabled', true);
+            $('tr[class^=\"student\"]').hide();
+            $('tr[class^=\"student' + $(this).val() + '\"]').show();
+            $('tr[class^=\"student' + $(this).val() + '\"] input[name=\"articles[]\"]').prop('disabled', false);
         }
     });
 </script>";
