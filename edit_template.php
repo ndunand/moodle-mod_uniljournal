@@ -231,9 +231,9 @@ echo '
             },
             beforeStop: function(event, ui) {
                 var table = $("#elementsAdded");
-                var minX = table.position().left;
+                var minX = table.offset().left;
                 var maxX = minX + table.width();
-                var minY = table.position().top;
+                var minY = table.offset().top;
                 var maxY = minY + table.height();
                 if (event.pageX > maxX || event.pageX < minX || event.pageY > maxY || event.pageY < minY) {
                     $(this).sortable("cancel");
