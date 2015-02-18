@@ -218,7 +218,7 @@ $PAGE->requires->jquery();
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('writearticletempl', 'mod_uniljournal', $articlemodel->title));
 
-echo '<div class="article">';
+echo '<div class="article clearfix">';
 echo '<div class="article-edit '.($uniljournal->comments_allowed?'':'nocomments').'">';
 $mform->display();
 echo '</div>';

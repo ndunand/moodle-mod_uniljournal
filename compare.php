@@ -86,6 +86,8 @@ echo $OUTPUT->header();
 
 echo $OUTPUT->heading(format_string($articletitle)." - " . get_string('compare', 'mod_uniljournal'));
 
+echo '<div class="article clearfix">';
+
 echo '<div class="article article-comparison article-comparison-A">';
   echo uniljournal_versiontoggle($articleinstance, $cm, $actualversionA, 'compare.php', 'versionA', array('versionB' => $versionB));
   echo '<div class="article-edit nocomments">';
@@ -98,6 +100,8 @@ echo '<div class="article article-comparison article-comparison-B">';
   echo '<div class="article-edit nocomments">';
     echo $articleB;
   echo '</div>';
+echo '</div>';
+
 echo '</div>';
 
 // Finish the page.
