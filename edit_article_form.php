@@ -128,9 +128,11 @@ class edit_article_form extends moodleform {
           $desc = get_string('element_'.$ae->element_type, 'uniljournal');
           
           if(uniljournal_startswith($ae->element_type, 'attachment_')) {
-            $draftitemid = file_get_submitted_draft_itemid($id);
-            file_prepare_draft_area($draftitemid, $context->id, 'mod_uniljournal', 'elementinstance', $currententry->$id, $attachmentoptions);
-            $currententry->$id = $draftitemid;
+            if (property_exists($currententry, $id)) {
+              $draftitemid = file_get_submitted_draft_itemid($id);
+              file_prepare_draft_area($draftitemid, $context->id, 'mod_uniljournal', 'elementinstance', $currententry->$id, $attachmentoptions);
+              $currententry->$id = $draftitemid;
+            }
 
             $attoptions = $attachmentoptions;
             $attoptions['accepted_types'] = substr($ae->element_type, 11);
