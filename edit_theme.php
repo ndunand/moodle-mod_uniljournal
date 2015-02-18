@@ -85,11 +85,14 @@ if ($mform->is_cancelled()) {
     $theme->themebankid = $tbid;
     $theme->hidden = false;
     $theme->sortorder = 0;
-    $instructions = file_postupdate_standard_editor($theme, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'theme', $theme->id);
+    $theme->instructions = $theme->instructions_editor['text'];
+    $theme->instructionsformat = $theme->instructions_editor['format'];
 
     if ($isnewentry) {
         // Add new entry.
         $theme->id = $DB->insert_record('uniljournal_themes', $theme);
+        $theme = file_postupdate_standard_editor($theme, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'theme', $theme->id);
+        $DB->update_record('uniljournal_themes', $theme);
 
         // Log the theme creation
         $event = \mod_uniljournal\event\theme_created::create(array(
@@ -105,6 +108,7 @@ if ($mform->is_cancelled()) {
         $event->trigger();
     } else {
         // Update existing entry.
+        $theme = file_postupdate_standard_editor($theme, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'theme', $theme->id);
         $DB->update_record('uniljournal_themes', $theme);
 
         // Log the theme update

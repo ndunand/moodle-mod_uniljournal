@@ -108,6 +108,10 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
 
         $output .= html_writer::start_div('article-view-template-instructions');
         $output .= $article->instructions;
+        if ($article->themetitle) {
+            $article->themeinstructions = file_rewrite_pluginfile_urls($article->themeinstructions, 'pluginfile.php', $context->id, 'mod_uniljournal', 'theme', $article->themeid);
+            $output .= $article->themeinstructions;
+        }
         $output .= html_writer::end_div();
 
         $output .= html_writer::end_div();
