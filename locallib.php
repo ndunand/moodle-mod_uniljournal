@@ -210,7 +210,7 @@ function uniljournal_get_article_instances($query_args = array('id' => '0'), $st
   LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
   LEFT JOIN {uniljournal_themes} t ON ai.themeid = t.id
       WHERE '.implode($where, ' AND ').'
-   ORDER BY ai.status ASC, ai.timemodified DESC', $query_args);
+   ORDER BY ai.timemodified DESC', $query_args);
 
 }
 
