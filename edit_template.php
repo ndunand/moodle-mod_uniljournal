@@ -98,7 +98,6 @@ if ($mform->is_cancelled()) {
     redirect(new moodle_url('/mod/uniljournal/manage_templates.php', array('id' => $cm->id)));
 } else if ($entry = $mform->get_data()) {
     $isnewentry = empty($entry->id);
-
     $entry->instructions       = '';          // updated later
     $entry->instructionsformat = FORMAT_HTML; // updated later
     $entry->sortorder = 0;
@@ -216,8 +215,8 @@ echo '
         $( "#elementsToAdd" ).sortable({
             connectWith: "#elementsAdded",
             update: function(event, ui) {
-                var item = $(event.toElement.cloneNode(true));
-                var position = parseInt(item.attr("id")[item.attr("id").length - 1]);
+                var item = $(ui.item[0].cloneNode(true));
+                var position = parseInt(item.prop("id")[item.prop("id").length - 1]);
                 if (position > 1) {
                     $(item).insertAfter($("#elementsToAdd #element" + (position - 1)));
                 } else {
@@ -229,7 +228,7 @@ echo '
                 var elementsAdded = $("#elementsAdded input[type=\"text\"]");
                 for (var i = 0; i < elementsAdded.length; i++) {
                     var element = elementsAdded[i];
-                    $(element).attr("name", "articleelements[]");
+                    $(element).prop("name", "articleelements[]");
                 }
             },
             beforeStop: function(event, ui) {
