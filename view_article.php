@@ -86,17 +86,17 @@ echo $OUTPUT->header();
 // Replace the following lines with you own code.
 echo $OUTPUT->heading(format_string($articletitle)." - " . get_string('preview', 'mod_uniljournal') . " (" . get_string('version', 'mod_uniljournal') . ": ".$actualversion.")");
 
-echo '<div class="article">';
+echo '<div class="article clearfix">';
 
 require_once('locallib.php');
 echo uniljournal_versiontoggle($articleinstance, $cm, $actualversion);
 
 echo '<div class="article-compare">';
 if($articleinstance->maxversion > 1) {
-  $versionB = ($articleinstance->maxversion==1)?2:($articleinstance->maxversion-1);
-  
+  $versionA = ($articleinstance->maxversion==1)?2:($articleinstance->maxversion-1);
+
   echo html_writer::link(
-    new moodle_url('/mod/uniljournal/compare.php', array('id' => $id, 'cmid' => $cmid, 'versionA'=> $actualversion, 'versionB' => $versionB)),
+    new moodle_url('/mod/uniljournal/compare.php', array('id' => $id, 'cmid' => $cmid, 'versionA'=> $versionA, 'versionB' => $actualversion)),
     get_string('compare', 'uniljournal')
     );
 }
