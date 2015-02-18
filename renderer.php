@@ -42,7 +42,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
           SELECT c.*, '.$userattrssql.' FROM {uniljournal_article_comments} c
           JOIN {user} u ON c.userid = u.id
           WHERE articleinstanceid = :articleinstanceid
-          ORDER BY timecreated ASC', array(
+          ORDER BY id ASC', array(
             'articleinstanceid' => $articleinstanceid
         ));
 
