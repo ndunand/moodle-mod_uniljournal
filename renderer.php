@@ -16,10 +16,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle renderer used to display special elements of the lesson module
+ * Moodle renderer used to display special elements of the uniljournal module
  *
- * @package mod_lesson
- * @copyright  2009 Sam Hemelryk
+ * @package    mod_uniljournal
+ * @copyright  2014-2015  Université de Lausanne
+ * @author     Liip AG eLearning Team <elearning@liip.ch>
+ * @author     Didier Raboud <didier.raboud@liip.ch>
+ * @author     Claude Bossy <claude.bossy@liip.ch>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
