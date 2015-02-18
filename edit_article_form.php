@@ -67,6 +67,7 @@ class edit_article_form extends moodleform {
             $mform->addElement('html', "\n\t\t".'<div class="felement fstatic">'.$themes[$currententry->themeid]->title.'</div>');
             $mform->addElement('html', "\n\t".'</div>');
             $mform->addElement('html', "\n\t".'<div class="fitem"><div class="fitemtitle"><div class="fstaticlabel"><label>'.get_string('article_instructions', 'uniljournal').'</label></div></div>');
+            $themes[$currententry->themeid]->instructions = file_rewrite_pluginfile_urls($themes[$currententry->themeid]->instructions, 'pluginfile.php', $context->id, 'mod_uniljournal', 'theme', $selectedthemeid);
             $mform->addElement('html', "\n\t\t".'<div class="felement fstatic">'.$themes[$currententry->themeid]->instructions.'</div>');
             $mform->addElement('html', "\n\t".'</div>');
           } else {
