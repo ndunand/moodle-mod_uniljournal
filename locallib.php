@@ -201,8 +201,12 @@ function uniljournal_get_article_instances($query_args = array('id' => '0'), $st
     $statusrequest = 'LEFT JOIN (
               SELECT DISTINCT instanceid as id, version as maxversion, aei.userid as edituserid, c.userid as commentuserid
                          FROM {uniljournal_aeinstances} aei
-                    LEFT JOIN {uniljournal_article_comments} c ON c.articleinstanceid = aei.instanceid AND c.articleinstanceversion = aei.version
-                        WHERE (instanceid, version) IN (
+                         LEFT JOIN (
+                            SELECT c.* FROM {uniljournal_article_comments} c, {uniljournal_aeinstances} aei
+                            WHERE c.articleinstanceid = aei.instanceid
+                            AND c.articleinstanceversion = aei.version  LIMIT 1
+                         ) c ON c.articleinstanceid = aei.instanceid
+                         WHERE (instanceid, version) IN (
                                                         SELECT instanceid, max(version) as maxversion
                                                           FROM {uniljournal_aeinstances} GROUP BY instanceid
                                                         )
