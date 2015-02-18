@@ -19,7 +19,10 @@
  *
  * @package   mod_uniljournal
  * @category  grade
- * @copyright 2011 Your Name
+ * @copyright  2014-2015  Université de Lausanne
+ * @author     Liip AG eLearning Team <elearning@liip.ch>
+ * @author     Didier Raboud <didier.raboud@liip.ch>
+ * @author     Claude Bossy <claude.bossy@liip.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

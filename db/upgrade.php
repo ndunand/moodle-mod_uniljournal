@@ -25,7 +25,10 @@
  * here will all be database-neutral, using the functions defined in DLL libraries.
  *
  * @package    mod_uniljournal
- * @copyright  2014 Liip AG {@link http://www.liip.ch/}
+ * @copyright  2014-2015  Université de Lausanne
+ * @author     Liip AG eLearning Team <elearning@liip.ch>
+ * @author     Didier Raboud <didier.raboud@liip.ch>
+ * @author     Claude Bossy <claude.bossy@liip.ch>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

@@ -21,7 +21,10 @@
  * visit: http://docs.moodle.org/en/Development:lib/formslib.php
  *
  * @package    mod_uniljournal
- * @copyright  2015 Liip AG {@link http://www.liip.ch/}
+ * @copyright  2014-2015  Université de Lausanne
+ * @author     Liip AG eLearning Team <elearning@liip.ch>
+ * @author     Didier Raboud <didier.raboud@liip.ch>
+ * @author     Claude Bossy <claude.bossy@liip.ch>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -128,9 +131,11 @@ class edit_article_form extends moodleform {
           $desc = get_string('element_'.$ae->element_type, 'uniljournal');
           
           if(uniljournal_startswith($ae->element_type, 'attachment_')) {
-            $draftitemid = file_get_submitted_draft_itemid($id);
-            file_prepare_draft_area($draftitemid, $context->id, 'mod_uniljournal', 'elementinstance', $currententry->$id, $attachmentoptions);
-            $currententry->$id = $draftitemid;
+            if (property_exists($currententry, $id)) {
+              $draftitemid = file_get_submitted_draft_itemid($id);
+              file_prepare_draft_area($draftitemid, $context->id, 'mod_uniljournal', 'elementinstance', $currententry->$id, $attachmentoptions);
+              $currententry->$id = $draftitemid;
+            }
 
             $attoptions = $attachmentoptions;
             $attoptions['accepted_types'] = substr($ae->element_type, 11);
