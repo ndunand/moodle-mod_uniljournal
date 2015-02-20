@@ -293,47 +293,6 @@ function uniljournal_scale_used_anywhere($scaleid) {
 }
 
 /**
- * Creates or updates grade item for the give uniljournal instance
- *
- * Needed by grade_update_mod_grades() in lib/gradelib.php
- *
- * @param stdClass $uniljournal instance object with extra cmidnumber and modname property
- * @param mixed optional array/object of grade(s); 'reset' means reset grades in gradebook
- * @return void
- */
-function uniljournal_grade_item_update(stdClass $uniljournal, $grades=null) {
-    global $CFG;
-    require_once($CFG->libdir.'/gradelib.php');
-
-    /* @example */
-    $item = array();
-    $item['itemname'] = clean_param($uniljournal->name, PARAM_NOTAGS);
-    $item['gradetype'] = GRADE_TYPE_VALUE;
-    $item['grademax']  = $uniljournal->grade;
-    $item['grademin']  = 0;
-
-    grade_update('mod/uniljournal', $uniljournal->course, 'mod', 'uniljournal', $uniljournal->id, 0, null, $item);
-}
-
-/**
- * Update uniljournal grades in the gradebook
- *
- * Needed by grade_update_mod_grades() in lib/gradelib.php
- *
- * @param stdClass $uniljournal instance object with extra cmidnumber and modname property
- * @param int $userid update grade of specific user only, 0 means all participants
- * @return void
- */
-function uniljournal_update_grades(stdClass $uniljournal, $userid = 0) {
-    global $CFG, $DB;
-    require_once($CFG->libdir.'/gradelib.php');
-
-    $grades = array(); // Populate array of grade objects indexed by userid. @example .
-
-    grade_update('mod/uniljournal', $uniljournal->course, 'mod', 'uniljournal', $uniljournal->id, 0, $grades);
-}
-
-/**
  * File API                                                                   //
  */
 
