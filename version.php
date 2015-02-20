@@ -37,6 +37,3 @@ $plugin->requires  = 2014051200;      // Requires this Moodle version.
 $plugin->cron      = 0;               // Period for cron to check this module (secs).
 $plugin->component = 'mod_uniljournal'; // To check on upgrade, that module sits in correct place.
 
-$plugin->dependencies = array(
-  'atto_corrections' => 2015010100,
-);
