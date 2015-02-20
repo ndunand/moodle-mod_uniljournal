@@ -29,26 +29,13 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
-    require_once("$CFG->libdir/resourcelib.php");
-    require_once("$CFG->dirroot/mod/uniljournal/locallib.php");
-
-    // Get available mimetype groups from the mimetype arrays.
-    $groups = array();
-    foreach(get_mimetypes_array() as $mimearray) {
-        if (array_key_exists('groups', $mimearray) && count($mimearray['groups']) > 0) {
-            $groups = array_merge($groups, $mimearray['groups']);
-        }
-    }
     $keyvalgroups = array();
-    foreach($groups as $gid => $group) {
-      // Exclude the web_ groups
-      if(!uniljournal_startswith($group, 'web_')) {
-        $keyvalgroups[$group] = $group;
-      }
-    }
+    $keyvalgroups['any'] = get_string('mimegroup_any', 'uniljournal');
+    $keyvalgroups['audio'] = get_string('mimegroup_audio', 'uniljournal');
+    $keyvalgroups['image'] = get_string('mimegroup_image', 'uniljournal');
     ksort($keyvalgroups);
-    
+
     $settings->add(new admin_setting_configmultiselect('uniljournal/allowedmimegroups',
         get_string('allowedmimegroups', 'uniljournal'), get_string('allowedmimegroupsdescription', 'uniljournal'),
-        $keyvalgroups, $keyvalgroups));
+        array_keys($keyvalgroups), $keyvalgroups));
 }
