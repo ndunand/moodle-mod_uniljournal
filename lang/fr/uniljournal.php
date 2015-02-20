@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'Journal d\'apprentissage';
 $string['modulenameplural'] = 'Journaux d\'apprentissage';
-$string['modulename_help'] = 'Le module Journal d\'apprentissage permet aux étudiants de créer des journaux structurés selon une structure définie à l\'acance';
+$string['modulename_help'] = 'Le module Journal d\'apprentissage permet aux étudiants de créer des journaux structurés selon une structure définie à l\'avance par l\'enseignant.';
 $string['ujname'] = 'Nom du journal';
 $string['ujname_help'] = 'Le nom du journal, tel qu\'il apparaîtra dans le cours Moodle.';
 $string['ujsubtitle'] = 'Sous-titre';
@@ -123,7 +123,7 @@ $string['course_context'] = 'Tout le cours';
 $string['category_context'] = 'Tous les cours de cette catégorie';
 $string['user_context'] = 'Cet utilisateur uniquement';
 $string['system_context'] = 'Partout';
-$string['themebank_contextid_help'] = 'Cette banque de thèmes sera disponible dans ces contexted.';
+$string['themebank_contextid_help'] = 'Cette banque de thèmes sera disponible dans ces contextes.';
 $string['managethemes'] = 'Gérer les thèmes';
 $string['addtheme'] = 'Ajouter un thème';
 $string['theme'] = 'Thème';
