@@ -133,5 +133,7 @@ if ($uniljournal->comments_allowed) {
 </script>';
 }
 
+echo '</div>';
+
 // Finish the page.
 echo $OUTPUT->footer();
