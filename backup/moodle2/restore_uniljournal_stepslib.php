@@ -29,6 +29,8 @@
  */
 class restore_uniljournal_activity_structure_step extends restore_activity_structure_step {
 
+    protected $course;
+
     protected function define_structure() {
 
         $paths = array();
@@ -55,6 +57,7 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
         $data = (object)$data;
         $oldid = $data->id;
         $data->course = $this->get_courseid();
+        $this->course = get_course($this->get_courseid());
 
         $data->timemodified = $this->apply_date_offset($data->timemodified);
 
@@ -62,6 +65,54 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
         $newitemid = $DB->insert_record('uniljournal', $data);
         // immediately after inserting "activity" record, call this
         $this->apply_activity_instance($newitemid);
+    }
+
+    protected function process_uniljournal_themebank($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $oldid = $data->id;
+
+        switch ($data->contextid) {
+            case 10:
+                $data->contextid = context_system::instance()->id;
+                break;
+            case 40:
+                $data->contextid = context_coursecat::instance($this->course->category)->id;
+                break;
+            case 50:
+                $data->contextid = context_course::instance($this->course->id)->id;
+                break;
+            case 70:
+                $mods = get_course_mods($this->course->id);
+                foreach($mods as $mod) {
+                    if ($mod->modname == 'uniljournal' && $mod->instance == $this->get_new_parentid('uniljournal')) {
+                        break;
+                    }
+                }
+                $data->contextid = context_module::instance($mod->id)->id;
+                break;
+            default:
+                $data->contextid = context_system::instance()->id;
+                break;
+        }
+
+
+        $newitemid = $DB->insert_record('uniljournal_themebanks', $data);
+        $this->set_mapping('uniljournal_themebank', $oldid, $newitemid);
+    }
+
+    protected function process_uniljournal_theme($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $oldid = $data->id;
+
+        $data->themebankid = $this->get_mappingid('uniljournal_themebank', $data->themebankid);
+        $this->add_related_files('mod_uniljournal', 'theme', 'uniljournal_theme', null, $oldid);
+
+        $newitemid = $DB->insert_record('uniljournal_themes', $data);
+        $this->set_mapping('uniljournal_theme', $oldid, $newitemid, true);
     }
 
     protected function process_uniljournal_articlemodel($data) {
@@ -87,31 +138,6 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
 
         $newitemid = $DB->insert_record('uniljournal_articleelements', $data);
         $this->set_mapping('uniljournal_articleelement', $oldid, $newitemid);
-    }
-
-    protected function process_uniljournal_themebank($data) {
-        global $DB;
-
-        $data = (object)$data;
-        $oldid = $data->id;
-
-        $data->contextid = 1;
-
-        $newitemid = $DB->insert_record('uniljournal_themebanks', $data);
-        $this->set_mapping('uniljournal_themebank', $oldid, $newitemid);
-    }
-
-    protected function process_uniljournal_theme($data) {
-        global $DB;
-
-        $data = (object)$data;
-        $oldid = $data->id;
-
-        $data->themebankid = $this->get_mappingid('uniljournal_themebank', $data->themebankid);
-        $this->add_related_files('mod_uniljournal', 'theme', 'uniljournal_theme', null, $oldid);
-
-        $newitemid = $DB->insert_record('uniljournal_themes', $data);
-        $this->set_mapping('uniljournal_theme', $oldid, $newitemid, true);
     }
 
     protected function process_uniljournal_articleinstance($data) {

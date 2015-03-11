@@ -39,6 +39,16 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
             'course', 'name', 'subtitle', 'intro',
             'introformat', 'logo', 'comments_allowed', 'timecreated', 'timemodified'));
 
+        $themebanks = new backup_nested_element('themebanks');
+        $themebank = new backup_nested_element('themebank', array('id'), array(
+            'contextid', 'title'
+        ));
+
+        $themes = new backup_nested_element('themes');
+        $theme = new backup_nested_element('theme', array('id'), array(
+            'themebankid', 'title', 'instructions', 'instructionsformat', 'sortorder', 'hidden'
+        ));
+
         $articlemodels = new backup_nested_element('articlemodels');
         $articlemodel = new backup_nested_element('articlemodel', array('id'), array(
             'uniljournalid', 'title', 'maxbytes', 'instructions', 'instructionsformat',
@@ -60,28 +70,18 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
             'instanceid', 'elementid', 'userid', 'version', 'timemodified', 'value', 'valueformat'
         ));
 
-        $themebanks = new backup_nested_element('themebanks');
-        $themebank = new backup_nested_element('themebank', array('id'), array(
-            'contextid', 'title'
-        ));
-
-        $themes = new backup_nested_element('themes');
-        $theme = new backup_nested_element('theme', array('id'), array(
-            'themebankid', 'title', 'instructions', 'instructionsformat', 'sortorder', 'hidden'
-        ));
-
         $article_comments = new backup_nested_element('article_comments');
         $article_comment = new backup_nested_element('article_comment', array('id'), array(
             'articleinstanceid', 'articleinstanceversion', 'userid', 'text'
         ));
 
         // Build the tree
+        $uniljournal->add_child($themebanks);
+        $uniljournal->add_child($themes);
         $uniljournal->add_child($articlemodels);
         $uniljournal->add_child($articleelements);
         $uniljournal->add_child($articleinstances);
         $uniljournal->add_child($aeinstances);
-        $uniljournal->add_child($themebanks);
-        $uniljournal->add_child($themes);
         $uniljournal->add_child($article_comments);
 
         $articlemodels->add_child($articlemodel);
@@ -112,10 +112,11 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
         );
 
         $themebank->set_source_sql('
-            SELECT tb.*
-            FROM {uniljournal_articlemodels} m, {uniljournal_themebanks} tb
+            SELECT tb.id, tb.title, c.contextlevel as contextid
+            FROM {uniljournal_articlemodels} m, {uniljournal_themebanks} tb, {context} c
             WHERE m.uniljournalid = ?
             AND tb.id = m.themebankid
+            AND c.id = tb.contextid
         ', array(backup::VAR_PARENTID));
 
         $theme->set_source_sql('
