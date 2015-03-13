@@ -278,3 +278,16 @@ function uniljournal_versiontoggle($articleinstance, $cm, $actualversion, $targe
 
   return $html;
 }
+
+function canmanagethemebank($themebank) {
+    if (array_key_exists('contextid', $themebank)) {
+        $themebank_context = context::instance_by_id($themebank->contextid);
+        if ($themebank_context->contextlevel < 50 && has_capability('moodle/category:manage', $themebank_context)) {
+            return true;
+        } else if ($themebank_context->contextlevel >= 50) {
+            return true;
+        }
+        return false;
+    }
+    return true;
+}

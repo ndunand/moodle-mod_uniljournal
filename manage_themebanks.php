@@ -60,7 +60,7 @@ if ($action && $tbid) {
         error('Must exist!');
     }
 
-    if($action == "delete" and $model->themescount == 0 ) {
+    if($action == "delete" and $model->themescount == 0 and canmanagethemebank($model)) {
         require_once('edit_themebank_form.php');
         $customdata = array();
         $customdata['course'] = $course;
@@ -127,7 +127,11 @@ if (isset($deleteform)) {
             $row = new html_table_row();
             $script = 'manage_themes.php';
             $args = array('cmid'=> $cm->id, 'tbid' => $themebank->id);
-            $row->cells[0] = html_writer::link(new moodle_url('/mod/uniljournal/' . $script, $args), $themebank->title);
+            if (canmanagethemebank($themebank)) {
+                $row->cells[0] = html_writer::link(new moodle_url('/mod/uniljournal/' . $script, $args), $themebank->title);
+            } else {
+                $row->cells[0] = $themebank->title;
+            }
 
             $context = context::instance_by_id($themebank->contextid);
             
@@ -135,26 +139,28 @@ if (isset($deleteform)) {
             $row->cells[2] = ($context->contextlevel <= CONTEXT_COURSE) ? '×': '';
             $row->cells[3] = ($context->contextlevel <= CONTEXT_COURSECAT) ? '×': '';
             $row->cells[4] = ($context->contextlevel <= CONTEXT_SYSTEM) ? '×': '';
-            
-            $actionarray = array();
-            $actionarray[] = 'edit';
-            if($themebank->themescount == 0) $actionarray[] = 'delete';
 
             $actions = "";
-            foreach($actionarray as $actcode) {
-                $script = 'manage_themebanks.php';
-                $args = array('id'=> $cm->id, 'tbid' => $themebank->id, 'action' => $actcode);
+            if (canmanagethemebank($themebank)) {
+                $actionarray = array();
+                $actionarray[] = 'edit';
+                if ($themebank->themescount == 0) $actionarray[] = 'delete';
 
-                switch($actcode) {
-                    case "edit":
-                        $script = 'edit_themebank.php';
-                        $args = array('cmid'=> $cm->id, 'id' => $themebank->id);
-                        break;
+                foreach ($actionarray as $actcode) {
+                    $script = 'manage_themebanks.php';
+                    $args = array('id' => $cm->id, 'tbid' => $themebank->id, 'action' => $actcode);
+
+                    switch ($actcode) {
+                        case "edit":
+                            $script = 'edit_themebank.php';
+                            $args = array('cmid' => $cm->id, 'id' => $themebank->id);
+                            break;
+                    }
+
+                    $url = new moodle_url('/mod/uniljournal/' . $script, $args);
+                    $img = html_writer::img($OUTPUT->pix_url('t/' . $actcode), get_string($actcode));
+                    $actions .= html_writer::link($url, $img) . "\t";
                 }
-
-                $url = new moodle_url('/mod/uniljournal/' . $script, $args);
-                $img = html_writer::img($OUTPUT->pix_url('t/'. $actcode), get_string($actcode));
-                $actions .= html_writer::link($url, $img)."\t";
             }
             $row->cells[5] = $actions;
             $table->data[] = $row;

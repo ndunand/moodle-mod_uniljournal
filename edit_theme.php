@@ -47,6 +47,10 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/uniljournal:managethemes', $context);
 
+if (!canmanagethemebank($themebank)) {
+    error('You don\'t have the permissions to edit that theme bank');
+}
+
 if ($id) { // if entry is specified
     if (!$theme = $DB->get_record('uniljournal_themes', array('id' => $id))) {
         print_error('invalidentry');
