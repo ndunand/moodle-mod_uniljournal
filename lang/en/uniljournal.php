@@ -207,3 +207,5 @@ $string['theme_updated_desc'] = 'User {$a->userid} has updated the theme {$a->th
 $string['theme_deleted_name'] = 'Delete a theme';
 $string['theme_deleted_explanation'] = 'Event when a theme has been successfully deleted.';
 $string['theme_deleted_desc'] = 'User {$a->userid} has deleted the theme {$a->themeid} from theme bank {$a->themebankid}';
+
+$string['restoredon'] = ' (restored on {$a->mday}/{$a->mon}/{$a->year})';

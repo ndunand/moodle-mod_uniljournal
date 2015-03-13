@@ -24,6 +24,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once(dirname(__FILE__).'/../../locallib.php');
+
 /**
  * Structure step to restore one uniljournal activity
  */
@@ -73,12 +75,32 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
         $data = (object)$data;
         $oldid = $data->id;
 
+        $data->title = $data->title . get_string('restoredon','mod_uniljournal', usergetdate(time()));
+
         switch ($data->contextid) {
             case 10:
                 $data->contextid = context_system::instance()->id;
+                if (!canmanagethemebank($data)) {
+                    $mods = get_course_mods($this->course->id);
+                    foreach($mods as $mod) {
+                        if ($mod->modname == 'uniljournal' && $mod->instance == $this->get_new_parentid('uniljournal')) {
+                            $data->contextid = context_module::instance($mod->id)->id;
+                            break;
+                        }
+                    }
+                }
                 break;
             case 40:
                 $data->contextid = context_coursecat::instance($this->course->category)->id;
+                if (!canmanagethemebank($data)) {
+                    $mods = get_course_mods($this->course->id);
+                    foreach($mods as $mod) {
+                        if ($mod->modname == 'uniljournal' && $mod->instance == $this->get_new_parentid('uniljournal')) {
+                            $data->contextid = context_module::instance($mod->id)->id;
+                            break;
+                        }
+                    }
+                }
                 break;
             case 50:
                 $data->contextid = context_course::instance($this->course->id)->id;
