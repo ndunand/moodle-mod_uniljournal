@@ -62,7 +62,7 @@ class mod_uniljournal_mod_form extends moodleform_mod {
         $this->add_intro_editor(false);
         
         $filemanager_options = array();
-        $filemanager_options['accepted_types'] = 'web_image';
+        $filemanager_options['accepted_types'] = array('.jpg', '.jpeg', '.png');
         $filemanager_options['subdirs'] = false;
         $filemanager_options['maxfiles'] = 1;
         $mform->addElement('filemanager', 'logo', get_string('ujlogo', 'uniljournal'), null, $filemanager_options);
@@ -87,7 +87,7 @@ class mod_uniljournal_mod_form extends moodleform_mod {
     function data_preprocessing(&$default_values) {
         if ($this->current->instance) {
             $filemanager_options = array();
-            $filemanager_options['accepted_types'] = 'web_image';
+            $filemanager_options['accepted_types'] = array('.jpg', '.jpeg', '.png');
             $filemanager_options['subdirs'] = false;
             $filemanager_options['maxfiles'] = 1;
             $draftitemid = file_get_submitted_draft_itemid('logo');

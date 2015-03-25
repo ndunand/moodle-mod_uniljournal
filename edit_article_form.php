@@ -47,8 +47,6 @@ class edit_article_form extends moodleform {
         $textonlyoptions   = $this->_customdata['textonlyoptions'];
         $attachmentoptions = $this->_customdata['attachmentoptions'];
         
-        $imageoptions['accepted_types'] = array('web_image');
-        
         $context         = context_module::instance($cm->id);
 
         $this->course  = $course;
@@ -139,7 +137,11 @@ class edit_article_form extends moodleform {
             }
 
             $attoptions = $attachmentoptions;
-            $attoptions['accepted_types'] = substr($ae->element_type, 11);
+            if (substr($ae->element_type, 11) == 'image') {
+                $attoptions['accepted_types'] = array('.jpg', '.jpeg', '.png');
+            } else {
+                $attoptions['accepted_types'] = substr($ae->element_type, 11);
+            }
             $mform->addElement('filemanager', $id, $desc, null, $attoptions);
           }
           
