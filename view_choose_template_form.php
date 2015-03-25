@@ -51,7 +51,7 @@ class status_change_form extends moodleform {
 
     public function definition() {
 
-        global $CFG;
+        global $USER, $DB, $course;
         $options      = $this->_customdata['options'];
         $currententry = $this->_customdata['currententry'];
 
@@ -59,7 +59,20 @@ class status_change_form extends moodleform {
         $mform->addElement('select', $currententry->statuskey, '', $options, array('class' => 'autosubmit'));
 
         $mform->disable_form_change_checker();
-        
+
+        // sent notification to teacher if status is 40
+        if (count($_POST) > 0 && $_POST['status_2'] == 40) {
+            $article = $DB->get_record('uniljournal_articleinstances', array('id' => $currententry->aid), '*', MUST_EXIST);
+
+            $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
+            $context = context_course::instance($course->id);
+            $teachers = get_role_users($role->id, $context);
+
+            foreach($teachers as $teacher) {
+                $articlelink = new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $_POST['id'], 'id' => $article->id));
+                sendtocorrectmessage($USER, $teacher, $article, $articlelink);
+            }
+        }
         $this->set_data($currententry);
         
     }

@@ -210,3 +210,32 @@ $string['theme_deleted_explanation'] = 'Event when a theme has been successfully
 $string['theme_deleted_desc'] = 'User {$a->userid} has deleted the theme {$a->themeid} from theme bank {$a->themebankid}';
 
 $string['restoredon'] = ' (restored on {$a->mday}/{$a->mon}/{$a->year})';
+
+//Mails
+$string['article_corrected_subject'] = 'Article corrected';
+$string['article_corrected_message'] = 'Dear {$a->user_name},
+
+
+Your article ({$a->article}) has been corrected.
+
+You can check those corrections here: {$a->link}
+';
+$string['article_corrected_html_message'] = '<p>Dear {$a->user_name},</p>
+<p>Your article ({$a->article}) has been corrected.</p>
+<p>You can check those corrections here: {$a->link}</p>
+';
+$string['messageprovider:correction'] = 'Correction notification';
+
+$string['article_tocorrect_subject'] = 'Article ready to be corrected';
+$string['article_tocorrect_message'] = 'Dear {$a->user_name},
+
+
+The article ({$a->article}) from {$a->author_name} is ready to be corrected.
+
+You can start to correct it here: {$a->link}
+';
+$string['article_tocorrect_html_message'] = '<p>Dear {$a->user_name},</p>
+<p>The article ({$a->article}) from {$a->author_name} is ready to be corrected.</p>
+<p>You can start to correct it here: {$a->link}</p>
+';
+$string['messageprovider:tocorrect'] = 'Ready to be corrected notification';

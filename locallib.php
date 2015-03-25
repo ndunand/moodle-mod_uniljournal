@@ -291,3 +291,48 @@ function canmanagethemebank($themebank) {
     }
     return true;
 }
+
+function sendcorrectionmessage($from, $to, $articleinstance, $articlelink) {
+    $user_name = $to->firstname . ' ' . $to->lastname;
+    $message = get_string('article_corrected_message', 'mod_uniljournal',
+        array('article' => $articleinstance->title, 'user_name' => $user_name, 'link' => $articlelink->__toString())
+    );
+    $html_message = get_string('article_corrected_html_message', 'mod_uniljournal',
+        array('article' => $articleinstance->title, 'user_name' => $user_name, 'link' => $articlelink->__toString())
+    );
+    $eventdata = new stdClass();
+    $eventdata->component         = 'mod_uniljournal';
+    $eventdata->name              = 'correction';
+    $eventdata->userfrom          = $from;
+    $eventdata->userto            = $to;
+    $eventdata->subject           = get_string('article_corrected_subject', 'mod_uniljournal');
+    $eventdata->fullmessage       = $message;
+    $eventdata->fullmessagehtml   = $html_message;
+    $eventdata->smallmessage      = $message;
+    $eventdata->fullmessageformat = FORMAT_PLAIN;
+    $eventdata->notification      = 1;
+    message_send($eventdata);
+}
+
+function sendtocorrectmessage($from, $to, $articleinstance, $articlelink) {
+    $user_name = $to->firstname . ' ' . $to->lastname;
+    $author_name = $from->firstname . ' ' . $from->lastname;
+    $message = get_string('article_tocorrect_message', 'mod_uniljournal',
+        array('article' => $articleinstance->title, 'user_name' => $user_name, 'author_name' => $author_name, 'link' => $articlelink->__toString())
+    );
+    $html_message = get_string('article_tocorrect_html_message', 'mod_uniljournal',
+        array('article' => $articleinstance->title, 'user_name' => $user_name, 'author_name' => $author_name, 'link' => $articlelink->__toString())
+    );
+    $eventdata = new stdClass();
+    $eventdata->component         = 'mod_uniljournal';
+    $eventdata->name              = 'tocorrect';
+    $eventdata->userfrom          = $from;
+    $eventdata->userto            = $to;
+    $eventdata->subject           = get_string('article_tocorrect_subject', 'mod_uniljournal');
+    $eventdata->fullmessage       = $message;
+    $eventdata->fullmessagehtml   = $html_message;
+    $eventdata->smallmessage      = $message;
+    $eventdata->fullmessageformat = FORMAT_PLAIN;
+    $eventdata->notification      = 1;
+    message_send($eventdata);
+}
