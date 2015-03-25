@@ -78,6 +78,7 @@ class template_edit_form extends moodleform {
         $mform->addElement('html', '<div class="fitem fitem_dragdrop">');
         $mform->addElement('html', '<div class="fitemtitle"><label>' . get_string('template_element', 'uniljournal') . '</label></div>');
         $mform->addElement('html', '<div class="felement">');
+        $mform->addElement('html', '<span id="error_elementsAdded" class="error" style="display:none;" tabindex="0">' . get_string('template_element_required', 'uniljournal') . '.</span>');
         $mform->addElement('html', '<div><ul id="elementsAdded" class="elementsAdded">');
         foreach($elements as $element) {
             $mform->addElement('html', html_writer::tag('li',
@@ -86,7 +87,7 @@ class template_edit_form extends moodleform {
                   array(
                     'style' => "display: none;",
                     'type' => "text",
-                    "name" => "articleelements['. $element->id .']",
+                    "name" => "articleelements[" . $element->id . "]",
                     "value" => $element->element_type
                     ))));
         }
