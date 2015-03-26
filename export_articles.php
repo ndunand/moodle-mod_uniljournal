@@ -121,7 +121,10 @@ if(count($articleinstances) > 0) {
         $row->attributes['class'] = 'student' . $ai->userid;
         $script = 'edit.php';
         require_once('locallib.php');
-        $corrected = !in_array($ai->edituserid, array($ai->userid, 0)) || !in_array($ai->commentuserid, array($ai->userid, 0));
+        $editorIsNotAuthor = !in_array($ai->edituserid, array($ai->userid, 0));
+        $commentFromTeacher = !in_array($ai->commentuserid, array($ai->userid, 0));
+        $commentFromLastVersion = $ai->commentversion === $ai->maxversion;
+        $corrected = $editorIsNotAuthor || ($commentFromTeacher && $commentFromLastVersion);
         $title = uniljournal_articletitle($ai);
         $row->cells[] = html_writer::start_tag('input', array('type' => 'checkbox', 'value' => $ai->id, 'name' => 'articles[]'));
 

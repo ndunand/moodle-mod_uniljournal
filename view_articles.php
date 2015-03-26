@@ -105,7 +105,10 @@ foreach($userarticles as $ua) {
   // Determine the 'corrected' status: true if:
   // a) was edited last by a foreign user OR
   // b) last version was commented by a foreign user
-  $corrected = !in_array($ua->edituserid, array($ua->userid, 0)) || !in_array($ua->commentuserid, array($ua->userid, 0));
+  $editorIsNotAuthor = !in_array($ua->edituserid, array($ua->userid, 0));
+  $commentFromTeacher = !in_array($ua->commentuserid, array($ua->userid, 0));
+  $commentFromLastVersion = $ua->commentversion === $ua->maxversion;
+  $corrected = $editorIsNotAuthor || ($commentFromTeacher && $commentFromLastVersion);
   
   if(!$corrected) $sumuncorrected++;
   
