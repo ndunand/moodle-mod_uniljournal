@@ -197,14 +197,16 @@ function uniljournal_get_article_instances($query_args = array('id' => '0'), $st
     array_push($attributes,
       'astatus.maxversion',
       'astatus.edituserid',
-      'astatus.commentuserid');
+      'astatus.commentuserid',
+      'astatus.commentversion');
     $statusrequest = 'LEFT JOIN (
-              SELECT DISTINCT instanceid as id, version as maxversion, aei.userid as edituserid, c.userid as commentuserid
+              SELECT DISTINCT instanceid as id, version as maxversion, aei.userid as edituserid, c.userid as commentuserid, c.articleinstanceversion as commentversion
                          FROM {uniljournal_aeinstances} aei
                          LEFT JOIN (
                             SELECT c.* FROM {uniljournal_article_comments} c, {uniljournal_aeinstances} aei
                             WHERE c.articleinstanceid = aei.instanceid
-                            AND c.articleinstanceversion = aei.version  LIMIT 1
+                            AND c.articleinstanceversion = aei.version
+                            ORDER BY c.articleinstanceversion DESC LIMIT 1
                          ) c ON c.articleinstanceid = aei.instanceid
                          WHERE (instanceid, version) IN (
                                                         SELECT instanceid, max(version) as maxversion
@@ -277,4 +279,62 @@ function uniljournal_versiontoggle($articleinstance, $cm, $actualversion, $targe
   $html .= '</div>';
 
   return $html;
+}
+
+function canmanagethemebank($themebank) {
+    if (array_key_exists('contextid', $themebank)) {
+        $themebank_context = context::instance_by_id($themebank->contextid);
+        if ($themebank_context->contextlevel < 50 && has_capability('moodle/category:manage', $themebank_context)) {
+            return true;
+        } else if ($themebank_context->contextlevel >= 50) {
+            return true;
+        }
+        return false;
+    }
+    return true;
+}
+
+function sendcorrectionmessage($from, $to, $articleinstance, $articlelink) {
+    $user_name = $to->firstname . ' ' . $to->lastname;
+    $message = get_string('article_corrected_message', 'mod_uniljournal',
+        array('article' => $articleinstance->title, 'user_name' => $user_name, 'link' => $articlelink->__toString())
+    );
+    $html_message = get_string('article_corrected_html_message', 'mod_uniljournal',
+        array('article' => $articleinstance->title, 'user_name' => $user_name, 'link' => $articlelink->__toString())
+    );
+    $eventdata = new stdClass();
+    $eventdata->component         = 'mod_uniljournal';
+    $eventdata->name              = 'correction';
+    $eventdata->userfrom          = $from;
+    $eventdata->userto            = $to;
+    $eventdata->subject           = get_string('article_corrected_subject', 'mod_uniljournal');
+    $eventdata->fullmessage       = $message;
+    $eventdata->fullmessagehtml   = $html_message;
+    $eventdata->smallmessage      = $message;
+    $eventdata->fullmessageformat = FORMAT_PLAIN;
+    $eventdata->notification      = 1;
+    message_send($eventdata);
+}
+
+function sendtocorrectmessage($from, $to, $articleinstance, $articlelink) {
+    $user_name = $to->firstname . ' ' . $to->lastname;
+    $author_name = $from->firstname . ' ' . $from->lastname;
+    $message = get_string('article_tocorrect_message', 'mod_uniljournal',
+        array('article' => $articleinstance->title, 'user_name' => $user_name, 'author_name' => $author_name, 'link' => $articlelink->__toString())
+    );
+    $html_message = get_string('article_tocorrect_html_message', 'mod_uniljournal',
+        array('article' => $articleinstance->title, 'user_name' => $user_name, 'author_name' => $author_name, 'link' => $articlelink->__toString())
+    );
+    $eventdata = new stdClass();
+    $eventdata->component         = 'mod_uniljournal';
+    $eventdata->name              = 'tocorrect';
+    $eventdata->userfrom          = $from;
+    $eventdata->userto            = $to;
+    $eventdata->subject           = get_string('article_tocorrect_subject', 'mod_uniljournal');
+    $eventdata->fullmessage       = $message;
+    $eventdata->fullmessagehtml   = $html_message;
+    $eventdata->smallmessage      = $message;
+    $eventdata->fullmessageformat = FORMAT_PLAIN;
+    $eventdata->notification      = 1;
+    message_send($eventdata);
 }

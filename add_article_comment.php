@@ -45,6 +45,7 @@ $PAGE->set_context($context);
 $cm         = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
 $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $uniljournal  = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
+$articleinstance  = $DB->get_record('uniljournal_articleinstances', array('id' => $articleinstanceid), '*', MUST_EXIST);
 
 if ($cid && $action == 'delete') {
     require_capability('mod/uniljournal:deletecomment', $context);
@@ -97,6 +98,13 @@ if ($cid && $action == 'delete') {
         'context' => $context,
     ));
     $event->trigger();
+
+    // Send notification to the student that his article has been corrected
+    if ($articleinstance->userid != $USER->id) {
+        $userto = $DB->get_record('user', array('id'=>$articleinstance->userid));
+        $articlelink = new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cm->id, 'id' => $articleinstance->id, 'version' => $articleinstanceversion));
+        sendcorrectionmessage($USER, $userto, $articleinstance, $articlelink);
+    }
 
     redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid, 'id' => $articleinstanceid)));
 }

@@ -114,6 +114,7 @@ if ($id) { // if entry is specified
 
 $articleinstance->cmid = $cmid;
 $articleinstance->amid = $amid;
+$authorid = $articleinstance->userid;
 
 $customdata = array();
 $customdata['current'] = $articleinstance;
@@ -206,7 +207,16 @@ if ($mform->is_cancelled()) {
         }
       }
     }
-    redirect(new moodle_url('/mod/uniljournal/view.php', array('id' => $cm->id)));
+    if (has_capability('mod/uniljournal:editallarticles', $context)) {
+        // Send notification to the student that his article has been corrected
+        $userto = $DB->get_record('user', array('id'=>$authorid));
+        $articlelink = new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cm->id, 'id' => $articleinstance->id, 'version' => $version));
+        sendcorrectionmessage($USER, $userto, $articleinstance, $articlelink);
+
+        redirect(new moodle_url('/mod/uniljournal/view_articles.php', array('id' => $cm->id, 'uid' => $authorid)));
+    } else {
+        redirect(new moodle_url('/mod/uniljournal/view.php', array('id' => $cm->id)));
+    }
 }
 
 

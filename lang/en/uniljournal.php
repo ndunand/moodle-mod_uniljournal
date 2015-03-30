@@ -66,6 +66,7 @@ $string['template_themebank'] = 'Pick a theme bank for that template';
 $string['template_instructions_help'] = '(TO BE COMPLETED !) …';
 $string['template_element'] = 'Template element';
 $string['template_nothemebank'] = 'Don\'t select a theme bank';
+$string['template_element_required'] = 'You must select at least one element';
 $string['element_subtitle'] = 'Subtitle';
 $string['article_theme'] = 'Pick a theme';
 $string['article_theme_mandatory'] = 'You must pick a theme!';
@@ -132,7 +133,7 @@ $string['theme_title'] = 'Theme title';
 $string['theme_title_help'] = '(TO BE COMPLETED !) This is the title of the theme';
 $string['theme_instructions'] = 'Instructions';
 $string['theme_instructions_help'] = '(TO BE COMPLETED !) These are the theme instructions';
-$string['n_articleinstances'] = '{$a} articles';
+$string['n_articleinstances'] = 'Used in {$a} article(s)';
 $string['articlestate'] = 'State';
 $string['revisions'] = 'Revisions';
 $string['corrected_status'] = 'Corrected';
@@ -207,3 +208,34 @@ $string['theme_updated_desc'] = 'User {$a->userid} has updated the theme {$a->th
 $string['theme_deleted_name'] = 'Delete a theme';
 $string['theme_deleted_explanation'] = 'Event when a theme has been successfully deleted.';
 $string['theme_deleted_desc'] = 'User {$a->userid} has deleted the theme {$a->themeid} from theme bank {$a->themebankid}';
+
+$string['restoredon'] = ' (restored on {$a->mday}/{$a->mon}/{$a->year})';
+
+//Mails
+$string['article_corrected_subject'] = 'Article corrected';
+$string['article_corrected_message'] = 'Dear {$a->user_name},
+
+
+Your article ({$a->article}) has been corrected.
+
+You can check those corrections here: {$a->link}
+';
+$string['article_corrected_html_message'] = '<p>Dear {$a->user_name},</p>
+<p>Your article ({$a->article}) has been corrected.</p>
+<p>You can check those corrections here: {$a->link}</p>
+';
+$string['messageprovider:correction'] = 'Correction notification';
+
+$string['article_tocorrect_subject'] = 'Article ready to be corrected';
+$string['article_tocorrect_message'] = 'Dear {$a->user_name},
+
+
+The article ({$a->article}) from {$a->author_name} is ready to be corrected.
+
+You can start to correct it here: {$a->link}
+';
+$string['article_tocorrect_html_message'] = '<p>Dear {$a->user_name},</p>
+<p>The article ({$a->article}) from {$a->author_name} is ready to be corrected.</p>
+<p>You can start to correct it here: {$a->link}</p>
+';
+$string['messageprovider:tocorrect'] = 'Ready to be corrected notification';

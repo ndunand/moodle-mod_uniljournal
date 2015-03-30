@@ -239,6 +239,8 @@ echo '
                 var maxY = minY + table.height();
                 if (event.pageX > maxX || event.pageX < minX || event.pageY > maxY || event.pageY < minY) {
                     $(this).sortable("cancel");
+                } else {
+                    $("#error_elementsAdded").hide();
                 }
             }
         });
@@ -251,7 +253,22 @@ echo '
                 var maxY = minY + table.height();
                 if (event.pageX > maxX || event.pageX < minX || event.pageY > maxY || event.pageY < minY) {
                     $(event.toElement).remove();
+                    if ($("#elementsAdded li").length < 1) {
+                        $("#error_elementsAdded").show();
+                    }
                 }
+            }
+        });
+        $("form[method=\"post\"]").on("submit", function (e) {
+            if ($("#elementsAdded li").length > 0) {
+                $("#error_elementsAdded").hide();
+            } else {
+                $("#error_elementsAdded").show();
+                $("#error_elementsAdded").focus();
+                $("html, body").animate({
+                    scrollTop: $("#elementsAdded").offset().top
+                }, 0);
+                return false;
             }
         });
     });

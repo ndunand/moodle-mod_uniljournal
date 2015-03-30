@@ -51,13 +51,13 @@ $module_context      = context_module::instance($cm->id);
 $course_context      = context_course::instance($course->id);
 $category_context    = context_coursecat::instance($course->category);
 $system_context      = context_system::instance();
-$user_context        = context_user::instance($USER->id);
 $contexts = array(
     $module_context->id => get_string('module_context', 'uniljournal'),
-    $course_context->id => get_string('course_context', 'uniljournal'),
-    $category_context->id => get_string('category_context', 'uniljournal'),
-    $system_context->id => get_string('system_context', 'uniljournal')
-);
+    $course_context->id => get_string('course_context', 'uniljournal'));
+if (has_capability('moodle/category:manage', $system_context)) {
+    $contexts[$category_context->id] = get_string('category_context', 'uniljournal');
+    $contexts[$system_context->id] = get_string('system_context', 'uniljournal');
+}
 
 if ($id) { // if entry is specified
     if ((!$entry = $DB->get_record('uniljournal_themebanks', array('id' => $id))) || !array_key_exists($entry->contextid, $contexts)) {
@@ -78,6 +78,10 @@ $customdata['cm'] = $cm;
 $customdata['contexts'] = $contexts;
 
 $mform = new themebank_edit_form(null, $customdata);
+
+if (!canmanagethemebank($entry)) {
+    error('You don\'t have the permissions to edit that theme bank');
+}
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
