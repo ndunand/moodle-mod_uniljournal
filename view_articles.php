@@ -36,6 +36,8 @@ require_once(dirname(__FILE__).'/lib.php');
 $id      = optional_param('id', 0, PARAM_INT); // Course_module ID, or
 $n       = optional_param('n', 0, PARAM_INT);  // ... uniljournal instance ID - it should be named as the first character of the module.
 $uid     = optional_param('uid', 0, PARAM_INT);
+$action  = optional_param('action', 0, PARAM_TEXT);
+$aid  = optional_param('aid', 0, PARAM_TEXT);
 
 if ($id) {
     $cm         = get_coursemodule_from_id('uniljournal', $id, 0, false, MUST_EXIST);
@@ -48,6 +50,8 @@ if ($id) {
 } else {
     error('You must specify a course_module ID or an instance ID');
 }
+
+global $DB;
 
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
@@ -77,7 +81,7 @@ $head = array(
     get_string('name'),
     get_string('lastmodified'),
     get_string('revisions', 'uniljournal'),
-    get_string('corrected_status', 'uniljournal'),
+    get_string('articlestate', 'uniljournal'),
     get_string('template', 'uniljournal'),
 );
 
@@ -93,6 +97,38 @@ $table->head = $head;
 
 // Pile the number of uncorrected articles
 $sumuncorrected = 0;
+$smforms = array();
+foreach($userarticles as $ai) {
+  require_once('view_choose_template_form.php');
+  $uniljournal_statuses = uniljournal_article_status(has_capability('mod/uniljournal:viewallarticles', $context), $ai->status);
+  $currententry = new stdClass();
+  $currententry->aid = $ai->id;
+  $statuskey = 'status_'.$ai->id;
+  $currententry->statuskey = $statuskey;
+  $currententry->$statuskey = $ai->status;
+  $smforms[$ai->id] = new status_change_form(new moodle_url('/mod/uniljournal/view_articles.php', array('id' => $id, 'uid' => $uid, 'n' => $n, 'aid' => $ai->id, 'action' => 'change_state')),
+    array(
+      'options' => $uniljournal_statuses,
+      'currententry' => $currententry,
+    ));
+}
+
+if ($action && $aid) {
+  if (!$ai  = $userarticles[$aid]) {
+    error('Must exist!');
+  }
+  if($action == "change_state" && has_capability('mod/uniljournal:editallarticles', $context) && array_key_exists($aid, $userarticles)) {
+    $ai = $userarticles[$aid];
+    $smform = $smforms[$aid];
+    $smid = 'status_'.$aid; // Don't take it from the form, out of 'security'
+    if ($smform->is_cancelled()) {
+      // Should not happen!
+    } elseif ($entry = $smform->get_data()) {
+      $ai->status = $entry->$smid;
+      $DB->update_record('uniljournal_articleinstances', $ai);
+    }
+  }
+}
 
 foreach($userarticles as $ua) {
   $row = new html_table_row();
@@ -102,17 +138,17 @@ foreach($userarticles as $ua) {
                     $title);
   $row->cells[] = strftime('%c', $ua->timemodified);
   $row->cells[] = $ua->maxversion; // No check needed, no article should be available without element instances
-  // Determine the 'corrected' status: true if:
-  // a) was edited last by a foreign user OR
-  // b) last version was commented by a foreign user
-  $editorIsNotAuthor = !in_array($ua->edituserid, array($ua->userid, 0));
-  $commentFromTeacher = !in_array($ua->commentuserid, array($ua->userid, 0));
-  $commentFromLastVersion = $ua->commentversion === $ua->maxversion;
-  $corrected = $editorIsNotAuthor || ($commentFromTeacher && $commentFromLastVersion);
-  
-  if(!$corrected) $sumuncorrected++;
-  
-  $row->cells[] = $corrected?html_writer::img($OUTPUT->pix_url('t/check'), get_string('yes')):'';
+  $corrected = $ua->status == 50;
+
+
+  $PAGE->requires->yui_module('moodle-core-formautosubmit',
+      'M.core.init_formautosubmit',
+      array(array('selectid' => 'id_status_'.$ua->id, 'nothing' => false))
+  );
+  // Add class to the form, to hint CSS for label hiding
+  $statecell = new html_table_cell($smforms[$ua->id]->render());
+  $statecell->attributes['class'] = 'state_form';
+  $row->cells[] = $statecell;
   $row->cells[] = $ua->amtitle;
   
   $actions = "";

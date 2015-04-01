@@ -119,21 +119,28 @@ function uniljournal_get_template_descriptions($uniljournalid, $onlyhidden=true)
   return $templatesoptions;
 }
 
-function uniljournal_article_status($id = null) {
+function uniljournal_article_status($isTeacher = false, $status) {
   $statuses = array();
-  $statuses[0] = '-';
-  $statuses[10] = '◯'; // Started
-  $statuses[20] = '◐'; // In progress
-  $statuses[30] = '⬤'; // Finished
-  $statuses[40] = '✓'; // Finished
-  
-  if(is_null($id)) {
-    return $statuses;
-  } else if (array_key_exists($id, $statuses)) {
-    return $statuses[$id];
-  } else {
-    return false;
+  if (! $isTeacher || ($isTeacher && $status == 0)) {
+      $statuses[0] = '-';
   }
+  if (! $isTeacher || ($isTeacher && $status == 10)) {
+      $statuses[10] = '◯'; // Started
+  }
+  if (! $isTeacher || ($isTeacher && $status == 20)) {
+      $statuses[20] = '◐'; // In progress
+  }
+  if (! $isTeacher || ($isTeacher && $status == 30)) {
+      $statuses[30] = '⬤'; // Finished
+  }
+  if (! $isTeacher || ($isTeacher && $status == 40)) {
+    $statuses[40] = get_string('to_correct', 'mod_uniljournal');
+  }
+  if (($isTeacher && $status == 40) || (!$isTeacher && $status == 50)) {
+    $statuses[50] = get_string('corrected', 'mod_uniljournal');
+  }
+
+  return $statuses;
 }
 
 function uniljournal_get_theme_banks($cm, $course) {

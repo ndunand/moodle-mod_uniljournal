@@ -61,12 +61,12 @@ if (has_capability('mod/uniljournal:viewallarticles', $context)) {
     $articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $USER->id), true);
 }
 
-$uniljournal_statuses = uniljournal_article_status();
 // Status modifier forms
 $smforms = array();
 $users = array();
 foreach($articleinstances as $ai) {
     require_once('view_choose_template_form.php');
+    $uniljournal_statuses = uniljournal_article_status(has_capability('mod/uniljournal:viewallarticles', $context), $ai->status);
     $currententry = new stdClass();
     $currententry->aid = $ai->id;
     $statuskey = 'status_'.$ai->id;
@@ -121,10 +121,6 @@ if(count($articleinstances) > 0) {
         $row->attributes['class'] = 'student' . $ai->userid;
         $script = 'edit.php';
         require_once('locallib.php');
-        $editorIsNotAuthor = !in_array($ai->edituserid, array($ai->userid, 0));
-        $commentFromTeacher = !in_array($ai->commentuserid, array($ai->userid, 0));
-        $commentFromLastVersion = $ai->commentversion === $ai->maxversion;
-        $corrected = $editorIsNotAuthor || ($commentFromTeacher && $commentFromLastVersion);
         $title = uniljournal_articletitle($ai);
         $row->cells[] = html_writer::start_tag('input', array('type' => 'checkbox', 'value' => $ai->id, 'name' => 'articles[]'));
 
@@ -137,7 +133,6 @@ if(count($articleinstances) > 0) {
             new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ai->id, 'cmid' => $cm->id)),
             $title);
         $row->cells[] = strftime('%c', $ai->timemodified);
-        $row->cells[] = $corrected?html_writer::img($OUTPUT->pix_url('t/check'), get_string('yes')):'';
         $row->cells[] = $ai->amtitle;
 
         $PAGE->requires->yui_module('moodle-core-formautosubmit',

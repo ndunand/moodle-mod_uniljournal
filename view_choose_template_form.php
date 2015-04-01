@@ -60,18 +60,32 @@ class status_change_form extends moodleform {
 
         $mform->disable_form_change_checker();
 
+
+        $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
+        $context = context_course::instance($course->id);
+        $teachers = get_role_users($role->id, $context);
+
         // sent notification to teacher if status is 40
-        if (count($_POST) > 0 && $_POST['status_2'] == 40) {
-            $article = $DB->get_record('uniljournal_articleinstances', array('id' => $currententry->aid), '*', MUST_EXIST);
+        if (count($_POST) > 0 && $_POST['status_' . $currententry->aid] == 40) {
+          $article = $DB->get_record('uniljournal_articleinstances', array('id' => $currententry->aid), '*', MUST_EXIST);
 
-            $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
-            $context = context_course::instance($course->id);
-            $teachers = get_role_users($role->id, $context);
+          foreach($teachers as $teacher) {
+              $articlelink = new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $_POST['id'], 'id' => $article->id));
+              sendtocorrectmessage($USER, $teacher, $article, $articlelink);
+          }
+        }
+        // sent notification to student if status is 50
+        if (count($_POST) > 0 && $_POST['status_' . $currententry->aid] == 50) {
+          if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
+            error('Must be a teacher to set this status');
+          }
+          $article = $DB->get_record('uniljournal_articleinstances', array('id' => $currententry->aid), '*', MUST_EXIST);
 
-            foreach($teachers as $teacher) {
-                $articlelink = new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $_POST['id'], 'id' => $article->id));
-                sendtocorrectmessage($USER, $teacher, $article, $articlelink);
-            }
+          $author = $DB->get_record('user', array('id' => $article->userid));
+
+          $articlelink = new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $_POST['id'], 'id' => $article->id));
+          sendcorrectionmessage($USER, $author, $article, $articlelink);
+
         }
         $this->set_data($currententry);
         

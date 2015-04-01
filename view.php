@@ -87,11 +87,11 @@ if(has_capability('mod/uniljournal:createarticle', $context)) {
 require_once('locallib.php');
 $articleinstances = uniljournal_get_article_instances(array('uniljournalid' => $uniljournal->id, 'userid' => $USER->id), true);
 
-$uniljournal_statuses = uniljournal_article_status();
 // Status modifier forms
 $smforms = array();
 foreach($articleinstances as $ai) {
   require_once('view_choose_template_form.php');
+  $uniljournal_statuses = uniljournal_article_status(has_capability('mod/uniljournal:viewallarticles', $context), $ai->status);
   $currententry = new stdClass();
   $currententry->aid = $ai->id;
   $statuskey = 'status_'.$ai->id;
@@ -198,7 +198,7 @@ if(isset($deleteform)) {
         $userarticles[$article->userid]->narticles++;
         $userarticles[$article->userid]->timemodified = max($userarticles[$article->userid]->timemodified, $article->timemodified);
 
-        if($article->userid == $article->edituserid && (is_null($article->commentuserid) || $article->userid == $article->commentuserid)) {
+        if($article->status == 40) {
           $userarticles[$article->userid]->ncorrected++;
           $sumuncorrected++;
         }
@@ -243,7 +243,6 @@ if(isset($deleteform)) {
     $table->head = array(
         get_string('myarticles', 'uniljournal'),
         get_string('lastmodified'),
-        get_string('corrected_status', 'uniljournal'),
         get_string('template', 'uniljournal'),
         get_string('articlestate', 'uniljournal'),
         get_string('actions'),
@@ -255,17 +254,12 @@ if(isset($deleteform)) {
       $row = new html_table_row();
       $script = 'edit.php';
       require_once('locallib.php');
-      $editorIsNotAuthor = !in_array($ai->edituserid, array($ai->userid, 0));
-      $commentFromTeacher = !in_array($ai->commentuserid, array($ai->userid, 0));
-      $commentFromLastVersion = $ai->commentversion === $ai->maxversion;
-      $corrected = $editorIsNotAuthor || ($commentFromTeacher && $commentFromLastVersion);
       $title = uniljournal_articletitle($ai);
 
       $row->cells[] = html_writer::link(
                         new moodle_url('/mod/uniljournal/view_article.php', array('id' => $ai->id, 'cmid' => $cm->id)),
                         $title);
       $row->cells[] = strftime('%c', $ai->timemodified);
-      $row->cells[] = $corrected?html_writer::img($OUTPUT->pix_url('t/check'), get_string('yes')):'';
       $row->cells[] = $ai->amtitle;
 
       $PAGE->requires->yui_module('moodle-core-formautosubmit',

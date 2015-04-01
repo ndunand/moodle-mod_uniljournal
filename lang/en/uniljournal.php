@@ -211,6 +211,9 @@ $string['theme_deleted_desc'] = 'User {$a->userid} has deleted the theme {$a->th
 
 $string['restoredon'] = ' (restored on {$a->mday}/{$a->mon}/{$a->year})';
 
+$string['to_correct'] = 'To correct';
+$string['corrected'] = 'Corrected';
+
 //Mails
 $string['article_corrected_subject'] = 'Article corrected';
 $string['article_corrected_message'] = 'Dear {$a->user_name},

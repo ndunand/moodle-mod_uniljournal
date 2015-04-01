@@ -99,12 +99,5 @@ if ($cid && $action == 'delete') {
     ));
     $event->trigger();
 
-    // Send notification to the student that his article has been corrected
-    if ($articleinstance->userid != $USER->id) {
-        $userto = $DB->get_record('user', array('id'=>$articleinstance->userid));
-        $articlelink = new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cm->id, 'id' => $articleinstance->id, 'version' => $articleinstanceversion));
-        sendcorrectionmessage($USER, $userto, $articleinstance, $articlelink);
-    }
-
     redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid, 'id' => $articleinstanceid)));
 }
