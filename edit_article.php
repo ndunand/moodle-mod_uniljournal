@@ -114,7 +114,9 @@ if ($id) { // if entry is specified
 
 $articleinstance->cmid = $cmid;
 $articleinstance->amid = $amid;
-$authorid = $articleinstance->userid;
+if ($articleinstance->id) {
+  $authorid = $articleinstance->userid;
+}
 
 $customdata = array();
 $customdata['current'] = $articleinstance;
