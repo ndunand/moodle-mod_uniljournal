@@ -81,7 +81,7 @@ foreach($articleinstances as $articleinstance) {
     $articletitle = uniljournal_articletitle($articleinstance);
     $articleinstance->title = $articletitle;
 
-    list($article_html, $pdf_files)= $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, $pdf);
+    list($article_html, $attachment_html, $attachment_files)= $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, $pdf);
 
     if ($pdf) {
         $article_html = '<html><head><style>' . file_get_contents('pdf_CSS.css') . '</style></head><body>' . $article_html;
@@ -91,7 +91,7 @@ foreach($articleinstances as $articleinstance) {
 
         $article_html = $article_html . '</body></html>';
 
-        $pdf_articles[$articleinstance->id] = [$article_html, $pdf_files, $articleinstance];
+        $pdf_articles[$articleinstance->id] = [$article_html, $attachment_html, $attachment_files, $articleinstance];
 
         $count++;
     } else {
@@ -104,7 +104,7 @@ if ($pdf) {
     make_cache_directory('tcpdf');
 
 //  Create PDF
-    $pdf =& new concat_pdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8');
     $pdf->setFontSubsetting(FALSE);
     $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
     $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
@@ -113,19 +113,33 @@ if ($pdf) {
     $pdf->setPrintFooter(FALSE);
 
     $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
-    $pdf->writeHTMLCell(0, 0, '', '', uniljournal_title_page($cm, $uniljournal));
+    $pdf->writeHTML(uniljournal_title_page($cm, $uniljournal));
 
     foreach($pdf_articles as $pdf_article) {
         $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
 
-        $pdf->Bookmark($pdf_article[2]->title, 0, 0, '', '', array(0,64,128));
-        $pdf->writeHTMLCell(0, 0, '', '', $pdf_article[0] . '</body></html>');
+        $pdf->Bookmark($pdf_article[3]->title, 0, 0, '', '', array(0,64,128));
+        $pdf->writeHTML($pdf_article[0] . '</body></html>');
 
-        if (count($pdf_article[1]) > 0 ){
-            $pdf->AddPage();
-            $pdf->Bookmark(get_string('attachments', 'mod_uniljournal'), 1, 0, '', '', array(128,0,0));
-            $pdf->setFiles($pdf_article[1]);
-            $pdf->concat();
+        if ($pdf_article[1]) {
+          $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
+          $pdf->writeHTML('<html><head><style>' . file_get_contents('pdf_CSS.css') . '</style></head><body>' . $pdf_article[1] . '</body></html>');
+        }
+
+        if (count($pdf_article[2]) > 0 ){
+          $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
+          $pdf->Bookmark(get_string('attachments', 'mod_uniljournal'), 1, 0, '', '', array(128,0,0));
+          $pdf->Cell(0, 0, get_string('offlineattachments', 'mod_uniljournal'), 0, 1);
+          $i = 0;
+          foreach($pdf_article[2] as $attachment) {
+            if ($i == 39) {
+              $i = -1;
+              $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
+            }
+            $pdf->Annotation(8, 33+6*$i, 2, 4, $attachment['filename'], array('Subtype' => 'FileAttachment', 'Name' => 'Paperclip', 'FS' => $attachment['url']));
+            $pdf->Cell(0, 6, $attachment['filename'], 0, 1);
+            $i++;
+          }
         }
     }
     $pdfname = 'articles';
@@ -142,6 +156,7 @@ if ($pdf) {
 
     $pdf->addTOC(2);
     $pdf->endTOCPage();
+
     $pdf->Output($pdfname, 'D');
 } else {
     $PAGE->set_url('/mod/uniljournal/export_articles.php', array('id' => $cm->id));

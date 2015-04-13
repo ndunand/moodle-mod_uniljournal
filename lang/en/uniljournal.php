@@ -244,3 +244,4 @@ $string['article_tocorrect_html_message'] = '<p>Dear {$a->user_name},</p>
 $string['messageprovider:tocorrect'] = 'Ready to be corrected notification';
 
 $string['toc'] = 'Table Of Contents';
+$string['offlineattachments'] = 'Offline attachments';
