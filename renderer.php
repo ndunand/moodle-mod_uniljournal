@@ -95,7 +95,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
     }
 
     function display_article($article, $articleelements, $context, $pdf, $version=0, &$actualversion=0) {
-        global $DB, $OUTPUT;
+        global $CFG, $DB, $OUTPUT;
 
         $output = '';
 
@@ -124,6 +124,8 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
         $attachments = '';
 
         $file_extensions = get_mimetypes_array();
+
+        $pdf_files = [];
 
         foreach($articleelements as $ae) {
             //hack to make the image readable by TCPDF
@@ -191,6 +193,11 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                             $attachments .= html_writer::link($url, $file->get_filename());
                             $attachments .= html_writer::end_div();
                         } else {
+                            if (strpos($file->get_mimetype(), 'pdf') !== false) {
+                              $filename = $file->get_contenthash();
+                              $path = $CFG->dataroot . '/filedir/' . substr($filename, 0, 2) . '/' . substr($filename, 2, 2) . '/' . $filename;
+                              $pdf_files[] = $path;
+                            }
                             $attachments .= html_writer::start_div('article-view-attachment-doc');
                             $attachments .= html_writer::start_div('article-view-attachment-doc-icon');
                             $attachments .= $OUTPUT->pix_icon('f/' . mimeinfo('icon128', $file->get_filename()), $file->get_filename());
@@ -223,6 +230,6 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
 
         $output .= html_writer::end_div();
 
-        return $output;
+        return [$output, $pdf_files];
     }
 }

@@ -31,6 +31,7 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(dirname(dirname(__FILE__))).'/lib/pdflib.php');
+include_once("fpdi/pdf_concat.php");
 
 $cmid    = optional_param('cmid', 0, PARAM_INT);  // Course_module ID
 $articleinstanceids = $_POST['articles'];
@@ -52,10 +53,7 @@ $uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
 $articleinstances = uniljournal_get_article_instances(array('id' => $articleinstanceids), true);
 
 $articles = '';
-
-if ($pdf) {
-    $articles = '<html><head><style>' . file_get_contents('pdf_CSS.css') . '</style></head><body>';
-}
+$pdf_articles = [];
 
 $count = 1;
 $numarticles = count($articleinstances);
@@ -83,35 +81,51 @@ foreach($articleinstances as $articleinstance) {
     $articletitle = uniljournal_articletitle($articleinstance);
     $articleinstance->title = $articletitle;
 
-    $article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, $pdf);
+    list($article_html, $pdf_files)= $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, $pdf);
 
-    if ($pdf && ($count != $numarticles)) {
-        $article_html .= '<br pagebreak="true"/>';
+    if ($pdf) {
+        $article_html = '<html><head><style>' . file_get_contents('pdf_CSS.css') . '</style></head><body>' . $article_html;
+        if ($count != $numarticles) {
+            $article_html .= '<br pagebreak="true"/>';
+        }
+
+        $article_html = $article_html . '</body></html>';
+
+        $pdf_articles[$articleinstance->id] = [$article_html, $pdf_files];
+
+        $count++;
+    } else {
+        $articles .= $article_html;
     }
 
-    $count++;
-
-    $articles .= $article_html;
 }
 
 if ($pdf) {
     make_cache_directory('tcpdf');
 
 //  Create PDF
-    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf =& new concat_pdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     $pdf->setFontSubsetting(FALSE);
     $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
     $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
     $pdf->setPrintHeader(FALSE);
     $pdf->setPrintFooter(FALSE);
+  
+    foreach($pdf_articles as $pdf_article) {
+        $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
 
-    $pdf->AddPage();
+        $pdf->writeHTMLCell(0, 0, '', '', $pdf_article[0] . '</body></html>');
 
-    $pdf->writeHTMLCell(0, 0, '', '', $articles . '</body></html>');
+        if (count($pdf_article[1]) > 0 ){
+            $pdf->AddPage();
+            $pdf->setFiles($pdf_article[1]);
+            $pdf->concat();
+        }
+    }
     $pdfname = 'articles';
     foreach ($articleinstanceids as $id) {
-        $pdfname .= '_' . $id;
+      $pdfname .= '_' . $id;
     }
     $pdfname .= '_' . time() . '.pdf';
     $pdf->Output($pdfname, 'D');

@@ -42,6 +42,8 @@ if ($cmid) {
     error('You must specify a course_module ID');
 }
 
+global $USER;
+
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 if(! has_capability('mod/uniljournal:createarticle', $context) && ! has_capability('mod/uniljournal:editallarticles', $context) ) {
@@ -148,6 +150,7 @@ if ($mform->is_cancelled()) {
     }
 
     if($isnewentry) {
+      $authorid = $USER->id;
       $articleinstance->userid = $USER->id; // A new article is always owned by its creator
       $articleinstance->id = $DB->insert_record('uniljournal_articleinstances', $articleinstance);
         // Log the article creation
