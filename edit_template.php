@@ -252,7 +252,7 @@ echo '
                 var minY = table.position().top;
                 var maxY = minY + table.height();
                 if (event.pageX > maxX || event.pageX < minX || event.pageY > maxY || event.pageY < minY) {
-                    $(event.toElement).remove();
+                    $(event.originalEvent.target).remove();
                     if ($("#elementsAdded li").length < 1) {
                         $("#error_elementsAdded").show();
                     }
