@@ -345,3 +345,21 @@ function sendtocorrectmessage($from, $to, $articleinstance, $articlelink) {
     $eventdata->notification      = 1;
     message_send($eventdata);
 }
+
+function uniljournal_title_page($cm, $uniljournal) {
+    global $DB;
+    $context = context_module::instance($cm->id);
+    $logo = uniljournal_get_logo($context);
+    $html = '<div class="titlepage">';
+    $html .= '<h1>' . $uniljournal->name . '</h1>';
+    if ($uniljournal->subtitle) {
+        $html .= '<h3>' . $uniljournal->subtitle . '</h3>';
+    }
+    if ($logo) {
+        $url = moodle_url::make_pluginfile_url($logo->get_contextid(), $logo->get_component(), $logo->get_filearea(), $logo->get_itemid(), $logo->get_filepath(), $logo->get_filename());
+        $logoimg = html_writer::img($url, 'Logo');
+        $html .= html_writer::tag('div', $logoimg, array('class' => 'logo'));
+    }
+    $html .= '</div><br pagebreak="true"/>';
+    return $html;
+}

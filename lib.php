@@ -390,7 +390,9 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
 
     //hack to make the image readable by TCPDF
     if ($filearea != 'elementinstance_pdf') {
-        require_login($course, true, $cm);
+        if ($filearea != 'logo') {
+            require_login($course, true, $cm);
+        }
     } else {
         $filearea = 'elementinstance';
     }

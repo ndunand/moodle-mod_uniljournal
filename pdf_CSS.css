@@ -76,3 +76,14 @@ tbody {
 td,th {
     display: table-cell;
 }
+
+.titlepage h1,
+.titlepage h3,
+.titlepage img {
+    text-align: center;
+}
+
+.titlepage img {
+    max-width: 300px;
+    max-height: 300px;
+}

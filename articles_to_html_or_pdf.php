@@ -111,7 +111,10 @@ if ($pdf) {
 
     $pdf->setPrintHeader(FALSE);
     $pdf->setPrintFooter(FALSE);
-  
+
+    $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
+    $pdf->writeHTMLCell(0, 0, '', '', uniljournal_title_page($cm, $uniljournal));
+
     foreach($pdf_articles as $pdf_article) {
         $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
 
