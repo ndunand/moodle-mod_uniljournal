@@ -91,7 +91,7 @@ foreach($articleinstances as $articleinstance) {
 
         $article_html = $article_html . '</body></html>';
 
-        $pdf_articles[$articleinstance->id] = [$article_html, $pdf_files];
+        $pdf_articles[$articleinstance->id] = [$article_html, $pdf_files, $articleinstance];
 
         $count++;
     } else {
@@ -118,10 +118,12 @@ if ($pdf) {
     foreach($pdf_articles as $pdf_article) {
         $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
 
+        $pdf->Bookmark($pdf_article[2]->title, 0, 0, '', '', array(0,64,128));
         $pdf->writeHTMLCell(0, 0, '', '', $pdf_article[0] . '</body></html>');
 
         if (count($pdf_article[1]) > 0 ){
             $pdf->AddPage();
+            $pdf->Bookmark(get_string('attachments', 'mod_uniljournal'), 1, 0, '', '', array(128,0,0));
             $pdf->setFiles($pdf_article[1]);
             $pdf->concat();
         }
@@ -131,6 +133,15 @@ if ($pdf) {
       $pdfname .= '_' . $id;
     }
     $pdfname .= '_' . time() . '.pdf';
+
+    $pdf->addTOCPage();
+
+    $pdf->MultiCell(0, 0, get_string('toc', 'mod_uniljournal'), 0, '', 0, 1, '', '', true, 0);
+    $pdf->Ln();
+    $pdf->SetFont('helvetica', '', 10);
+
+    $pdf->addTOC(2);
+    $pdf->endTOCPage();
     $pdf->Output($pdfname, 'D');
 } else {
     $PAGE->set_url('/mod/uniljournal/export_articles.php', array('id' => $cm->id));

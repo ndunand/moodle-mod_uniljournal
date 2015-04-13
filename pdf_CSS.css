@@ -77,9 +77,7 @@ td,th {
     display: table-cell;
 }
 
-.titlepage h1,
-.titlepage h3,
-.titlepage img {
+.titlepage {
     text-align: center;
 }
 

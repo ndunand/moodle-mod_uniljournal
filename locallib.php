@@ -350,7 +350,8 @@ function uniljournal_title_page($cm, $uniljournal) {
     global $DB;
     $context = context_module::instance($cm->id);
     $logo = uniljournal_get_logo($context);
-    $html = '<div class="titlepage">';
+    $html = '<html><head><style>' . file_get_contents('pdf_CSS.css') . '</style></head><body>';
+    $html .= '<div class="titlepage">';
     $html .= '<h1>' . $uniljournal->name . '</h1>';
     if ($uniljournal->subtitle) {
         $html .= '<h3>' . $uniljournal->subtitle . '</h3>';
@@ -360,6 +361,7 @@ function uniljournal_title_page($cm, $uniljournal) {
         $logoimg = html_writer::img($url, 'Logo');
         $html .= html_writer::tag('div', $logoimg, array('class' => 'logo'));
     }
-    $html .= '</div><br pagebreak="true"/>';
+    $html .= '<p>' . date_format_string(time(), '%d %B %Y') . '</p>';
+    $html .= '</div><br pagebreak="true"/></body>';
     return $html;
 }

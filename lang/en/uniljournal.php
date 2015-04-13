@@ -242,3 +242,5 @@ $string['article_tocorrect_html_message'] = '<p>Dear {$a->user_name},</p>
 <p>You can start to correct it here: {$a->link}</p>
 ';
 $string['messageprovider:tocorrect'] = 'Ready to be corrected notification';
+
+$string['toc'] = 'Table Of Contents';
