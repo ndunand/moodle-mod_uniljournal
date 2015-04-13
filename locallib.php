@@ -136,7 +136,7 @@ function uniljournal_article_status($isTeacher = false, $status) {
   if (! $isTeacher || ($isTeacher && $status == 40)) {
     $statuses[40] = get_string('to_correct', 'mod_uniljournal');
   }
-  if (($isTeacher && $status == 40) || (!$isTeacher && $status == 50)) {
+  if (($isTeacher && $status == 40) || ($status == 50)) {
     $statuses[50] = get_string('corrected', 'mod_uniljournal');
   }
 

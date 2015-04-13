@@ -66,7 +66,7 @@ class status_change_form extends moodleform {
         $teachers = get_role_users($role->id, $context);
 
         // sent notification to teacher if status is 40
-        if (count($_POST) > 0 && $_POST['status_' . $currententry->aid] == 40) {
+        if (count($_POST) > 0 && array_key_exists($currententry->statuskey, $_POST) && $_POST[$currententry->statuskey] == 40) {
           $article = $DB->get_record('uniljournal_articleinstances', array('id' => $currententry->aid), '*', MUST_EXIST);
 
           foreach($teachers as $teacher) {
@@ -75,7 +75,7 @@ class status_change_form extends moodleform {
           }
         }
         // sent notification to student if status is 50
-        if (count($_POST) > 0 && $_POST['status_' . $currententry->aid] == 50) {
+        if (count($_POST) > 0 && array_key_exists($currententry->statuskey, $_POST) && $_POST[$currententry->statuskey] == 50) {
           if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
             error('Must be a teacher to set this status');
           }
