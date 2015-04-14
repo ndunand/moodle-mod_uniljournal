@@ -186,28 +186,24 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                             $attachments .= html_writer::end_div();
                         } elseif (!$pdf && strpos($file->get_mimetype(), 'audio') !== false) {
                             $attachment_files[] = $url->out();
-                            if (!$pdf) {
-                                $attachment_files[] = $url->out();
-                                $attachments .= html_writer::start_div('article-view-attachment-audio');
-                                $attachments .= html_writer::start_tag('audio', array('controls' => ''));
-                                $attachments .= html_writer::start_tag('source', array('type' => $file->get_mimetype(), 'src' => $url));
-                                $attachments .= html_writer::end_tag('source');
-                                $attachments .= html_writer::end_tag('audio');
-                                $attachments .= html_writer::link($url, $file->get_filename());
-                                $attachments .= html_writer::end_div();
-                            }
+                            $attachment_files[] = $url->out();
+                            $attachments .= html_writer::start_div('article-view-attachment-audio');
+                            $attachments .= html_writer::start_tag('audio', array('controls' => ''));
+                            $attachments .= html_writer::start_tag('source', array('type' => $file->get_mimetype(), 'src' => $url));
+                            $attachments .= html_writer::end_tag('source');
+                            $attachments .= html_writer::end_tag('audio');
+                            $attachments .= html_writer::link($url, $file->get_filename());
+                            $attachments .= html_writer::end_div();
                         } else {
                             $attachment_files[] = ['url' => $url->out(), 'filename' => $file->get_filename()];
-                            if (!$pdf) {
-                                $attachments .= html_writer::start_div('article-view-attachment-doc');
-                                $attachments .= html_writer::start_div('article-view-attachment-doc-icon');
-                                $attachments .= $OUTPUT->pix_icon('f/' . mimeinfo('icon128', $file->get_filename()), $file->get_filename());
-                                $attachments .= html_writer::end_div();
-                                $attachments .= html_writer::start_div('article-view-attachment-doc-text');
-                                $attachments .= html_writer::link($url, $file->get_filename());
-                                $attachments .= html_writer::end_div();
-                                $attachments .= html_writer::end_div();
-                            }
+                            $attachments .= html_writer::start_div('article-view-attachment-doc');
+                            $attachments .= html_writer::start_div('article-view-attachment-doc-icon');
+                            $attachments .= $OUTPUT->pix_icon('f/' . mimeinfo('icon128', $file->get_filename()), $file->get_filename());
+                            $attachments .= html_writer::end_div();
+                            $attachments .= html_writer::start_div('article-view-attachment-doc-text');
+                            $attachments .= html_writer::link($url, $file->get_filename());
+                            $attachments .= html_writer::end_div();
+                            $attachments .= html_writer::end_div();
                         }
                     }
                 }
@@ -221,13 +217,15 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
         $output .= html_writer::end_div();
 
         $output .= html_writer::start_div('article-view-attachment');
-        if ($attachments != '' && !$pdf) {
-            $output .= '<br pagebreak="true"/>';
-            $output .= html_writer::start_div('article-view-attachment-title');
-            $output .= get_string('attachments', 'mod_uniljournal');
-            $output .= html_writer::end_div();
+        if ($attachments != '' && $pdf) {
+            $attachments_title = html_writer::start_div('article-view-attachment-title');
+            $attachments_title .= get_string('attachments', 'mod_uniljournal');
+            $attachments_title .= html_writer::end_div();
+            $attachments = $attachments_title . $attachments;
         }
-        $output .= $attachments;
+        if (!$pdf) {
+          $output .= $attachments;
+        }
         $output .= html_writer::end_div();
 
         $output .= html_writer::end_div();
