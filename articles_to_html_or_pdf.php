@@ -31,7 +31,6 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(dirname(dirname(__FILE__))).'/lib/pdflib.php');
-include_once("fpdi/pdf_concat.php");
 
 $cmid    = optional_param('cmid', 0, PARAM_INT);  // Course_module ID
 $articleinstanceids = $_POST['articles'];
