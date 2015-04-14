@@ -81,7 +81,7 @@ $uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
 $actualversion = 0;
 
 
-$article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, false, $version, $actualversion);
+$article_html = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, false, $version, $actualversion)[0];
 
 // Output starts here.
 echo $OUTPUT->header();

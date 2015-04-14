@@ -81,8 +81,8 @@ $uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
 $actualversionA = 0;
 $actualversionB = 0;
 
-$articleA = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, false, $versionA, $actualversionA);
-$articleB = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, false, $versionB, $actualversionB);
+$articleA = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, false, $versionA, $actualversionA)[0];
+$articleB = $uniljournal_renderer->display_article($articleinstance, $articleelements, $context, false, $versionB, $actualversionB)[0];
 
 // Output starts here.
 echo $OUTPUT->header();
