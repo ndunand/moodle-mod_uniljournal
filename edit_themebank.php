@@ -41,7 +41,7 @@ if ($cmid) {
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $uniljournal  = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
 } else {
-    error('You must specify a course_module ID');
+  print_error('id_missing', 'mod_uniljournal');
 }
 
 require_login($course, true, $cm);
@@ -80,7 +80,7 @@ $customdata['contexts'] = $contexts;
 $mform = new themebank_edit_form(null, $customdata);
 
 if (!canmanagethemebank($entry)) {
-    error('You don\'t have the permissions to edit that theme bank');
+    print_error('cannotmanagethemebank', 'mod_uniljournal');
 }
 
 //Form processing and displaying is done here

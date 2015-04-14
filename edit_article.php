@@ -39,7 +39,7 @@ if ($cmid) {
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $uniljournal  = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
 } else {
-    error('You must specify a course_module ID');
+  print_error('id_missing', 'mod_uniljournal');
 }
 
 global $USER;
@@ -47,7 +47,7 @@ global $USER;
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 if(! has_capability('mod/uniljournal:createarticle', $context) && ! has_capability('mod/uniljournal:editallarticles', $context) ) {
-  error('You can\'t edit this article');
+  print_error('canteditarticle', 'mod_uniljournal');
 }
 
 // Get the model we're editing

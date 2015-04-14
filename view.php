@@ -47,7 +47,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $uniljournal->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('uniljournal', $uniljournal->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+  print_error('id_missing', 'mod_uniljournal');
 }
 
 require_login($course, true, $cm);
@@ -106,7 +106,7 @@ foreach($articleinstances as $ai) {
 
 if ($action && $aid) {
   if (!$ai  = $articleinstances[$aid]) {
-    error('Must exist!');
+    print_error('mustexist', 'mod_uniljournal');
   }
   if($action == "delete" && has_capability('mod/uniljournal:deletearticle', $context) && array_key_exists($aid, $articleinstances)) {
     require_once('edit_article_form.php');

@@ -32,12 +32,8 @@ if ($id) {
     $cm         = get_coursemodule_from_id('uniljournal', $id, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $uniljournal  = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
-} else if ($n) {
-    $uniljournal  = $DB->get_record('uniljournal', array('id' => $n), '*', MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $uniljournal->course), '*', MUST_EXIST);
-    $cm         = get_coursemodule_from_instance('uniljournal', $uniljournal->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    print_error('id_missing', 'mod_uniljournal');
 }
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
@@ -105,7 +101,6 @@ if(count($articleinstances) > 0) {
         get_string('select'),
         get_string('myarticles', 'uniljournal'),
         get_string('lastmodified'),
-        get_string('corrected_status', 'uniljournal'),
         get_string('template', 'uniljournal'),
         get_string('articlestate', 'uniljournal'),
         get_string('actions'),

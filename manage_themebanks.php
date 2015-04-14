@@ -45,7 +45,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $uniljournal->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('uniljournal', $uniljournal->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+  print_error('id_missing', 'mod_uniljournal');
 }
 
 $module_context = context_module::instance($cm->id);
@@ -57,7 +57,7 @@ $themebanks = uniljournal_get_theme_banks($cm, $course);
 
 if ($action && $tbid) {
     if (!$model = $themebanks[$tbid]) {
-        error('Must exist!');
+      print_error('mustexist', 'mod_uniljournal');
     }
 
     if($action == "delete" and $model->themescount == 0 and canmanagethemebank($model)) {

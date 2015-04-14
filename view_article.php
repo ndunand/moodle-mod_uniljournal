@@ -42,7 +42,7 @@ if ($cmid and $id) {
     $articleinstances = uniljournal_get_article_instances(array('id' => $id), true);
     $articleinstance = array_pop($articleinstances);
 } else {
-    error('You must specify a course_module and an article instance ID');
+  print_error('id_missing', 'mod_uniljournal');
 
 }
 

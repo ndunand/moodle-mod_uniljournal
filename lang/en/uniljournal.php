@@ -245,3 +245,9 @@ $string['messageprovider:tocorrect'] = 'Ready to be corrected notification';
 
 $string['toc'] = 'Table Of Contents';
 $string['offlineattachments'] = 'Offline attachments';
+$string['id_missing'] = 'You must specify a course_module ID or an instance ID';
+$string['cannotmanagethemebank'] = 'You don\'t have the permissions to edit that theme bank';
+$string['mustexist'] = 'Must exist!';
+$string['userdoesnotexist'] = 'This user does not exist';
+$string['mustbeteacher'] = 'You must be a teacher to do this action';
+$string['canteditarticle'] = 'You cannot edit this article';

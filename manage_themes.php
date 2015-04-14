@@ -42,7 +42,7 @@ if ($tbid && $cmid) {
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $uniljournal  = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
 } else {
-    error('You must specify a course_module ID and a theme bank ID');
+  print_error('id_missing', 'mod_uniljournal');
 }
 
 require_login($course, true, $cm);
@@ -71,7 +71,7 @@ $themes = $DB->get_records_sql('
 
 if ($action && $tid) {
     if (!$theme = $themes[$tid]) {
-        error('Must exist!');
+        print_error('mustexist', 'mod_uniljournal');
     }
 
     if($action == "delete" && (is_null($theme->count) || $theme->count == 0)) {

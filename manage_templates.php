@@ -45,7 +45,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $uniljournal->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('uniljournal', $uniljournal->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+  print_error('id_missing', 'mod_uniljournal');
 }
 
 require_login($course, true, $cm);
@@ -62,7 +62,7 @@ $amodels = $DB->get_records_sql('
 
 if ($action && $tid) {
    if (!$model = $amodels[$tid]) {
-     error('Must exist!');
+     print_error('mustexist', 'mod_uniljournal');
    }
    
    if($action == "delete" and $model->articleinstancescount == 0 ) {

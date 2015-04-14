@@ -48,7 +48,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $uniljournal->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('uniljournal', $uniljournal->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+  print_error('id_missing', 'mod_uniljournal');
 }
 
 global $DB;
@@ -60,7 +60,7 @@ require_capability('mod/uniljournal:viewallarticles', $context);
 if($uid) {
   $foreign_user = $DB->get_record('user', array('id' => $uid), '*', MUST_EXIST);
 } else {
-  error('That user doesn\'t exist');
+  print_error('userdoesnotexist', 'mod_uniljournal');
 }
 
 $event = \mod_uniljournal\event\course_module_viewed::create(array(
@@ -115,7 +115,7 @@ foreach($userarticles as $ai) {
 
 if ($action && $aid) {
   if (!$ai  = $userarticles[$aid]) {
-    error('Must exist!');
+    print_error('mustexist', 'mod_uniljournal');
   }
   if($action == "change_state" && has_capability('mod/uniljournal:editallarticles', $context) && array_key_exists($aid, $userarticles)) {
     $ai = $userarticles[$aid];

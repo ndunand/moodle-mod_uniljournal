@@ -40,7 +40,7 @@ if ($cmid && $tbid) {
     $course       = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
     $uniljournal  = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
 } else {
-    error('You must specify a course_module ID and a theme bank ID');
+  print_error('id_missing', 'mod_uniljournal');
 }
 
 require_login($course, true, $cm);
@@ -48,7 +48,7 @@ $context = context_module::instance($cm->id);
 require_capability('mod/uniljournal:managethemes', $context);
 
 if (!canmanagethemebank($themebank)) {
-    error('You don\'t have the permissions to edit that theme bank');
+  print_error('cannotmanagethemebank', 'mod_uniljournal');
 }
 
 if ($id) { // if entry is specified

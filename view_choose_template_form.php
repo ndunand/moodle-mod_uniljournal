@@ -77,7 +77,7 @@ class status_change_form extends moodleform {
         // sent notification to student if status is 50
         if (count($_POST) > 0 && array_key_exists($currententry->statuskey, $_POST) && $_POST[$currententry->statuskey] == 50) {
           if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
-            error('Must be a teacher to set this status');
+            print_error('mustbeteacher', 'mod_uniljournal');
           }
           $article = $DB->get_record('uniljournal_articleinstances', array('id' => $currententry->aid), '*', MUST_EXIST);
 
