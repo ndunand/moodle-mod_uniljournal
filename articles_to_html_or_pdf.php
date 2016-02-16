@@ -110,6 +110,8 @@ foreach ($articleinstances as $articleinstance) {
 if ($pdf) {
     make_cache_directory('tcpdf');
 
+    raise_memory_limit(MEMORY_EXTRA);
+
     define('PDF_IMAGE_SIZE', 60);
 
     //  Create PDF
@@ -157,7 +159,17 @@ if ($pdf) {
 
         // article itself
         $pdf->Bookmark($pdf_article[3]->title, 0, 0, '', '', [0, 64, 128]);
-        $pdf->writeHTML($pdf_article[0]);
+        $article_contents_html = $pdf_article[0];
+        $strip_nodes = ['span' => 'atto_corrections_comment'];
+        foreach ($strip_nodes as $strip_node_name => $strip_node_class) {
+            $re = '/<' . $strip_node_name . ' class="' . $strip_node_class . '">[^<]*<\/' . $strip_node_name . '>/';
+            $article_contents_html = preg_replace($re, '', $article_contents_html);
+        }
+        $strip_tags = ['span'];
+        foreach ($strip_tags as $strip_tag) {
+            $article_contents_html = preg_replace('/<\/?' . $strip_tag . '[^>]*>/', '', $article_contents_html);
+        }
+        $pdf->writeHTML($article_contents_html);
     }
     $pdfname = 'articles';
     foreach ($articleinstanceids as $id) {
