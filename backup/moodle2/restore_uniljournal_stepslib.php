@@ -80,10 +80,12 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
         $data = (object)$data;
         $oldid = $data->id;
 
-        $data->title = $data->title . get_string('restoredon', 'mod_uniljournal', usergetdate(time()));
+        if ($data->contextid != CONTEXT_MODULE) {
+            $data->title = $data->title . get_string('restoredon', 'mod_uniljournal', usergetdate(time()));
+        }
 
         switch ($data->contextid) {
-            case 10:
+            case CONTEXT_SYSTEM:
                 $data->contextid = context_system::instance()->id;
                 if (!canmanagethemebank($data)) {
                     $mods = get_course_mods($this->course->id);
@@ -95,7 +97,7 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
                     }
                 }
                 break;
-            case 40:
+            case CONTEXT_COURSECAT:
                 $data->contextid = context_coursecat::instance($this->course->category)->id;
                 if (!canmanagethemebank($data)) {
                     $mods = get_course_mods($this->course->id);
@@ -107,10 +109,10 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
                     }
                 }
                 break;
-            case 50:
+            case CONTEXT_COURSE:
                 $data->contextid = context_course::instance($this->course->id)->id;
                 break;
-            case 70:
+            case CONTEXT_MODULE:
                 $mods = get_course_mods($this->course->id);
                 foreach ($mods as $mod) {
                     if ($mod->modname == 'uniljournal' && $mod->instance == $this->get_new_parentid('uniljournal')) {
