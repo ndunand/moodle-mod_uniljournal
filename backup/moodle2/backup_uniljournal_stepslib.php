@@ -106,16 +106,18 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
             LEFT JOIN {context} c on c.id = tb.contextid
             WHERE m.themebankid is not null
             OR c.contextlevel = 70
+            GROUP BY tb.id
         ', [backup::VAR_PARENTID]);
 
         $theme->set_source_sql('
             SELECT t.*
             FROM {uniljournal_themes} t
             LEFT JOIN {uniljournal_themebanks} tb on tb.id = t.themebankid
-            LEFT JOIN {uniljournal_articlemodels} m on tb.id = m.themebankid AND m.uniljournalid = 1
+            LEFT JOIN {uniljournal_articlemodels} m on tb.id = m.themebankid AND m.uniljournalid = ?
             LEFT JOIN {context} c on c.id = tb.contextid
             WHERE m.themebankid is not null
             OR c.contextlevel = 70
+            GROUP BY t.id
         ', [backup::VAR_PARENTID]);
 
         // All the rest of elements only happen if we are including user info

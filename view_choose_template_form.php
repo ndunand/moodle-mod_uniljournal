@@ -65,20 +65,20 @@ class status_change_form extends moodleform {
         $teachers = get_role_users($role->id, $context);
 
         // sent notification to teacher if status is 40
-        if (count($_POST) > 0 && array_key_exists($currententry->statuskey,
-                        $_POST) && $_POST[$currententry->statuskey] == 40
+        if (count($_GET) > 0 && array_key_exists($currententry->statuskey,
+                        $_GET) && $_GET[$currententry->statuskey] == 40
         ) {
             $article = $DB->get_record('uniljournal_articleinstances', ['id' => $currententry->aid], '*', MUST_EXIST);
 
             foreach ($teachers as $teacher) {
                 $articlelink = new moodle_url('/mod/uniljournal/view_article.php',
-                        ['cmid' => $_POST['id'], 'id' => $article->id]);
+                        ['cmid' => $_GET['id'], 'id' => $article->id]);
                 sendtocorrectmessage($USER, $teacher, $article, $articlelink);
             }
         }
         // sent notification to student if status is 50
-        if (count($_POST) > 0 && array_key_exists($currententry->statuskey,
-                        $_POST) && $_POST[$currententry->statuskey] == 50
+        if (count($_GET) > 0 && array_key_exists($currententry->statuskey,
+                        $_GET) && $_GET[$currententry->statuskey] == 50
         ) {
             if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
                 print_error('mustbeteacher', 'mod_uniljournal');
@@ -88,12 +88,12 @@ class status_change_form extends moodleform {
             $author = $DB->get_record('user', ['id' => $article->userid]);
 
             $articlelink =
-                    new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $_POST['id'], 'id' => $article->id]);
+                    new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $_GET['id'], 'id' => $article->id]);
             sendcorrectionmessage($USER, $author, $article, $articlelink);
         }
         // sent notification to student if status is 60
-        if (count($_POST) > 0 && array_key_exists($currententry->statuskey,
-                        $_POST) && $_POST[$currententry->statuskey] == 60
+        if (count($_GET) > 0 && array_key_exists($currententry->statuskey,
+                        $_GET) && $_GET[$currententry->statuskey] == 60
         ) {
             if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
                 print_error('mustbeteacher', 'mod_uniljournal');
@@ -103,7 +103,7 @@ class status_change_form extends moodleform {
             $author = $DB->get_record('user', ['id' => $article->userid]);
 
             $articlelink =
-                    new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $_POST['id'], 'id' => $article->id]);
+                    new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $_GET['id'], 'id' => $article->id]);
             sendacceptedmessage($USER, $author, $article, $articlelink);
         }
 
