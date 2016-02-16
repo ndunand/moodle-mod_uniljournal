@@ -245,7 +245,7 @@ Vous pouvez examiner les corrections ici : {$a->link}
 ';
 $string['article_corrected_html_message'] = '<p>Cher/Chère {$a->user_name},</p>
 <p>Votre article ({$a->article}) a été corrigé.</p>
-<p>Vous pouvez examiner les corrections ici : {$a->link}</p>
+<p>Vous pouvez examiner les corrections ici : <a href="{$a->link}">{$a->link}</a></p>
 ';
 $string['article_accepted_subject'] = 'Article accepté';
 $string['article_accepted_message'] = 'Cher/Chère {$a->user_name},
@@ -257,7 +257,7 @@ Vous pouvez le consulter ici : {$a->link}
 ';
 $string['article_accepted_html_message'] = '<p>Cher/Chère {$a->user_name},</p>
 <p>Votre article ({$a->article}) a été accepté par l\'enseignant-e.</p>
-<p>Vous pouvez le consulter ici : {$a->link}</p>
+<p>Vous pouvez le consulter ici : <a href="{$a->link}">{$a->link}</a></p>
 ';
 $string['messageprovider:correction'] = 'Notification de correction';
 $string['messageprovider:accepted'] = 'Notification d\'article accepté';
@@ -272,7 +272,7 @@ Vous pouvez le corriger ici : {$a->link}
 ';
 $string['article_tocorrect_html_message'] = '<p>Cher/Chère {$a->user_name},</p>
 <p>L\'article "{$a->article}" de {$a->author_name} est prêt à être corrigé.</p>
-<p>Vous pouvez le corriger ici : {$a->link}</p>
+<p>Vous pouvez le corriger ici : <a href="{$a->link}">{$a->link}</a></p>
 ';
 $string['messageprovider:tocorrect'] = 'Notification d\'article à corriger';
 
