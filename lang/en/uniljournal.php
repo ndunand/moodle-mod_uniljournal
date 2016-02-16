@@ -244,7 +244,7 @@ You can check those corrections here: {$a->link}
 ';
 $string['article_corrected_html_message'] = '<p>Dear {$a->user_name},</p>
 <p>Your article ({$a->article}) has been corrected.</p>
-<p>You can check those corrections here: {$a->link}</p>
+<p>You can check those corrections here: <a href="{$a->link}">{$a->link}</a></p>
 ';
 $string['article_accepted_subject'] = 'Article accepted';
 $string['article_accepted_message'] = 'Dear {$a->user_name},
@@ -256,7 +256,7 @@ You can view the article here: {$a->link}
 ';
 $string['article_accepted_html_message'] = '<p>Dear {$a->user_name},</p>
 <p>Your article ({$a->article}) has been accepted.</p>
-<p>You can view the article here: {$a->link}</p>
+<p>You can view the article here: <a href="{$a->link}">{$a->link}</a></p>
 ';
 $string['messageprovider:correction'] = 'Correction notification';
 $string['messageprovider:accepted'] = 'Article accepted notification';
@@ -271,7 +271,7 @@ You can start to correct it here: {$a->link}
 ';
 $string['article_tocorrect_html_message'] = '<p>Dear {$a->user_name},</p>
 <p>The article ({$a->article}) from {$a->author_name} is ready to be corrected.</p>
-<p>You can start to correct it here: {$a->link}</p>
+<p>You can start to correct it here: <a href="{$a->link}">{$a->link}</a></p>
 ';
 $string['messageprovider:tocorrect'] = 'Ready to be corrected notification';
 
