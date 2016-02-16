@@ -198,6 +198,24 @@ function uniljournal_get_article_instances($query_args = ['id' => '0'], $status 
                     'am.freetitle as freetitle', 'am.instructions as instructions'];
 
     $statusrequest = '';
+    // mod_ND : optimization #1
+    if (isset($query_args['id'])) {
+        if (is_array($query_args['id'])) {
+            // make sure we only request one ID at a time, because this optimization is only possible if so
+            throw new \moodle_exception();
+        }
+        // we have articleinstance.id
+        $where_version = 'WHERE version = (SELECT max(version) FROM mdl_uniljournal_aeinstances WHERE instanceid = '.$query_args['id'].')';
+    }
+    else {
+        // TODO heavy lifting here, watch out!
+        $where_version = 'WHERE (instanceid, version) IN (
+                                                        SELECT instanceid, max(version) as maxversion
+                                                          FROM {uniljournal_aeinstances} GROUP BY instanceid
+                                                        )';
+        // TODO or....
+        $where_version = 'GROUP BY instanceid';
+    }
     if ($status) {
         // Fetch the article instance status. Make that an option as that's an expensive request
         array_push($attributes, 'astatus.maxversion', 'astatus.edituserid', 'astatus.commentuserid',
@@ -211,14 +229,19 @@ function uniljournal_get_article_instances($query_args = ['id' => '0'], $status 
                             AND c.articleinstanceversion = aei.version
                             ORDER BY c.articleinstanceversion DESC LIMIT 1
                          ) c ON c.articleinstanceid = aei.instanceid
-                         WHERE (instanceid, version) IN (
-                                                        SELECT instanceid, max(version) as maxversion
-                                                          FROM {uniljournal_aeinstances} GROUP BY instanceid
-                                                        )
+                         '.$where_version.'
             ) astatus ON astatus.id = ai.id';
     }
 
     // MONSTER query to get a list of articles, with all relevant informations concerning comments, max versions, etc
+//    die('SELECT ' . implode($attributes, ', ') . '
+//       FROM {uniljournal_articleinstances} ai
+//            ' . $statusrequest . '
+//  LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
+//  LEFT JOIN {uniljournal_themes} t ON ai.themeid = t.id
+//      WHERE ' . implode($where, ' AND ') . '
+//   ORDER BY ' . $orderby);
+//    die(print_r($query_args, true));
     return $DB->get_records_sql('SELECT ' . implode($attributes, ', ') . '
        FROM {uniljournal_articleinstances} ai
             ' . $statusrequest . '

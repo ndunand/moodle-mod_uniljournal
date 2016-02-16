@@ -50,8 +50,17 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 $uniljournal_renderer = $PAGE->get_renderer('mod_uniljournal');
 
-$articleinstances = uniljournal_get_article_instances(['id' => $articleinstanceids], true,
-        't.sortorder, am.sortorder, ai.timecreated ASC');
+// TODO : remove because perf problem here
+//$articleinstances = uniljournal_get_article_instances(['id' => $articleinstanceids], true,
+//        't.sortorder, am.sortorder, ai.timecreated ASC');
+// TODO : replace with this:
+$articleinstances = [];
+foreach ($articleinstanceids as $articleinstanceid) {
+    $articleinstance = uniljournal_get_article_instances(['id' => $articleinstanceid], true,
+            't.sortorder, am.sortorder, ai.timecreated ASC');
+    $articleinstance = array_pop($articleinstance);
+    $articleinstances[$articleinstance->id] = $articleinstance;
+}
 
 $articles = '';
 $pdf_articles = [];
@@ -80,10 +89,11 @@ foreach ($articleinstances as $articleinstance) {
             "articlemodelid = $articleinstance->amid ORDER BY sortorder ASC");
 
     // Log the article read action
-    $event = \mod_uniljournal\event\article_read::create(['other'    => ['userid'    => $USER->id,
-                                                                         'articleid' => $articleinstance->id],
-                                                          'courseid' => $course->id, 'objectid' => $articleinstance->id,
-                                                          'context'  => $context,]);
+    $event = \mod_uniljournal\event\article_read::create([
+            'other'       => [
+                    'userid' => $USER->id, 'articleid' => $articleinstance->id
+            ], 'courseid' => $course->id, 'objectid' => $articleinstance->id, 'context' => $context,
+    ]);
     $event->trigger();
 
     $articletitle = uniljournal_articletitle($articleinstance);

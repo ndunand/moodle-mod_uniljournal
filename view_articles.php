@@ -142,7 +142,8 @@ foreach ($userarticles as $ua) {
                     $title);
     $row->cells[] = userdate($ua->timemodified,
             get_string('strftimedaydatetime', 'langconfig')); //strftime('%c', $ua->timemodified);
-    $row->cells[] = $ua->maxversion; // No check needed, no article should be available without element instances
+    $maxversion = $DB->get_field_select('uniljournal_aeinstances', 'MAX(version) AS maxversion', 'instanceid = :instanceid', array('instanceid' => $ua->id), MUST_EXIST);
+    $row->cells[] = $maxversion;
     $corrected = $ua->status == 50;
 
     $PAGE->requires->yui_module('moodle-core-formautosubmit', 'M.core.init_formautosubmit',
