@@ -30,7 +30,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
 class themebank_edit_form extends moodleform {
     protected $course;
@@ -38,15 +38,15 @@ class themebank_edit_form extends moodleform {
     public function definition() {
 
         global $CFG, $USER;
-        $course              = $this->_customdata['course'];
-        $currententry        = $this->_customdata['current'];
-        $choices             = $this->_customdata['contexts'];
+        $course = $this->_customdata['course'];
+        $currententry = $this->_customdata['current'];
+        $choices = $this->_customdata['contexts'];
 
-        $this->course  = $course;
+        $this->course = $course;
 
         $mform = $this->_form;
 
-        $mform->addElement('text', 'title', get_string('themebank_title', 'uniljournal'), array('size' => '64'));
+        $mform->addElement('text', 'title', get_string('themebank_title', 'uniljournal'), ['size' => '64']);
         $mform->setType('title', PARAM_TEXT);
         $mform->addRule('title', null, 'required', null, 'client');
         $mform->addRule('title', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
@@ -65,7 +65,7 @@ class themebank_edit_form extends moodleform {
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
 
-//-------------------------------------------------------------------------------
+        //-------------------------------------------------------------------------------
         $this->set_data($currententry);
     }
 }
@@ -76,10 +76,10 @@ class themebank_delete_form extends moodleform {
     public function definition() {
 
         global $CFG;
-        $course              = $this->_customdata['course'];
-        $themebank            = $this->_customdata['themebank'];
+        $course = $this->_customdata['course'];
+        $themebank = $this->_customdata['themebank'];
 
-        $this->course  = $course;
+        $this->course = $course;
 
         $mform = $this->_form;
 
@@ -87,7 +87,7 @@ class themebank_delete_form extends moodleform {
         $a->type = get_string('themebanklower', 'mod_uniljournal');
         $a->name = $themebank->title;
 
-        $mform->addElement('html', '<div>'.get_string('deletechecktypename', 'core', $a).'</div>');
+        $mform->addElement('html', '<div>' . get_string('deletechecktypename', 'core', $a) . '</div>');
 
         $mform->addElement('hidden', 'confirm');
         $mform->setType('confirm', PARAM_BOOL);
@@ -95,7 +95,6 @@ class themebank_delete_form extends moodleform {
         // Add standard buttons, common to all modules.
         $this->add_action_buttons(true, get_string('delete', 'core'));
 
-        $this->set_data(array('confirm' => true));
-
+        $this->set_data(['confirm' => true]);
     }
 }

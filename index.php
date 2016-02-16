@@ -30,58 +30,59 @@
 
 // Replace uniljournal with the name of your module and remove this line.
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/lib.php');
 
 $id = required_param('id', PARAM_INT); // Course.
 
-$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
 require_course_login($course);
 
-add_to_log($course->id, 'uniljournal', 'view all', 'index.php?id='.$course->id, '');
+add_to_log($course->id, 'uniljournal', 'view all', 'index.php?id=' . $course->id, '');
 
 $coursecontext = context_course::instance($course->id);
 
-$PAGE->set_url('/mod/uniljournal/index.php', array('id' => $id));
+$PAGE->set_url('/mod/uniljournal/index.php', ['id' => $id]);
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($coursecontext);
 
 echo $OUTPUT->header();
 
-if (! $uniljournals = get_all_instances_in_course('uniljournal', $course)) {
-    notice(get_string('nouniljournals', 'uniljournal'), new moodle_url('/course/view.php', array('id' => $course->id)));
+if (!$uniljournals = get_all_instances_in_course('uniljournal', $course)) {
+    notice(get_string('nouniljournals', 'uniljournal'), new moodle_url('/course/view.php', ['id' => $course->id]));
 }
 
 $table = new html_table();
 if ($course->format == 'weeks') {
-    $table->head  = array(get_string('week'), get_string('name'));
-    $table->align = array('center', 'left');
-} else if ($course->format == 'topics') {
-    $table->head  = array(get_string('topic'), get_string('name'));
-    $table->align = array('center', 'left', 'left', 'left');
-} else {
-    $table->head  = array(get_string('name'));
-    $table->align = array('left', 'left', 'left');
+    $table->head = [get_string('week'), get_string('name')];
+    $table->align = ['center', 'left'];
+}
+else if ($course->format == 'topics') {
+    $table->head = [get_string('topic'), get_string('name')];
+    $table->align = ['center', 'left', 'left', 'left'];
+}
+else {
+    $table->head = [get_string('name')];
+    $table->align = ['left', 'left', 'left'];
 }
 
 foreach ($uniljournals as $uniljournal) {
     if (!$uniljournal->visible) {
-        $link = html_writer::link(
-            new moodle_url('/mod/uniljournal.php', array('id' => $uniljournal->coursemodule)),
-            format_string($uniljournal->name, true),
-            array('class' => 'dimmed'));
-    } else {
-        $link = html_writer::link(
-            new moodle_url('/mod/uniljournal.php', array('id' => $uniljournal->coursemodule)),
-            format_string($uniljournal->name, true));
+        $link = html_writer::link(new moodle_url('/mod/uniljournal.php', ['id' => $uniljournal->coursemodule]),
+                format_string($uniljournal->name, true), ['class' => 'dimmed']);
+    }
+    else {
+        $link = html_writer::link(new moodle_url('/mod/uniljournal.php', ['id' => $uniljournal->coursemodule]),
+                format_string($uniljournal->name, true));
     }
 
     if ($course->format == 'weeks' or $course->format == 'topics') {
-        $table->data[] = array($uniljournal->section, $link);
-    } else {
-        $table->data[] = array($link);
+        $table->data[] = [$uniljournal->section, $link];
+    }
+    else {
+        $table->data[] = [$link];
     }
 }
 

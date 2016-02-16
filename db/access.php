@@ -49,106 +49,53 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'mod/uniljournal:addinstance' => array(
-        'riskbitmask' => RISK_XSS,
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        ),
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
-    ),
+$capabilities = ['mod/uniljournal:addinstance'     => ['riskbitmask'          => RISK_XSS, 'captype' => 'write',
+                                                       'contextlevel'         => CONTEXT_COURSE,
+                                                       'archetypes'           => ['editingteacher' => CAP_ALLOW,
+                                                                                  'manager'        => CAP_ALLOW],
+                                                       'clonepermissionsfrom' => 'moodle/course:manageactivities'],
 
-    'mod/uniljournal:view' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_MODULE,
-        'legacy' => array(
-            'guest' => CAP_ALLOW,
-            'student' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
-    ),
+                 'mod/uniljournal:view'            => ['captype' => 'read', 'contextlevel' => CONTEXT_MODULE,
+                                                       'legacy'  => ['guest' => CAP_ALLOW, 'student' => CAP_ALLOW,
+                                                                     'teacher' => CAP_ALLOW,
+                                                                     'editingteacher' => CAP_ALLOW,
+                                                                     'manager' => CAP_ALLOW]],
 
-    'mod/uniljournal:createarticle' => array(
-        'riskbitmask' => RISK_SPAM,
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'student' => CAP_ALLOW
-        )
-    ),
+                 'mod/uniljournal:createarticle'   => ['riskbitmask'  => RISK_SPAM, 'captype' => 'write',
+                                                       'contextlevel' => CONTEXT_MODULE,
+                                                       'archetypes'   => ['student' => CAP_ALLOW]],
 
-    'mod/uniljournal:deletearticle' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'student' => CAP_ALLOW
-        )
-    ),
+                 'mod/uniljournal:deletearticle'   => ['captype'    => 'write', 'contextlevel' => CONTEXT_MODULE,
+                                                       'archetypes' => ['student' => CAP_ALLOW]],
 
-    'mod/uniljournal:editallarticles' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        ),
-    ),
+                 'mod/uniljournal:editallarticles' => ['captype'    => 'write', 'contextlevel' => CONTEXT_MODULE,
+                                                       'archetypes' => ['teacher'        => CAP_ALLOW,
+                                                                        'editingteacher' => CAP_ALLOW,
+                                                                        'manager'        => CAP_ALLOW],],
 
-    'mod/uniljournal:viewallarticles' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        ),
-    ),
+                 'mod/uniljournal:viewallarticles' => ['captype'    => 'read', 'contextlevel' => CONTEXT_MODULE,
+                                                       'archetypes' => ['teacher'        => CAP_ALLOW,
+                                                                        'editingteacher' => CAP_ALLOW,
+                                                                        'manager'        => CAP_ALLOW],],
 
-    'mod/uniljournal:managetemplates' => array(
-        'riskbitmask' => RISK_XSS,
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        ),
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
-    ),
+                 'mod/uniljournal:managetemplates' => ['riskbitmask'          => RISK_XSS, 'captype' => 'write',
+                                                       'contextlevel'         => CONTEXT_COURSE,
+                                                       'archetypes'           => ['editingteacher' => CAP_ALLOW,
+                                                                                  'manager'        => CAP_ALLOW],
+                                                       'clonepermissionsfrom' => 'moodle/course:manageactivities'],
 
-    'mod/uniljournal:managethemes' => array(
-        'riskbitmask' => RISK_XSS,
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        ),
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
-    ),
+                 'mod/uniljournal:managethemes'    => ['riskbitmask'          => RISK_XSS, 'captype' => 'write',
+                                                       'contextlevel'         => CONTEXT_SYSTEM,
+                                                       'archetypes'           => ['editingteacher' => CAP_ALLOW,
+                                                                                  'manager'        => CAP_ALLOW],
+                                                       'clonepermissionsfrom' => 'moodle/course:manageactivities'],
 
-    'mod/uniljournal:addcomment' => array(
-        'riskbitmask' => RISK_SPAM,
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'student' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
-    ),
+                 'mod/uniljournal:addcomment'      => ['riskbitmask'  => RISK_SPAM, 'captype' => 'write',
+                                                       'contextlevel' => CONTEXT_MODULE,
+                                                       'archetypes'   => ['student'        => CAP_ALLOW,
+                                                                          'editingteacher' => CAP_ALLOW,
+                                                                          'manager'        => CAP_ALLOW]],
 
-    'mod/uniljournal:deletecomment' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
-    ),
-);
+                 'mod/uniljournal:deletecomment'   => ['captype'    => 'write', 'contextlevel' => CONTEXT_MODULE,
+                                                       'archetypes' => ['editingteacher' => CAP_ALLOW,
+                                                                        'manager'        => CAP_ALLOW]],];

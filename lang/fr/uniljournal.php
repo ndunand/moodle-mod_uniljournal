@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * English strings for uniljournal
  *
@@ -33,7 +32,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'Journal d\'apprentissage';
 $string['modulenameplural'] = 'Journaux d\'apprentissage';
-$string['modulename_help'] = 'Le module Journal d\'apprentissage permet aux étudiants de créer des journaux structurés selon une structure définie à l\'avance par l\'enseignant.';
+$string['modulename_help'] =
+        'Le module Journal d\'apprentissage permet aux étudiants de créer des journaux structurés selon une structure définie à l\'avance par l\'enseignant.';
 $string['ujname'] = 'Nom du journal';
 $string['ujname_help'] = 'Le nom du journal, tel qu\'il apparaîtra dans le cours Moodle.';
 $string['ujsubtitle'] = 'Sous-titre';
@@ -45,7 +45,8 @@ $string['ujlogo_help'] = 'Ce logo sera affiché dans sa taille nominale en premi
 $string['ujcomments_allowed'] = 'Activer les commentaires';
 $string['ujcomments_allowed_help'] = 'Autoriser l\'étudiant et l\'enseignant à commenter les articles du journal.';
 $string['allowedmimegroups'] = 'Types de fichiers joints permis';
-$string['allowedmimegroupsdescription'] = 'Permet de restreindre les groupes de type MIME de fichiers utilisables dans les Journaux d\'apprentissage.';
+$string['allowedmimegroupsdescription'] =
+        'Permet de restreindre les groupes de type MIME de fichiers utilisables dans les Journaux d\'apprentissage.';
 $string['mimegroup_any'] = 'Tous les fichiers';
 $string['mimegroup_audio'] = 'Fichiers audio';
 $string['mimegroup_image'] = 'Images';
@@ -59,11 +60,13 @@ $string['templatelower'] = 'modèle';
 $string['template_title'] = 'Titre du modèle';
 $string['template_title_help'] = 'Le titre du modèle, tel qu\'il sera affiché à l\'utilisateur.';
 $string['template_freetitle'] = 'L\'étudiant peut choisir un titre librement';
-$string['template_freetitle_help'] = 'Autoriser l\'étudiant à définir un titre d\'article lui-même, ou le titre doit-il être défini par la banque de thèmes.';
+$string['template_freetitle_help'] =
+        'Autoriser l\'étudiant à définir un titre d\'article lui-même, ou le titre doit-il être défini par la banque de thèmes.';
 $string['template_instructions'] = 'Instructions';
 $string['template_instructions_help'] = 'Les instructions liées au modèle.';
 $string['template_themebank'] = 'Utiliser une banque de thèmes pour ce modèle.';
-$string['template_instructions_help'] = 'Permet de lier une banque de thèmes, permettant ainsi à l\'étudiant de choisir un thème pour son article.';
+$string['template_instructions_help'] =
+        'Permet de lier une banque de thèmes, permettant ainsi à l\'étudiant de choisir un thème pour son article.';
 $string['template_element'] = 'Elément du modèle';
 $string['template_nothemebank'] = 'Ne pas utiliser une banque de thèmes';
 $string['element_subtitle'] = 'Sous-titre';
@@ -76,8 +79,8 @@ $string['element_text'] = 'Texte';
 $string['element_image'] = 'Image';
 $string['element_subtitle_desc'] = '{$a} sous-titre(s)';
 $string['element_text_desc'] = '{$a} texte(s)';
-$string['element_textonly'] = 'Texte sans pièces jointes';
-$string['element_textonly_desc'] = '{$a} texte(s) sans pièces jointes';
+$string['element_textonly'] = 'Texte';
+$string['element_textonly_desc'] = '{$a} texte(s)';
 $string['element_attachment_any'] = 'Tout type de fichier';
 $string['element_attachment_any_desc'] = '{$a} fichier(s)';
 $string['element_attachment_archive'] = 'Archive';
@@ -105,13 +108,21 @@ $string['articles_num'] = 'Nombre d\'articles';
 $string['articles_uncorrected'] = 'Articles non corrigés';
 // Capabilities
 $string['uniljournal:addinstance'] = 'Ajouter une instance';
+$string['uniljournal:addcomment'] = 'Ajouter un commentaire';
+$string['uniljournal:deletecomment'] = 'Supprimer un commentaire';
 $string['uniljournal:managetemplates'] = 'Gérer les modèles';
+$string['uniljournal:managethemes'] = 'Gérer les thèmes';
 $string['uniljournal:view'] = 'Voir les articles';
 $string['uniljournal:createarticle'] = 'Créer des articles';
 $string['uniljournal:deletearticle'] = 'Supprimer des articles';
+$string['uniljournal:editallarticles'] = 'Modifier n\'importe quel article';
 $string['uniljournal:viewallarticles'] = 'Voir tous les articles d\'une instance de module';
 $string['articlelower'] = 'article';
+$string['managethemebanks_hint'] =
+        'Information : vous avez la possibilité d\'utiliser des banques de thèmes, puis de les lier à un modèle d\'article. Pour ce faire, utilisez l\'option "Gérer les banques de thèmes" du menu Administration.';
 $string['managethemebanks'] = 'Gérer les banques de thèmes';
+$string['managethemebanks_help'] =
+        'Une fois une banque de thèmes créée, cliquez sur son titre pour y ajouter des thèmes.';
 $string['addthemebank'] = 'Ajouter une banque de thèmes';
 $string['themebank'] = 'Banque de thèmes';
 $string['themebanklower'] = 'banque de thèmes';
@@ -124,14 +135,15 @@ $string['category_context'] = 'Tous les cours de cette catégorie';
 $string['user_context'] = 'Cet utilisateur uniquement';
 $string['system_context'] = 'Partout';
 $string['themebank_contextid_help'] = 'Cette banque de thèmes sera disponible dans ces contextes.';
-$string['managethemes'] = 'Gérer les thèmes';
+$string['managethemes'] = 'Banque de thèmes "{$a->themebankname}"';
 $string['addtheme'] = 'Ajouter un thème';
 $string['theme'] = 'Thème';
 $string['themelower'] = 'thème';
 $string['theme_title'] = 'Titre du thème';
 $string['theme_title_help'] = 'Le titre du thème, tel qu\'il apparaîtra à l\'utilisateur.';
 $string['theme_instructions'] = 'Instructions';
-$string['theme_instructions_help'] = 'Les instructions de rédaction, qui seront affichées à l\'utilisateur sélectionnant ce thème.';
+$string['theme_instructions_help'] =
+        'Les instructions de rédaction, qui seront affichées à l\'utilisateur sélectionnant ce thème.';
 $string['n_articleinstances'] = '{$a} articles';
 $string['articlestate'] = 'Etat';
 $string['revisions'] = 'Révisions';
@@ -147,12 +159,17 @@ $string['uncorrected_articles'] = '{$a->uncorrected} article(s) non corrigé(s)'
 $string['exportarticles'] = 'Exporter les articles';
 $string['compare'] = 'Comparer';
 $string['author'] = 'Auteur';
-$string['all_students']  = 'Tous les étudiants';
-$string['logo'] =  'Logo de l\'activité';
+$string['all_students'] = 'Tous les étudiants';
+$string['logo'] = 'Logo de l\'activité';
 $string['elementinstance'] = "Eléments déposés";
 $string['themeinstructions'] = "Instructions du thème déposées";
 $string['error_notitle'] = 'Erreur : aucun titre n\'a été défini';
 $string['preview'] = "Prévisualiser";
+$string['atto_writinginstructions'] =
+        '<strong>Information :</strong> vous pouvez utiliser les outils de correction dans l\'éditeur ci-dessous ; pour faire apparaître ces outils, cliquez sur le premier bouton de la palette d\'outils.';
+$string['themescount'] = 'Nombre de thèmes';
+$string['displayarticles'] = 'Afficher les articles';
+$string['exportpdf'] = 'Exporter en PDF';
 
 //Logs
 $string['template_created_name'] = 'Create a template';
@@ -183,10 +200,12 @@ $string['article_read_desc'] = 'User {$a->userid} has read the article {$a->arti
 
 $string['comment_created_name'] = 'Create a comment';
 $string['comment_created_explanation'] = 'Event when a comment has been successfully created.';
-$string['comment_created_desc'] = 'User {$a->userid} has created the comment {$a->commentid} in article {$a->articleid}';
+$string['comment_created_desc'] =
+        'User {$a->userid} has created the comment {$a->commentid} in article {$a->articleid}';
 $string['comment_deleted_name'] = 'Delete a comment';
 $string['comment_deleted_explanation'] = 'Event when a comment has been successfully deleted.';
-$string['comment_deleted_desc'] = 'User {$a->userid} has deleted the comment {$a->commentid} from article {$a->articleid}';
+$string['comment_deleted_desc'] =
+        'User {$a->userid} has deleted the comment {$a->commentid} from article {$a->articleid}';
 
 $string['themebank_created_name'] = 'Create a theme bank';
 $string['themebank_created_explanation'] = 'Event when a theme bank has been successfully created.';
@@ -206,4 +225,65 @@ $string['theme_updated_explanation'] = 'Event when a theme has been successfully
 $string['theme_updated_desc'] = 'User {$a->userid} has updated the theme {$a->themeid} in theme bank {$a->themebankid}';
 $string['theme_deleted_name'] = 'Delete a theme';
 $string['theme_deleted_explanation'] = 'Event when a theme has been successfully deleted.';
-$string['theme_deleted_desc'] = 'User {$a->userid} has deleted the theme {$a->themeid} from theme bank {$a->themebankid}';
+$string['theme_deleted_desc'] =
+        'User {$a->userid} has deleted the theme {$a->themeid} from theme bank {$a->themebankid}';
+
+$string['restoredon'] = ' (restauré le {$a->mday}/{$a->mon}/{$a->year})';
+
+$string['to_correct'] = 'Terminé';
+$string['corrected'] = 'A améliorer';
+$string['accepted'] = 'Accepté';
+
+//Mails
+$string['article_corrected_subject'] = 'Article corrigé';
+$string['article_corrected_message'] = 'Cher/Chère {$a->user_name},
+
+
+Votre article ({$a->article}) a été corrigé.
+
+Vous pouvez examiner les corrections ici : {$a->link}
+';
+$string['article_corrected_html_message'] = '<p>Cher/Chère {$a->user_name},</p>
+<p>Votre article ({$a->article}) a été corrigé.</p>
+<p>Vous pouvez examiner les corrections ici : {$a->link}</p>
+';
+$string['article_accepted_subject'] = 'Article accepté';
+$string['article_accepted_message'] = 'Cher/Chère {$a->user_name},
+
+
+Votre article ({$a->article}) a été accepté par l\'enseifgnant-e.
+
+Vous pouvez le consulter ici : {$a->link}
+';
+$string['article_accepted_html_message'] = '<p>Cher/Chère {$a->user_name},</p>
+<p>Votre article ({$a->article}) a été accepté par l\'enseignant-e.</p>
+<p>Vous pouvez le consulter ici : {$a->link}</p>
+';
+$string['messageprovider:correction'] = 'Notification de correction';
+$string['messageprovider:accepted'] = 'Notification d\'article accepté';
+
+$string['article_tocorrect_subject'] = 'Article prêt à être corrigé';
+$string['article_tocorrect_message'] = 'Cher/Chère {$a->user_name},
+
+
+L\'article "{$a->article}" de {$a->author_name} est prêt à être corrigé.
+
+Vous pouvez le corriger ici : {$a->link}
+';
+$string['article_tocorrect_html_message'] = '<p>Cher/Chère {$a->user_name},</p>
+<p>L\'article "{$a->article}" de {$a->author_name} est prêt à être corrigé.</p>
+<p>Vous pouvez le corriger ici : {$a->link}</p>
+';
+$string['messageprovider:tocorrect'] = 'Notification d\'article à corriger';
+
+$string['toc'] = 'Table des matières';
+$string['offlineattachments'] = 'Pièces jointes';
+$string['id_missing'] = 'You must specify a course_module ID or an instance ID';
+$string['cannotmanagethemebank'] = 'Vous ne pouvez pas modifier cette banque de thèmes';
+$string['mustexist'] = 'Must exist!';
+$string['userdoesnotexist'] = 'This user does not exist';
+$string['mustbeteacher'] = 'Vous n\'avez pas les droits nécessaires pour une telle action';
+$string['editarticle'] = 'Modifier la version actuelle de cet article';
+$string['editarticle_teacher'] = 'Corriger la version actuelle de cet article';
+$string['canteditarticle'] = 'Vous ne pouvez pas modifier cet article';
+

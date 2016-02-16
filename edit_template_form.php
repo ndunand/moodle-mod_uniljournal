@@ -30,7 +30,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
 class template_edit_form extends moodleform {
     protected $course;
@@ -38,37 +38,39 @@ class template_edit_form extends moodleform {
     public function definition() {
 
         global $CFG;
-        $course              = $this->_customdata['course'];
-        $cm                  = $this->_customdata['cm'];
+        $course = $this->_customdata['course'];
+        $cm = $this->_customdata['cm'];
         $instructionsoptions = $this->_customdata['instructionsoptions'];
-        $currententry        = $this->_customdata['current'];
-        $elements            = $this->_customdata['elements'];
-        $elementsoptions     = $this->_customdata['elementsoptions'];
-        $themebanks          = $this->_customdata['themebanks'];
-        $context  = context_module::instance($cm->id);
+        $currententry = $this->_customdata['current'];
+        $elements = $this->_customdata['elements'];
+        $elementsoptions = $this->_customdata['elementsoptions'];
+        $themebanks = $this->_customdata['themebanks'];
+        $context = context_module::instance($cm->id);
 
-        $this->course  = $course;
-    
+        $this->course = $course;
+
         $mform = $this->_form;
 
-        $mform->addElement('text', 'title', get_string('template_title', 'uniljournal'), array('size' => '64'));
+        $mform->addElement('text', 'title', get_string('template_title', 'uniljournal'), ['size' => '64']);
         $mform->setType('title', PARAM_TEXT);
         $mform->addRule('title', null, 'required', null, 'client');
         $mform->addRule('title', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('title', 'template_title', 'uniljournal');
-        
+
         // Let's prepare the maxbytes popup.
         $choices = get_max_upload_sizes($CFG->maxbytes, $this->course->maxbytes, 0, 0);
         $mform->addElement('select', 'maxbytes', get_string('maximumupload'), $choices);
         $mform->addHelpButton('maxbytes', 'maximumupload');
-        
-        $mform->addElement('editor', 'instructions_editor', get_string('template_instructions', 'uniljournal'), null, $instructionsoptions);
+
+        $mform->addElement('editor', 'instructions_editor', get_string('template_instructions', 'uniljournal'), null,
+                $instructionsoptions);
         $mform->setType('instructions_editor', PARAM_RAW);
         $mform->addHelpButton('instructions_editor', 'template_instructions', 'uniljournal');
 
         $mform->addElement('select', 'themebankid', get_string('template_themebank', 'uniljournal'), $themebanks);
         $mform->setType('themebankid', PARAM_INT);
-        
+        $mform->addHelpButton('themebankid', 'template_instructions', 'uniljournal');
+
         $mform->addElement('checkbox', 'freetitle', get_string('template_freetitle', 'uniljournal'));
         $mform->setType('freetitle', PARAM_BOOL);
         $mform->addHelpButton('freetitle', 'template_freetitle', 'uniljournal');
@@ -76,39 +78,33 @@ class template_edit_form extends moodleform {
         $mform->disabledIf('freetitle', 'themebankid', 'eq', -1);
 
         $mform->addElement('html', '<div class="fitem fitem_dragdrop">');
-        $mform->addElement('html', '<div class="fitemtitle"><label>' . get_string('template_element', 'uniljournal') . '</label></div>');
+        $mform->addElement('html',
+                '<div class="fitemtitle"><label>' . get_string('template_element', 'uniljournal') . '</label></div>');
         $mform->addElement('html', '<div class="felement">');
-        $mform->addElement('html', '<span id="error_elementsAdded" class="error" style="display:none;" tabindex="0">' . get_string('template_element_required', 'uniljournal') . '.</span>');
+        $mform->addElement('html',
+                '<span id="error_elementsAdded" class="error" style="display:none;" tabindex="0">' . get_string('template_element_required',
+                        'uniljournal') . '.</span>');
         $mform->addElement('html', '<div><ul id="elementsAdded" class="elementsAdded">');
-        foreach($elements as $element) {
+        foreach ($elements as $element) {
             $mform->addElement('html', html_writer::tag('li',
-                get_string('element_' . $element->element_type, 'uniljournal') .
-                html_writer::tag('input', '',
-                  array(
-                    'style' => "display: none;",
-                    'type' => "text",
-                    "name" => "articleelements[" . $element->id . "]",
-                    "value" => $element->element_type
-                    ))));
+                    get_string('element_' . $element->element_type, 'uniljournal') . html_writer::tag('input', '',
+                            ['style' => "display: none;", 'type' => "text",
+                             "name"  => "articleelements[" . $element->id . "]", "value" => $element->element_type])));
         }
         $mform->addElement('html', '</ul>');
         $mform->addElement('html', '<ul id="elementsToAdd" class="elementsToAdd">');
         $count = 1;
         foreach ($elementsoptions as $key => $element) {
             $mform->addElement('html', html_writer::tag('li',
-                get_string('element_' . $key, 'uniljournal') .
-                html_writer::tag('input', '',
-                  array(
-                    'style' => "display: none;",
-                    'type' => "text",
-                    "value" => $key
-                    )), array('id' => 'element'.$count)));
+                    get_string('element_' . $key, 'uniljournal') . html_writer::tag('input', '',
+                            ['style' => "display: none;", 'type' => "text", "value" => $key]),
+                    ['id' => 'element' . $count]));
             $count += 1;
         }
         $mform->addElement('html', '</ul></div>');
         $mform->addElement('html', '</div>');
         $mform->addElement('html', '</div>');
-        
+
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'cmid');
@@ -117,15 +113,16 @@ class template_edit_form extends moodleform {
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
 
-//-------------------------------------------------------------------------------
+        //-------------------------------------------------------------------------------
         $this->set_data($currententry);
     }
 
     public function getArticleElements() {
         if (array_key_exists('articleelements', $this->_form->_submitValues)) {
             return $this->_form->_submitValues['articleelements'];
-        } else  {
-            return array();
+        }
+        else {
+            return [];
         }
     }
 }
@@ -136,28 +133,27 @@ class template_delete_form extends moodleform {
     public function definition() {
 
         global $CFG;
-        $course              = $this->_customdata['course'];
-        $cm                  = $this->_customdata['cm'];
-        $template            = $this->_customdata['template'];
-        $context             = context_module::instance($cm->id);
+        $course = $this->_customdata['course'];
+        $cm = $this->_customdata['cm'];
+        $template = $this->_customdata['template'];
+        $context = context_module::instance($cm->id);
 
-        $this->course  = $course;
-    
+        $this->course = $course;
+
         $mform = $this->_form;
-        
+
         $a = new stdClass();
         $a->type = get_string('templatelower', 'mod_uniljournal');
         $a->name = $template->title;
-        
-        $mform->addElement('html', '<div>'.get_string('deletechecktypename', 'core', $a).'</div>');
+
+        $mform->addElement('html', '<div>' . get_string('deletechecktypename', 'core', $a) . '</div>');
 
         $mform->addElement('hidden', 'confirm');
         $mform->setType('confirm', PARAM_BOOL);
-        
+
         // Add standard buttons, common to all modules.
         $this->add_action_buttons(true, get_string('delete', 'core'));
-        
-        $this->set_data(array('confirm' => true));
-        
+
+        $this->set_data(['confirm' => true]);
     }
 }

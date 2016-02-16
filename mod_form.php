@@ -30,7 +30,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
 /**
  * Module instance settings form
@@ -48,29 +48,29 @@ class mod_uniljournal_mod_form extends moodleform_mod {
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('ujname', 'uniljournal'), array('size' => '64'));
+        $mform->addElement('text', 'name', get_string('ujname', 'uniljournal'), ['size' => '64']);
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'ujname', 'uniljournal');
-        
-        $mform->addElement('text', 'subtitle', get_string('ujsubtitle', 'uniljournal'), array('size' => '64'));
+
+        $mform->addElement('text', 'subtitle', get_string('ujsubtitle', 'uniljournal'), ['size' => '64']);
         $mform->setType('subtitle', PARAM_TEXT);
         $mform->addRule('subtitle', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('subtitle', 'ujsubtitle', 'uniljournal');
 
         $this->add_intro_editor(false);
-        
-        $filemanager_options = array();
-        $filemanager_options['accepted_types'] = array('.jpg', '.jpeg', '.png');
+
+        $filemanager_options = [];
+        $filemanager_options['accepted_types'] = ['.jpg', '.jpeg', '.png'];
         $filemanager_options['subdirs'] = false;
         $filemanager_options['maxfiles'] = 1;
         $mform->addElement('filemanager', 'logo', get_string('ujlogo', 'uniljournal'), null, $filemanager_options);
         $mform->addHelpButton('logo', 'ujlogo', 'uniljournal');
-        
+
         $mform->addElement('selectyesno', 'comments_allowed', get_string('ujcomments_allowed', 'uniljournal'));
         $mform->addHelpButton('comments_allowed', 'ujcomments_allowed', 'uniljournal');
-        
+
         // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();
 
@@ -86,12 +86,13 @@ class mod_uniljournal_mod_form extends moodleform_mod {
      **/
     function data_preprocessing(&$default_values) {
         if ($this->current->instance) {
-            $filemanager_options = array();
-            $filemanager_options['accepted_types'] = array('.jpg', '.jpeg', '.png');
+            $filemanager_options = [];
+            $filemanager_options['accepted_types'] = ['.jpg', '.jpeg', '.png'];
             $filemanager_options['subdirs'] = false;
             $filemanager_options['maxfiles'] = 1;
             $draftitemid = file_get_submitted_draft_itemid('logo');
-            file_prepare_draft_area($draftitemid, $this->context->id, 'mod_uniljournal', 'logo', 0, $filemanager_options);
+            file_prepare_draft_area($draftitemid, $this->context->id, 'mod_uniljournal', 'logo', 0,
+                    $filemanager_options);
             $default_values['logo'] = $draftitemid;
         }
     }

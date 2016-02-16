@@ -26,21 +26,22 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
-require_once(dirname(__FILE__).'/locallib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/lib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
 $cmid = optional_param('cmid', 0, PARAM_INT);  // Course_module ID, or
 $tbid = optional_param('tbid', 0, PARAM_INT);  // theme bank ID
-$id   = optional_param('id', 0, PARAM_INT);    // theme instance ID
+$id = optional_param('id', 0, PARAM_INT);    // theme instance ID
 
 if ($cmid && $tbid) {
-    $cm         = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
-    $themebank    = $DB->get_record('uniljournal_themebanks', array('id' => $tbid), '*', MUST_EXIST);
-    $course       = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $uniljournal  = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
-} else {
-  print_error('id_missing', 'mod_uniljournal');
+    $cm = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
+    $themebank = $DB->get_record('uniljournal_themebanks', ['id' => $tbid], '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $uniljournal = $DB->get_record('uniljournal', ['id' => $cm->instance], '*', MUST_EXIST);
+}
+else {
+    print_error('id_missing', 'mod_uniljournal');
 }
 
 require_login($course, true, $cm);
@@ -48,30 +49,28 @@ $context = context_module::instance($cm->id);
 require_capability('mod/uniljournal:managethemes', $context);
 
 if (!canmanagethemebank($themebank)) {
-  print_error('cannotmanagethemebank', 'mod_uniljournal');
+    print_error('cannotmanagethemebank', 'mod_uniljournal');
 }
 
 if ($id) { // if entry is specified
-    if (!$theme = $DB->get_record('uniljournal_themes', array('id' => $id))) {
+    if (!$theme = $DB->get_record('uniljournal_themes', ['id' => $id])) {
         print_error('invalidentry');
     }
-} else { // new entry
+}
+else { // new entry
     $theme = new stdClass();
     $theme->id = null;
 }
 
-$instructionsoptions = array(
-    'subdirs'  => false,
-    'maxfiles' => '12',
-    'maxbytes' => 0,
-    'context'  => $context
-);
+$instructionsoptions = ['subdirs' => false, 'maxfiles' => '12', 'maxbytes' => 0, 'context' => $context];
 $theme->cmid = $cmid;
 $theme->tbid = $tbid;
-$theme = file_prepare_standard_editor($theme, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'theme', $theme->id);
+$theme =
+        file_prepare_standard_editor($theme, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'theme',
+                $theme->id);
 
 require_once('edit_theme_form.php');
-$customdata = array();
+$customdata = [];
 $customdata['current'] = $theme;
 $customdata['cm'] = $cm;
 $customdata['course'] = $course;
@@ -82,8 +81,9 @@ $mform = new edit_theme_form(null, $customdata);
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/mod/uniljournal/manage_themes.php', array('cmid' => $cm->id, 'tbid' => $tbid)));
-} else if ($theme = $mform->get_data()) {
+    redirect(new moodle_url('/mod/uniljournal/manage_themes.php', ['cmid' => $cm->id, 'tbid' => $tbid]));
+}
+else if ($theme = $mform->get_data()) {
     $isnewentry = empty($theme->id);
 
     $theme->themebankid = $tbid;
@@ -95,44 +95,36 @@ if ($mform->is_cancelled()) {
     if ($isnewentry) {
         // Add new entry.
         $theme->id = $DB->insert_record('uniljournal_themes', $theme);
-        $theme = file_postupdate_standard_editor($theme, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'theme', $theme->id);
+        $theme = file_postupdate_standard_editor($theme, 'instructions', $instructionsoptions, $context,
+                'mod_uniljournal', 'theme', $theme->id);
         $DB->update_record('uniljournal_themes', $theme);
 
         // Log the theme creation
-        $event = \mod_uniljournal\event\theme_created::create(array(
-            'other' => array(
-                'userid' => $USER->id,
-                'themeid' => $theme->id,
-                'themebankid' => $tbid
-            ),
-            'courseid' => $course->id,
-            'objectid' => $theme->id,
-            'context' => $context,
-        ));
+        $event = \mod_uniljournal\event\theme_created::create(['other' => ['userid'      => $USER->id,
+                                                                           'themeid'     => $theme->id,
+                                                                           'themebankid' => $tbid],
+                                                               'courseid' => $course->id, 'objectid' => $theme->id,
+                                                               'context' => $context,]);
         $event->trigger();
-    } else {
+    }
+    else {
         // Update existing entry.
-        $theme = file_postupdate_standard_editor($theme, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'theme', $theme->id);
+        $theme = file_postupdate_standard_editor($theme, 'instructions', $instructionsoptions, $context,
+                'mod_uniljournal', 'theme', $theme->id);
         $DB->update_record('uniljournal_themes', $theme);
 
         // Log the theme update
-        $event = \mod_uniljournal\event\theme_updated::create(array(
-            'other' => array(
-                'userid' => $USER->id,
-                'themeid' => $theme->id,
-                'themebankid' => $tbid
-            ),
-            'courseid' => $course->id,
-            'objectid' => $theme->id,
-            'context' => $context,
-        ));
+        $event = \mod_uniljournal\event\theme_updated::create(['other' => ['userid'      => $USER->id,
+                                                                           'themeid'     => $theme->id,
+                                                                           'themebankid' => $tbid],
+                                                               'courseid' => $course->id, 'objectid' => $theme->id,
+                                                               'context' => $context,]);
         $event->trigger();
     }
-    redirect(new moodle_url('/mod/uniljournal/manage_themes.php', array('cmid' => $cm->id, 'tbid' => $tbid)));
+    redirect(new moodle_url('/mod/uniljournal/manage_themes.php', ['cmid' => $cm->id, 'tbid' => $tbid]));
 }
 
-
-$url = new moodle_url('/mod/uniljournal/edit_theme.php', array('cmid'=>$cm->id, 'tbid' => $tbid));
+$url = new moodle_url('/mod/uniljournal/edit_theme.php', ['cmid' => $cm->id, 'tbid' => $tbid]);
 if (!empty($id)) {
     $url->param('id', $id);
 }
@@ -142,7 +134,9 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('managethemes', 'mod_uniljournal'));
+$a = new stdClass();
+$a->themebankname = $themebank->title;
+echo $OUTPUT->heading(get_string('managethemes', 'mod_uniljournal', $a));
 
 $mform->display();
 

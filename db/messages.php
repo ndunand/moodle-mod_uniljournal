@@ -26,13 +26,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$messageproviders = array (
+$messageproviders = [
 
-/// Submitting a correction
-    'correction' => array (
-    ),
-/// Submitting a ready to correct notification
-    'tocorrect' => array (
-    ),
+    /// Submitting a correction
+        'correction' => [], /// Submitting a ready to correct notification
+        'tocorrect'  => [],
 
-);
+];

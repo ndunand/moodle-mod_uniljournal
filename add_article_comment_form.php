@@ -30,7 +30,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
 class add_article_comment_form extends moodleform {
     public function definition() {
@@ -43,9 +43,8 @@ class add_article_comment_form extends moodleform {
 
         $mform = $this->_form;
 
-        $mform->addElement('textarea', 'text', '', array('size' => '64'));
+        $mform->addElement('textarea', 'text', '');
         $mform->setType('text', PARAM_TEXT);
-
 
         $mform->addElement('hidden', 'articleinstanceid');
         $mform->setType('articleinstanceid', PARAM_INT);
@@ -60,7 +59,8 @@ class add_article_comment_form extends moodleform {
         $mform->setType('cmid', PARAM_INT);
         $mform->setConstant('cmid', $cmid);
 
-        $mform->setAttributes(array('action' => new moodle_url('/mod/uniljournal/add_article_comment.php'), 'method' => 'post', 'class' => 'mform'));
+        $mform->setAttributes(['action' => new moodle_url('/mod/uniljournal/add_article_comment.php'),
+                               'method' => 'post', 'class' => 'mform']);
 
         $this->add_action_buttons(false, get_string('sendcomment', 'mod_uniljournal'));
     }

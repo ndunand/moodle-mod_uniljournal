@@ -26,15 +26,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
-require_once(dirname(__FILE__).'/locallib.php');
-require_once(dirname(__FILE__).'/add_article_comment_form.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/lib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
+require_once(dirname(__FILE__) . '/add_article_comment_form.php');
 
 require_login();
 
-$cmid  = optional_param('cmid', 0, PARAM_INT); // Course_module ID, or
-$articleinstanceid  = optional_param('articleinstanceid', 0, PARAM_INT); // article instance ID, or
+$cmid = optional_param('cmid', 0, PARAM_INT); // Course_module ID, or
+$articleinstanceid = optional_param('articleinstanceid', 0, PARAM_INT); // article instance ID, or
 $articleinstanceversion = optional_param('articleinstanceversion', 0, PARAM_INT);  // article instance version
 $cid = optional_param('cid', 0, PARAM_INT);  // comment ID
 $action = optional_param('action', '', PARAM_TEXT);  // action
@@ -42,32 +42,28 @@ $action = optional_param('action', '', PARAM_TEXT);  // action
 $context = context_module::instance($cmid);
 $PAGE->set_context($context);
 
-$cm         = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
-$course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-$uniljournal  = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
-$articleinstance  = $DB->get_record('uniljournal_articleinstances', array('id' => $articleinstanceid), '*', MUST_EXIST);
+$cm = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+$uniljournal = $DB->get_record('uniljournal', ['id' => $cm->instance], '*', MUST_EXIST);
+$articleinstance = $DB->get_record('uniljournal_articleinstances', ['id' => $articleinstanceid], '*', MUST_EXIST);
 
 if ($cid && $action == 'delete') {
     require_capability('mod/uniljournal:deletecomment', $context);
-    $DB->delete_records('uniljournal_article_comments', array('id' => $cid));
+    $DB->delete_records('uniljournal_article_comments', ['id' => $cid]);
 
     // Log the comment deletion
-    $event = \mod_uniljournal\event\comment_deleted::create(array(
-        'other' => array(
-            'userid' => $USER->id,
-            'commentid' => $cid,
-            'articleid' => $articleinstanceid
-        ),
-        'courseid' => $course->id,
-        'objectid' => $cid,
-        'context' => $context,
-    ));
+    $event = \mod_uniljournal\event\comment_deleted::create(['other'    => ['userid'    => $USER->id,
+                                                                            'commentid' => $cid,
+                                                                            'articleid' => $articleinstanceid],
+                                                             'courseid' => $course->id, 'objectid' => $cid,
+                                                             'context'  => $context,]);
     $event->trigger();
 
-    redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid, 'id' => $articleinstanceid)));
-} else {
+    redirect(new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $cmid, 'id' => $articleinstanceid]));
+}
+else {
     require_capability('mod/uniljournal:addcomment', $context);
-    $customdata = array();
+    $customdata = [];
     $customdata['cmid'] = $cmid;
     $customdata['articleinstanceid'] = $articleinstanceid;
     $customdata['articleinstanceversion'] = $articleinstanceversion;
@@ -87,17 +83,12 @@ if ($cid && $action == 'delete') {
     $cid = $DB->insert_record('uniljournal_article_comments', $comment);
 
     // Log the comment creation
-    $event = \mod_uniljournal\event\comment_created::create(array(
-        'other' => array(
-            'userid' => $USER->id,
-            'commentid' => $cid,
-            'articleid' => $articleinstanceid
-        ),
-        'courseid' => $course->id,
-        'objectid' => $cid,
-        'context' => $context,
-    ));
+    $event = \mod_uniljournal\event\comment_created::create(['other'    => ['userid'    => $USER->id,
+                                                                            'commentid' => $cid,
+                                                                            'articleid' => $articleinstanceid],
+                                                             'courseid' => $course->id, 'objectid' => $cid,
+                                                             'context'  => $context,]);
     $event->trigger();
 
-    redirect(new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $cmid, 'id' => $articleinstanceid)));
+    redirect(new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $cmid, 'id' => $articleinstanceid]));
 }

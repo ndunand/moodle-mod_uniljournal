@@ -1,91 +1,89 @@
-.fitem_dragdrop .row {
+body.path-mod-uniljournal .fitem_dragdrop .row {
     margin: 0;
 }
 
-#elementsToAdd,
-#elementsAdded {
+body.path-mod-uniljournal #elementsToAdd, body.path-mod-uniljournal #elementsAdded {
     list-style: none;
     padding: 10px;
     border: 1px solid rgb(196, 196, 208);
     margin: 0;
 }
 
-#elementsToAdd {
+body.path-mod-uniljournal #elementsToAdd {
     margin-left: 10px;
 }
 
-#elementsToAdd li,
-#elementsAdded li {
+body.path-mod-uniljournal #elementsToAdd li, body.path-mod-uniljournal #elementsAdded li {
     cursor: pointer;
     border: 1px solid black;
     padding: 10px;
     margin: 10px 0;
 }
 
-#elementsToAdd li .fitem,
-#elementsAdded li .fitem {
+body.path-mod-uniljournal #elementsToAdd li .fitem, body.path-mod-uniljournal #elementsAdded li .fitem {
     display: none;
 }
 
-.fitem_dragdrop button {
+body.path-mod-uniljournal .fitem_dragdrop button {
     display: block;
 }
 
-.fitem_dragdrop .elementsToAdd,
-.fitem_dragdrop .elementsAdded {
+body.path-mod-uniljournal .fitem_dragdrop .elementsToAdd, body.path-mod-uniljournal .fitem_dragdrop .elementsAdded {
     display: block;
     float: left;
     width: 45%;
 }
 
-
-#page-mod-uniljournal-view .logo>img {
+body.path-mod-uniljournal #page-mod-uniljournal-view .logo > img {
     max-height: 500px;
     max-width: 100%;
 }
 
-.article {
+body.path-mod-uniljournal .article {
     position: relative;
     display: block;
     width: 100%;
 }
 
-.article-edit {
+body.path-mod-uniljournal .article-edit {
     position: relative;
     display: block;
     float: left;
     width: 70%;
 }
 
-.article-edit.nocomments {
+body.path-mod-uniljournal .article-edit.nocomments {
     width: 100%;
 }
 
-.article.article-comparison {
+body.path-mod-uniljournal .article.article-comparison {
     width: 48%;
     margin-left: 0;
     margin-right: 0;
     float: left;
 }
 
-.article.article-comparison .article-view-attachment {
+body.path-mod-uniljournal .article.article-comparison > div {
+    width: 95%;
+}
+
+body.path-mod-uniljournal .article.article-comparison .article-view-attachment {
     width: 100%;
     border: none;
 }
 
-.article.article-comparison .article-view-content {
+body.path-mod-uniljournal .article.article-comparison .article-view-content {
     width: 100%;
-    padding-right: 20px;
     box-sizing: border-box;
 }
 
-.article-comments {
+body.path-mod-uniljournal .article-comments {
     position: relative;
     display: block;
     float: right;
     width: 28%;
     background: lightgray;
-    padding: 10px 20px;
+    padding: 10px;
     box-sizing: border-box;
 }
 
@@ -93,15 +91,16 @@
     display: none;
 }
 
-.article-comments .mform .fitem {
+body.path-mod-uniljournal .article-comments .mform .fitem {
     margin-bottom: 0;
 }
 
-.article-comments .mform .fitem .felement {
+body.path-mod-uniljournal .article-comments .mform .fitem .felement {
     width: 100%;
     margin-left: 0;
 }
-.article-comments-item .mform .fitem .felement textarea {
+
+body.path-mod-uniljournal .article-comments-item .mform .fitem .felement textarea {
     width: 100%;
     margin: 0;
     padding: 5px;
@@ -110,64 +109,91 @@
     box-sizing: border-box;
 }
 
-#region-main .article-comments .mform:not(.unresponsive) .fitem .fitemtitle label {
+body.path-mod-uniljournal #region-main .article-comments .mform:not(.unresponsive) .fitem .fitemtitle label {
     margin: 0;
 }
 
-.article-comments #fitem_id_submitbutton {
+body.path-mod-uniljournal .article-comments #fitem_id_submitbutton {
     padding: 0;
-    margin: 0;
+    margin: 10px 0 0 0;
     background: none;
     border: none;
 }
 
-.article-comments-item {
-    color: lightslategray;
-    background: white;
-    padding: 10px 10px;
-    margin: 10px 0;
+body.path-mod-uniljournal #region-main .article-comments #fitem_id_text div {
+    width: 100%;
+    margin: 0;
 }
 
-.article-comments-item.current {
-    color: black;
+body.path-mod-uniljournal #region-main .article-comments #fitem_id_text textarea {
+    width: 100%;
+    resize: vertical;
 }
 
-.article-comments-item h5 {
+body.path-mod-uniljournal .article-comments-item {
+    color: #789;
+    background: #fff;
+    padding: 10px;
+    margin: 0;
+    border-top: 5px solid #d3d3d3;
+}
+
+body.path-mod-uniljournal .article-comments-item fieldset, body.path-mod-uniljournal .article-comments-item fieldset div {
+    margin: 0;
+}
+
+body.path-mod-uniljournal table fieldset, body.path-mod-uniljournal table fieldset > div {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+body.path-mod-uniljournal .cell {
+    vertical-align: middle;
+}
+
+body.path-mod-uniljournal .article-comments-item.current {
+    color: #000;
+}
+
+body.path-mod-uniljournal .article-comments-item h5 {
     margin: 0;
     padding: 0;
 }
 
-.article-comments-item>a>img {
+body.path-mod-uniljournal .article-comments-item > a > img {
     position: absolute;
     right: 30px;
     margin: 5px 0;
 }
 
-.article-version-toggle {
-   text-align: center;
+body.path-mod-uniljournal .article-version-toggle {
+    text-align: center;
 }
 
-.article-version-toggle a.arrow_link {
-  margin: 0 0.5em;
+body.path-mod-uniljournal .article-version-toggle a.arrow_link {
+    margin: 0 0.5em;
 }
 
-.article-compare {
-  text-align: center;
+body.path-mod-uniljournal .article-compare {
+    text-align: center;
 }
 
-.state_form .fitemtitle {
-  display: none;
+body.path-mod-uniljournal .state_form .fitemtitle {
+    display: none;
 }
-.state_form .felement {
-  margin-left: 0 !important;
+
+body.path-mod-uniljournal .state_form .felement {
+    margin-left: 0 !important;
 }
+
 @media screen and (max-width: 767px) {
-    .article-edit {
-        float:none;
+    body.path-mod-uniljournal .article-edit {
+        float: none;
         width: 100%;
     }
 
-    .article-comments {
+    body.path-mod-uniljournal .article-comments {
         float: none;
         width: 100%;
     }
@@ -176,64 +202,75 @@
         width: 100%;
         margin-left: 0;
     }
+
+    body.path-mod-uniljournal .article-view-content {
+        width: 100%;
+    }
+
+    body.path-mod-uniljournal .article-view-attachment {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
 }
 
-.article-view {
+body.path-mod-uniljournal .article-view {
     margin: 10px 0;
     border-bottom: 1px dotted #DDD;
     padding-bottom: 40px;
     margin-bottom: 40px;
 }
 
-.article-view:last-child {
+body.path-mod-uniljournal .article-view:last-child {
     border-bottom: none;
     margin-bottom: 0;
 }
 
-.article-view-template-title {
+body.path-mod-uniljournal .article-view-template-title {
     font-style: italic;
 }
 
-.article-view-template-instructions {
+body.path-mod-uniljournal .article-view-template-instructions {
     color: #bbb;
 }
 
-.article-view-title {
+body.path-mod-uniljournal .article-view-title {
     font-size: 24px;
     margin-bottom: 20px;
 }
 
-.article-view-content-subtitle,
-.article-view-attachment-title {
+body.path-mod-uniljournal .article-view-content-subtitle, body.path-mod-uniljournal .article-view-attachment-title {
     font-size: 18px;
     margin-bottom: 10px;
 }
 
-.article-view-attachment-title {
+body.path-mod-uniljournal .article-view-attachment-title {
     text-align: center;
 }
 
-.article-view-content {
+body.path-mod-uniljournal .article-view-content {
     vertical-align: top;
     width: 65%;
     display: inline-block;
 }
 
-.article-view-attachment {
+body.path-mod-uniljournal .article-view-attachment {
     vertical-align: top;
     width: 33%;
     display: inline-block;
-    margin-left: 10px;
-    padding-left: 10px;
+    margin: 1em 0;
+    padding: 0;
     border-left: 1px solid rgb(231, 231, 231);
     box-sizing: border-box;
 }
 
-.article-view-attachment img {
-    max-width: 100%;
+body.path-mod-uniljournal .article-view-attachment * {
+    width: 100%;
 }
 
-[class^="article-view-attachment-"] {
+body.path-mod-uniljournal [class^="article-view-attachment-"] {
     text-align: center;
     margin: 0 0 20px 0;
 }
+

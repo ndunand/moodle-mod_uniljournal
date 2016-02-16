@@ -29,13 +29,13 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
-    $keyvalgroups = array();
+    $keyvalgroups = [];
     $keyvalgroups['any'] = get_string('mimegroup_any', 'uniljournal');
     $keyvalgroups['audio'] = get_string('mimegroup_audio', 'uniljournal');
     $keyvalgroups['image'] = get_string('mimegroup_image', 'uniljournal');
     ksort($keyvalgroups);
 
     $settings->add(new admin_setting_configmultiselect('uniljournal/allowedmimegroups',
-        get_string('allowedmimegroups', 'uniljournal'), get_string('allowedmimegroupsdescription', 'uniljournal'),
-        array_keys($keyvalgroups), $keyvalgroups));
+            get_string('allowedmimegroups', 'uniljournal'), get_string('allowedmimegroupsdescription', 'uniljournal'),
+            array_keys($keyvalgroups), $keyvalgroups));
 }

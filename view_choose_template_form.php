@@ -30,7 +30,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
 class choose_template_form extends moodleform {
     protected $course;
@@ -39,9 +39,9 @@ class choose_template_form extends moodleform {
 
         global $CFG;
         $options = $this->_customdata['options'];
-        
+
         $mform = $this->_form;
-        $mform->addElement('select', 'amid', '', $options, array('class' => 'autosubmit'));
+        $mform->addElement('select', 'amid', '', $options, ['class' => 'autosubmit']);
         $mform->disable_form_change_checker();
     }
 }
@@ -52,43 +52,61 @@ class status_change_form extends moodleform {
     public function definition() {
 
         global $USER, $DB, $course;
-        $options      = $this->_customdata['options'];
+        $options = $this->_customdata['options'];
         $currententry = $this->_customdata['currententry'];
 
         $mform = $this->_form;
-        $mform->addElement('select', $currententry->statuskey, '', $options, array('class' => 'autosubmit'));
+        $mform->addElement('select', $currententry->statuskey, '', $options, ['class' => 'autosubmit']);
 
         $mform->disable_form_change_checker();
 
-
-        $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
+        $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
         $context = context_course::instance($course->id);
         $teachers = get_role_users($role->id, $context);
 
         // sent notification to teacher if status is 40
-        if (count($_POST) > 0 && array_key_exists($currententry->statuskey, $_POST) && $_POST[$currententry->statuskey] == 40) {
-          $article = $DB->get_record('uniljournal_articleinstances', array('id' => $currententry->aid), '*', MUST_EXIST);
+        if (count($_POST) > 0 && array_key_exists($currententry->statuskey,
+                        $_POST) && $_POST[$currententry->statuskey] == 40
+        ) {
+            $article = $DB->get_record('uniljournal_articleinstances', ['id' => $currententry->aid], '*', MUST_EXIST);
 
-          foreach($teachers as $teacher) {
-              $articlelink = new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $_POST['id'], 'id' => $article->id));
-              sendtocorrectmessage($USER, $teacher, $article, $articlelink);
-          }
+            foreach ($teachers as $teacher) {
+                $articlelink = new moodle_url('/mod/uniljournal/view_article.php',
+                        ['cmid' => $_POST['id'], 'id' => $article->id]);
+                sendtocorrectmessage($USER, $teacher, $article, $articlelink);
+            }
         }
         // sent notification to student if status is 50
-        if (count($_POST) > 0 && array_key_exists($currententry->statuskey, $_POST) && $_POST[$currententry->statuskey] == 50) {
-          if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
-            print_error('mustbeteacher', 'mod_uniljournal');
-          }
-          $article = $DB->get_record('uniljournal_articleinstances', array('id' => $currententry->aid), '*', MUST_EXIST);
+        if (count($_POST) > 0 && array_key_exists($currententry->statuskey,
+                        $_POST) && $_POST[$currententry->statuskey] == 50
+        ) {
+            if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
+                print_error('mustbeteacher', 'mod_uniljournal');
+            }
+            $article = $DB->get_record('uniljournal_articleinstances', ['id' => $currententry->aid], '*', MUST_EXIST);
 
-          $author = $DB->get_record('user', array('id' => $article->userid));
+            $author = $DB->get_record('user', ['id' => $article->userid]);
 
-          $articlelink = new moodle_url('/mod/uniljournal/view_article.php', array('cmid' => $_POST['id'], 'id' => $article->id));
-          sendcorrectionmessage($USER, $author, $article, $articlelink);
-
+            $articlelink =
+                    new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $_POST['id'], 'id' => $article->id]);
+            sendcorrectionmessage($USER, $author, $article, $articlelink);
         }
-        $this->set_data($currententry);
-        
-    }
+        // sent notification to student if status is 60
+        if (count($_POST) > 0 && array_key_exists($currententry->statuskey,
+                        $_POST) && $_POST[$currententry->statuskey] == 60
+        ) {
+            if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
+                print_error('mustbeteacher', 'mod_uniljournal');
+            }
+            $article = $DB->get_record('uniljournal_articleinstances', ['id' => $currententry->aid], '*', MUST_EXIST);
 
+            $author = $DB->get_record('user', ['id' => $article->userid]);
+
+            $articlelink =
+                    new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $_POST['id'], 'id' => $article->id]);
+            sendacceptedmessage($USER, $author, $article, $articlelink);
+        }
+
+        $this->set_data($currententry);
+    }
 }

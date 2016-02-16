@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * English strings for uniljournal
  *
@@ -33,7 +32,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'UNIL Learning Journal';
 $string['modulenameplural'] = 'UNIL Learning Journals';
-$string['modulename_help'] = 'The UNIL journal module allows students to create learning journals structured in a structure of articles defined in advance.';
+$string['modulename_help'] =
+        'The UNIL journal module allows students to create learning journals structured in a structure of articles defined in advance.';
 $string['ujname'] = 'Journal name';
 $string['ujname_help'] = '(TO BE COMPLETED !) This is the name of the journal.';
 $string['ujsubtitle'] = 'Subtitle';
@@ -41,11 +41,14 @@ $string['ujsubtitle_help'] = '(TO BE COMPLETED !) This is the subtitle of the jo
 $string['ujdescription'] = 'Description';
 $string['ujdescription_help'] = '(TO BE COMPLETED !) This is the description of the journal.';
 $string['ujlogo'] = 'Coverpage logo';
-$string['ujlogo_help'] = '(TO BE COMPLETED !) The logo will be displayed in its nominal size on the first page of the printable version.';
+$string['ujlogo_help'] =
+        '(TO BE COMPLETED !) The logo will be displayed in its nominal size on the first page of the printable version.';
 $string['ujcomments_allowed'] = 'Activate comments';
-$string['ujcomments_allowed_help'] = '(TO BE COMPLETED !) Activate (or not) the possibility to associate general comments to each article of the journal.';
+$string['ujcomments_allowed_help'] =
+        '(TO BE COMPLETED !) Activate (or not) the possibility to associate general comments to each article of the journal.';
 $string['allowedmimegroups'] = 'Allowed file types within Unil journal module';
-$string['allowedmimegroupsdescription'] = 'Restricts the list of allowed file MIME type groups in the UNIL journal module instances.';
+$string['allowedmimegroupsdescription'] =
+        'Restricts the list of allowed file MIME type groups in the UNIL journal module instances.';
 $string['mimegroup_any'] = 'Any file';
 $string['mimegroup_audio'] = 'Audio file';
 $string['mimegroup_image'] = 'Image file';
@@ -59,11 +62,11 @@ $string['templatelower'] = 'template';
 $string['template_title'] = 'Template title';
 $string['template_title_help'] = '(TO BE COMPLETED !) This is the title of the template';
 $string['template_freetitle'] = 'Students can freely pick a title';
-$string['template_freetitle_help'] = '(TO BE COMPLETED !) Whether students can freely pick a title outside of theme banks';
+$string['template_freetitle_help'] =
+        '(TO BE COMPLETED !) Whether students can freely pick a title outside of theme banks';
 $string['template_instructions'] = 'Instructions';
 $string['template_instructions_help'] = '(TO BE COMPLETED !) These are the template instructions';
 $string['template_themebank'] = 'Pick a theme bank for that template';
-$string['template_instructions_help'] = '(TO BE COMPLETED !) …';
 $string['template_element'] = 'Template element';
 $string['template_nothemebank'] = 'Don\'t select a theme bank';
 $string['template_element_required'] = 'You must select at least one element';
@@ -77,8 +80,8 @@ $string['element_text'] = 'Text';
 $string['element_image'] = 'Image';
 $string['element_subtitle_desc'] = '{$a} subtitle(s)';
 $string['element_text_desc'] = '{$a} text(s)';
-$string['element_textonly'] = 'Text without attachments';
-$string['element_textonly_desc'] = '{$a} text(s) without attachments';
+$string['element_textonly'] = 'Text';
+$string['element_textonly_desc'] = '{$a} text(s)';
 $string['element_attachment_any'] = 'Any file';
 $string['element_attachment_any_desc'] = '{$a} file(s)';
 $string['element_attachment_archive'] = 'Archive';
@@ -106,13 +109,20 @@ $string['articles_num'] = 'Amount of articles';
 $string['articles_uncorrected'] = 'Uncorrected articles';
 // Capabilities
 $string['uniljournal:addinstance'] = 'Add instance';
+$string['uniljournal:addcomment'] = 'Add a comment';
+$string['uniljournal:deletecomment'] = 'Delete a comment';
 $string['uniljournal:managetemplates'] = 'Manage templates';
+$string['uniljournal:managethemes'] = 'Manage themes';
 $string['uniljournal:view'] = 'View articles';
 $string['uniljournal:createarticle'] = 'Create articles';
 $string['uniljournal:deletearticle'] = 'Delete articles';
+$string['uniljournal:editallarticles'] = 'Edit any article';
 $string['uniljournal:viewallarticles'] = 'View all articles in a module instance';
 $string['articlelower'] = 'article';
+$string['managethemebanks_hint'] =
+        'Information: you can use theme banks and link them from your article templates. To do so, choose "Manage theme banks" from the Administration menu.';
 $string['managethemebanks'] = 'Manage theme banks';
+$string['managethemebanks_help'] = 'Once a theme bank is created, click on its title to add themes into it.';
 $string['addthemebank'] = 'Add theme bank';
 $string['themebank'] = 'Theme bank';
 $string['themebanklower'] = 'theme bank';
@@ -125,7 +135,7 @@ $string['category_context'] = 'This category only';
 $string['user_context'] = 'This user only';
 $string['system_context'] = 'Everywhere';
 $string['themebank_contextid_help'] = '(TO BE COMPLETED !) This where this bank will be available.';
-$string['managethemes'] = 'Manage themes';
+$string['managethemes'] = 'Theme bank "{$a->themebankname}"';
 $string['addtheme'] = 'Add theme ';
 $string['theme'] = 'Theme';
 $string['themelower'] = 'theme';
@@ -148,12 +158,17 @@ $string['uncorrected_articles'] = '{$a->uncorrected} uncorrected article(s)';
 $string['exportarticles'] = 'Export articles';
 $string['compare'] = 'Compare';
 $string['author'] = 'Author';
-$string['all_students']  = 'All students';
-$string['logo'] =  "Activity logo";
+$string['all_students'] = 'All students';
+$string['logo'] = "Activity logo";
 $string['elementinstance'] = "Elements uploaded";
 $string['themeinstructions'] = "Theme instructions uploaded";
 $string['error_notitle'] = "ERROR: no title set";
 $string['preview'] = "Preview";
+$string['atto_writinginstructions'] =
+        '<strong>Notice:</strong> you can use the correction tools in the text editor below; to reveal the correction tools, click on the first button of the palette.';
+$string['themescount'] = 'Themes count';
+$string['displayarticles'] = 'Display articles';
+$string['exportpdf'] = 'Export to PDF';
 
 //Logs
 $string['template_created_name'] = 'Create a template';
@@ -184,10 +199,12 @@ $string['article_read_desc'] = 'User {$a->userid} has read the article {$a->arti
 
 $string['comment_created_name'] = 'Create a comment';
 $string['comment_created_explanation'] = 'Event when a comment has been successfully created.';
-$string['comment_created_desc'] = 'User {$a->userid} has created the comment {$a->commentid} in article {$a->articleid}';
+$string['comment_created_desc'] =
+        'User {$a->userid} has created the comment {$a->commentid} in article {$a->articleid}';
 $string['comment_deleted_name'] = 'Delete a comment';
 $string['comment_deleted_explanation'] = 'Event when a comment has been successfully deleted.';
-$string['comment_deleted_desc'] = 'User {$a->userid} has deleted the comment {$a->commentid} from article {$a->articleid}';
+$string['comment_deleted_desc'] =
+        'User {$a->userid} has deleted the comment {$a->commentid} from article {$a->articleid}';
 
 $string['themebank_created_name'] = 'Create a theme bank';
 $string['themebank_created_explanation'] = 'Event when a theme bank has been successfully created.';
@@ -207,12 +224,14 @@ $string['theme_updated_explanation'] = 'Event when a theme has been successfully
 $string['theme_updated_desc'] = 'User {$a->userid} has updated the theme {$a->themeid} in theme bank {$a->themebankid}';
 $string['theme_deleted_name'] = 'Delete a theme';
 $string['theme_deleted_explanation'] = 'Event when a theme has been successfully deleted.';
-$string['theme_deleted_desc'] = 'User {$a->userid} has deleted the theme {$a->themeid} from theme bank {$a->themebankid}';
+$string['theme_deleted_desc'] =
+        'User {$a->userid} has deleted the theme {$a->themeid} from theme bank {$a->themebankid}';
 
-$string['restoredon'] = ' (restored on {$a->mday}/{$a->mon}/{$a->year})';
+$string['restoredon'] = ' (restored on {$a->mon}/{$a->mday}/{$a->year})';
 
-$string['to_correct'] = 'To correct';
-$string['corrected'] = 'Corrected';
+$string['to_correct'] = 'Finished';
+$string['corrected'] = 'To be improved';
+$string['accepted'] = 'Accepted';
 
 //Mails
 $string['article_corrected_subject'] = 'Article corrected';
@@ -227,7 +246,20 @@ $string['article_corrected_html_message'] = '<p>Dear {$a->user_name},</p>
 <p>Your article ({$a->article}) has been corrected.</p>
 <p>You can check those corrections here: {$a->link}</p>
 ';
+$string['article_accepted_subject'] = 'Article accepted';
+$string['article_accepted_message'] = 'Dear {$a->user_name},
+
+
+Your article ({$a->article}) has been accepted.
+
+You can view the article here: {$a->link}
+';
+$string['article_accepted_html_message'] = '<p>Dear {$a->user_name},</p>
+<p>Your article ({$a->article}) has been accepted.</p>
+<p>You can view the article here: {$a->link}</p>
+';
 $string['messageprovider:correction'] = 'Correction notification';
+$string['messageprovider:accepted'] = 'Article accepted notification';
 
 $string['article_tocorrect_subject'] = 'Article ready to be corrected';
 $string['article_tocorrect_message'] = 'Dear {$a->user_name},
@@ -250,4 +282,7 @@ $string['cannotmanagethemebank'] = 'You don\'t have the permissions to edit that
 $string['mustexist'] = 'Must exist!';
 $string['userdoesnotexist'] = 'This user does not exist';
 $string['mustbeteacher'] = 'You must be a teacher to do this action';
+$string['editarticle'] = 'Edit the current version of this article';
+$string['editarticle_teacher'] = 'Correct the current version of this article';
 $string['canteditarticle'] = 'You cannot edit this article';
+

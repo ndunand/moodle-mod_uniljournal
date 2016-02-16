@@ -54,15 +54,15 @@ class backup_uniljournal_activity_task extends backup_activity_task {
     static public function encode_content_links($content) {
         global $CFG;
 
-        $base = preg_quote($CFG->wwwroot,"/");
+        $base = preg_quote($CFG->wwwroot, "/");
 
         // Link to the list of choices
-        $search="/(".$base."\/mod\/uniljournal\/index.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@UNILJOURNALINDEX*$2@$', $content);
+        $search = "/(" . $base . "\/mod\/uniljournal\/index.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@UNILJOURNALINDEX*$2@$', $content);
 
         // Link to choice view by moduleid
-        $search="/(".$base."\/mod\/uniljournal\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@UNILJOURNALVIEWBYID*$2@$', $content);
+        $search = "/(" . $base . "\/mod\/uniljournal\/view.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@UNILJOURNALVIEWBYID*$2@$', $content);
 
         return $content;
     }

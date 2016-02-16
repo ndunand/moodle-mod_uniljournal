@@ -28,61 +28,72 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
-require_once(dirname(__FILE__).'/locallib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/lib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
-$cmid  = optional_param('cmid', 0, PARAM_INT); // Course_module ID, or
+$cmid = optional_param('cmid', 0, PARAM_INT); // Course_module ID, or
 $id = optional_param('id', 0, PARAM_INT);  // template ID
 
 if ($cmid) {
-    $cm         = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $uniljournal  = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
-} else {
-  print_error('id_missing', 'mod_uniljournal');
+    $cm = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $uniljournal = $DB->get_record('uniljournal', ['id' => $cm->instance], '*', MUST_EXIST);
+}
+else {
+    print_error('id_missing', 'mod_uniljournal');
 }
 
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/uniljournal:managetemplates', $context);
 
-$instructionsoptions = array('trusttext'=> true, 'maxfiles'=> 0, 'context'=> $context, 'subdirs'=>0);
+$instructionsoptions = ['trusttext' => true, 'maxfiles' => 0, 'context' => $context, 'subdirs' => 0];
 
 if ($id) { // if entry is specified
-    if (!$entry = $DB->get_record('uniljournal_articlemodels', array('id' => $id))) {
+    if (!$entry = $DB->get_record('uniljournal_articlemodels', ['id' => $id])) {
         print_error('invalidentry');
     }
-    $elements = $DB->get_records('uniljournal_articleelements', array('articlemodelid' => $id), 'sortorder');
-    if(count($elements) > 0) {
-      // Extract the ids only
-      $elementsids = $elements;
-      array_walk($elementsids, function (&$item) { $item =  $item->id;});
-      list ($inequal, $values) = $DB->get_in_or_equal($elementsids);
-      if($DB->count_records_sql('SELECT COUNT(id) FROM {uniljournal_aeinstances} WHERE elementid '.$inequal, $values) > 0) {
-        // Elements are already in use
-        print_error('invalidentry');
-      }
+    $elements = $DB->get_records('uniljournal_articleelements', ['articlemodelid' => $id], 'sortorder');
+    if (count($elements) > 0) {
+        // Extract the ids only
+        $elementsids = $elements;
+        array_walk($elementsids, function (&$item) {
+            $item = $item->id;
+        });
+        list ($inequal, $values) = $DB->get_in_or_equal($elementsids);
+        if ($DB->count_records_sql('SELECT COUNT(id) FROM {uniljournal_aeinstances} WHERE elementid ' . $inequal,
+                        $values) > 0
+        ) {
+            // Elements are already in use
+            print_error('invalidentry');
+        }
     }
-} else { // new entry
+}
+else { // new entry
     $entry = new stdClass();
     $entry->id = null;
-    $elements = array();
+    $elements = [];
 }
 
-$entry = file_prepare_standard_editor($entry, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'articletemplates', $entry->id);
+$entry = file_prepare_standard_editor($entry, 'instructions', $instructionsoptions, $context, 'mod_uniljournal',
+        'articletemplates', $entry->id);
 $entry->cmid = $cm->id;
 
 require_once('locallib.php');
 $themebanks = uniljournal_get_theme_banks($cm, $course);
 // Don't allow selection of theme banks without themes
-$themebanks = array_filter($themebanks, function($item) { return ($item->themescount > 0);});
-array_walk($themebanks, function (&$item) { $item =  $item->title;});
+$themebanks = array_filter($themebanks, function ($item) {
+    return ($item->themescount > 0);
+});
+array_walk($themebanks, function (&$item) {
+    $item = $item->title;
+});
 $themebanks[-1] = get_string('template_nothemebank', 'uniljournal');
 ksort($themebanks);
 
 require_once('edit_template_form.php');
-$customdata = array();
+$customdata = [];
 $customdata['current'] = $entry;
 $customdata['course'] = $course;
 $customdata['instructionsoptions'] = $instructionsoptions;
@@ -95,19 +106,22 @@ $mform = new template_edit_form(null, $customdata);
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/mod/uniljournal/manage_templates.php', array('id' => $cm->id)));
-} else if ($entry = $mform->get_data()) {
+    redirect(new moodle_url('/mod/uniljournal/manage_templates.php', ['id' => $cm->id]));
+}
+else if ($entry = $mform->get_data()) {
     $isnewentry = empty($entry->id);
-    $entry->instructions       = '';          // updated later
+    $entry->instructions = '';          // updated later
     $entry->instructionsformat = FORMAT_HTML; // updated later
     $entry->sortorder = 0;
     $entry->hidden = false;
     $entry->uniljournalid = $uniljournal->id;
-    if(!array_key_exists($entry->themebankid, $themebanks) || $entry->themebankid == -1) { // Force freetitle as there's no themebank
-      $entry->freetitle = true;
-      $entry->themebankid = null;
-    } else {
-      $entry->freetitle = (isset($entry->freetitle) && $entry->freetitle == 1);
+    if (!array_key_exists($entry->themebankid, $themebanks) || $entry->themebankid == -1
+    ) { // Force freetitle as there's no themebank
+        $entry->freetitle = true;
+        $entry->themebankid = null;
+    }
+    else {
+        $entry->freetitle = (isset($entry->freetitle) && $entry->freetitle == 1);
     }
 
     if ($isnewentry) {
@@ -115,81 +129,69 @@ if ($mform->is_cancelled()) {
         $entry->id = $DB->insert_record('uniljournal_articlemodels', $entry);
 
         // Log the template creation
-        $event = \mod_uniljournal\event\template_created::create(array(
-            'other' => array(
-                'userid' => $USER->id,
-                'templateid' => $entry->id
-            ),
-            'courseid' => $course->id,
-            'objectid' => $entry->id,
-            'context' => $context,
-        ));
+        $event = \mod_uniljournal\event\template_created::create(['other' => ['userid'     => $USER->id,
+                                                                              'templateid' => $entry->id],
+                                                                  'courseid' => $course->id, 'objectid' => $entry->id,
+                                                                  'context' => $context,]);
         $event->trigger();
-    } else {
+    }
+    else {
         // Update existing entry.
         $DB->update_record('uniljournal_articlemodels', $entry);
 
         // Log the template update
-        $event = \mod_uniljournal\event\template_updated::create(array(
-            'other' => array(
-                'userid' => $USER->id,
-                'templateid' => $entry->id
-            ),
-            'courseid' => $course->id,
-            'objectid' => $entry->id,
-            'context' => $context,
-        ));
+        $event = \mod_uniljournal\event\template_updated::create(['other' => ['userid'     => $USER->id,
+                                                                              'templateid' => $entry->id],
+                                                                  'courseid' => $course->id, 'objectid' => $entry->id,
+                                                                  'context' => $context,]);
         $event->trigger();
     }
     $articleelementorder = 0;
-    foreach($mform->getArticleElements() as $articleelementid => $articleelement) {
-      $articleelementobject = new stdClass();
-      $articleelementobject->articlemodelid = $entry->id;
-      $articleelementobject->sortorder = $articleelementorder++;
-      if(array_key_exists($articleelement, $customdata['elementsoptions'])) {
-        $articleelementobject->element_type = $articleelement;
-        if ($articleelement !== "0") {
-          if(!array_key_exists($articleelementid, $elements)) { // -1 should never be in there
-            // Add new entry
-            $articleelementobject->id = $DB->insert_record('uniljournal_articleelements', $articleelementobject);
-          } else {
-            // Old element, update!
-            $articleelementobject->id = $articleelementid;
-            $DB->update_record('uniljournal_articleelements', $articleelementobject);
-            // Don't delete it later on
-            unset($elements[$articleelementid]);
-          }
+    foreach ($mform->getArticleElements() as $articleelementid => $articleelement) {
+        $articleelementobject = new stdClass();
+        $articleelementobject->articlemodelid = $entry->id;
+        $articleelementobject->sortorder = $articleelementorder++;
+        if (array_key_exists($articleelement, $customdata['elementsoptions'])) {
+            $articleelementobject->element_type = $articleelement;
+            if ($articleelement !== "0") {
+                if (!array_key_exists($articleelementid, $elements)) { // -1 should never be in there
+                    // Add new entry
+                    $articleelementobject->id =
+                            $DB->insert_record('uniljournal_articleelements', $articleelementobject);
+                }
+                else {
+                    // Old element, update!
+                    $articleelementobject->id = $articleelementid;
+                    $DB->update_record('uniljournal_articleelements', $articleelementobject);
+                    // Don't delete it later on
+                    unset($elements[$articleelementid]);
+                }
+            }
         }
-      }
     }
 
     // Delete the elements that were there before and that aren't here anymore (see "unset(" above)
-    foreach($elements as $articleelementid => $articleelement) {
-      $DB->delete_records('uniljournal_articleelements', array('id' => $articleelementid));
+    foreach ($elements as $articleelementid => $articleelement) {
+        $DB->delete_records('uniljournal_articleelements', ['id' => $articleelementid]);
     }
 
     // save and relink embedded images and save attachments
-    $entry = file_postupdate_standard_editor($entry, 'instructions', $instructionsoptions, $context, 'mod_uniljournal', 'articletemplates', $entry->id);
+    $entry = file_postupdate_standard_editor($entry, 'instructions', $instructionsoptions, $context, 'mod_uniljournal',
+            'articletemplates', $entry->id);
     // store the updated value values
     $DB->update_record('uniljournal_articlemodels', $entry);
 
-    redirect(new moodle_url('/mod/uniljournal/manage_templates.php', array('id' => $cm->id)));
+    redirect(new moodle_url('/mod/uniljournal/manage_templates.php', ['id' => $cm->id]));
 }
 
-$url = new moodle_url('/mod/uniljournal/edit_template.php', array('cmid'=>$cm->id));
+$url = new moodle_url('/mod/uniljournal/edit_template.php', ['cmid' => $cm->id]);
 if (!empty($id)) {
     $url->param('id', $id);
 
     // Log the template read action
-    $event = \mod_uniljournal\event\template_read::create(array(
-        'other' => array(
-            'userid' => $USER->id,
-            'templateid' => $id
-        ),
-        'courseid' => $course->id,
-        'objectid' => $id,
-        'context' => $context,
-    ));
+    $event = \mod_uniljournal\event\template_read::create(['other'    => ['userid' => $USER->id, 'templateid' => $id],
+                                                           'courseid' => $course->id, 'objectid' => $id,
+                                                           'context'  => $context,]);
     $event->trigger();
 }
 $PAGE->set_url($url);

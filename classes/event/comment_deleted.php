@@ -26,6 +26,7 @@
  */
 
 namespace mod_uniljournal\event;
+
 defined('MOODLE_INTERNAL') || die();
 
 class comment_deleted extends \core\event\base {

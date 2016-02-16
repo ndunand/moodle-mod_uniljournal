@@ -35,45 +35,37 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
         $userinfo = $this->get_setting_value('userinfo');
 
         // Define each element separated
-        $uniljournal = new backup_nested_element('uniljournal', array('id'), array(
-            'course', 'name', 'subtitle', 'intro',
-            'introformat', 'logo', 'comments_allowed', 'timecreated', 'timemodified'));
+        $uniljournal = new backup_nested_element('uniljournal', ['id'],
+                ['course', 'name', 'subtitle', 'intro', 'introformat', 'logo', 'comments_allowed', 'timecreated',
+                        'timemodified']);
 
         $themebanks = new backup_nested_element('themebanks');
-        $themebank = new backup_nested_element('themebank', array('id'), array(
-            'contextid', 'title'
-        ));
+        $themebank = new backup_nested_element('themebank', ['id'], ['contextid', 'title']);
 
         $themes = new backup_nested_element('themes');
-        $theme = new backup_nested_element('theme', array('id'), array(
-            'themebankid', 'title', 'instructions', 'instructionsformat', 'sortorder', 'hidden'
-        ));
+        $theme = new backup_nested_element('theme', ['id'],
+                ['themebankid', 'title', 'instructions', 'instructionsformat', 'sortorder', 'hidden']);
 
         $articlemodels = new backup_nested_element('articlemodels');
-        $articlemodel = new backup_nested_element('articlemodel', array('id'), array(
-            'uniljournalid', 'title', 'maxbytes', 'instructions', 'instructionsformat',
-            'freetitle', 'themebankid', 'sortorder', 'hidden'
-        ));
+        $articlemodel = new backup_nested_element('articlemodel', ['id'],
+                ['uniljournalid', 'title', 'maxbytes', 'instructions', 'instructionsformat', 'freetitle', 'themebankid',
+                        'sortorder', 'hidden']);
 
         $articleelements = new backup_nested_element('articleelements');
-        $articleelement = new backup_nested_element('articleelement', array('id'), array(
-            'articlemodelid', 'element_type', 'sortorder'
-        ));
+        $articleelement =
+                new backup_nested_element('articleelement', ['id'], ['articlemodelid', 'element_type', 'sortorder']);
 
         $articleinstances = new backup_nested_element('articleinstances');
-        $articleinstance = new backup_nested_element('articleinstance', array('id'), array(
-            'articlemodelid', 'userid', 'timemodified', 'title', 'status', 'themeid'
-        ));
+        $articleinstance = new backup_nested_element('articleinstance', ['id'],
+                ['articlemodelid', 'userid', 'timemodified', 'title', 'status', 'themeid']);
 
         $aeinstances = new backup_nested_element('aeinstances');
-        $aeinstance = new backup_nested_element('aeinstance', array('id'), array(
-            'instanceid', 'elementid', 'userid', 'version', 'timemodified', 'value', 'valueformat'
-        ));
+        $aeinstance = new backup_nested_element('aeinstance', ['id'],
+                ['instanceid', 'elementid', 'userid', 'version', 'timemodified', 'value', 'valueformat']);
 
         $article_comments = new backup_nested_element('article_comments');
-        $article_comment = new backup_nested_element('article_comment', array('id'), array(
-            'articleinstanceid', 'articleinstanceversion', 'userid', 'text'
-        ));
+        $article_comment = new backup_nested_element('article_comment', ['id'],
+                ['articleinstanceid', 'articleinstanceversion', 'userid', 'text']);
 
         // Build the tree
         $uniljournal->add_child($themebanks);
@@ -92,24 +84,19 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
         $themes->add_child($theme);
         $article_comments->add_child($article_comment);
 
-
         // Define sources
-        $uniljournal->set_source_table('uniljournal', array('id' => backup::VAR_ACTIVITYID));
+        $uniljournal->set_source_table('uniljournal', ['id' => backup::VAR_ACTIVITYID]);
 
         $articlemodel->set_source_sql('
             SELECT *
               FROM {uniljournal_articlemodels}
-             WHERE uniljournalid = ?',
-            array(backup::VAR_PARENTID)
-        );
+             WHERE uniljournalid = ?', [backup::VAR_PARENTID]);
 
         $articleelement->set_source_sql('
             SELECT e.*
             FROM {uniljournal_articlemodels} m, {uniljournal_articleelements} e
             WHERE m.uniljournalid = ?
-            AND m.id = e.articlemodelid',
-            array(backup::VAR_PARENTID)
-        );
+            AND m.id = e.articlemodelid', [backup::VAR_PARENTID]);
 
         //save used themes + themes from module
         $themebank->set_source_sql('
@@ -119,7 +106,7 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
             LEFT JOIN {context} c on c.id = tb.contextid
             WHERE m.themebankid is not null
             OR c.contextlevel = 70
-        ', array(backup::VAR_PARENTID));
+        ', [backup::VAR_PARENTID]);
 
         $theme->set_source_sql('
             SELECT t.*
@@ -129,7 +116,7 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
             LEFT JOIN {context} c on c.id = tb.contextid
             WHERE m.themebankid is not null
             OR c.contextlevel = 70
-        ', array(backup::VAR_PARENTID));
+        ', [backup::VAR_PARENTID]);
 
         // All the rest of elements only happen if we are including user info
         if ($userinfo) {
@@ -138,8 +125,7 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
                 FROM {uniljournal_articleinstances} a, {uniljournal_articlemodels} m
                 WHERE m.uniljournalid = ?
                 AND m.id = a.articlemodelid
-            ', array(backup::VAR_PARENTID));
-
+            ', [backup::VAR_PARENTID]);
 
             $aeinstance->set_source_sql('
                 SELECT ae.*
@@ -147,7 +133,7 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
                 WHERE m.uniljournalid = ?
                 AND m.id = a.articlemodelid
                 AND a.id = ae.instanceid
-            ', array(backup::VAR_PARENTID));
+            ', [backup::VAR_PARENTID]);
 
             $article_comment->set_source_sql('
                 SELECT c.*
@@ -155,7 +141,7 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
                 WHERE m.uniljournalid = ?
                 AND m.id = a.articlemodelid
                 AND a.id = c.articleinstanceid
-            ', array(backup::VAR_PARENTID));
+            ', [backup::VAR_PARENTID]);
         }
 
         // Define id annotations

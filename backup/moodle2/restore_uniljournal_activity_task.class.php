@@ -53,9 +53,9 @@ class restore_uniljournal_activity_task extends restore_activity_task {
      * processed by the link decoder
      */
     static public function define_decode_contents() {
-        $contents = array();
+        $contents = [];
 
-        $contents[] = new restore_decode_content('uniljournal', array('intro'), 'uniljournal');
+        $contents[] = new restore_decode_content('uniljournal', ['intro'], 'uniljournal');
 
         return $contents;
     }
@@ -65,13 +65,12 @@ class restore_uniljournal_activity_task extends restore_activity_task {
      * to the activity to be executed by the link decoder
      */
     static public function define_decode_rules() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_decode_rule('UNILJOURNALVIEWBYID', '/mod/uniljournal/view.php?id=$1', 'course_module');
         $rules[] = new restore_decode_rule('UNILJOURNALINDEX', '/mod/uniljournal/index.php?id=$1', 'course');
 
         return $rules;
-
     }
 
     /**
@@ -81,7 +80,7 @@ class restore_uniljournal_activity_task extends restore_activity_task {
      * of {@link restore_log_rule} objects
      */
     static public function define_restore_log_rules() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_log_rule('uniljournal', 'add', 'view.php?id={course_module}', '{uniljournal}');
         $rules[] = new restore_log_rule('uniljournal', 'update', 'view.php?id={course_module}', '{uniljournal}');
@@ -104,14 +103,13 @@ class restore_uniljournal_activity_task extends restore_activity_task {
      * activity level. All them are rules not linked to any module instance (cmid = 0)
      */
     static public function define_restore_log_rules_for_course() {
-        $rules = array();
+        $rules = [];
 
         // Fix old wrong uses (missing extension)
-        $rules[] = new restore_log_rule('uniljournal', 'view all', 'index?id={course}', null,
-            null, null, 'index.php?id={course}');
+        $rules[] = new restore_log_rule('uniljournal', 'view all', 'index?id={course}', null, null, null,
+                'index.php?id={course}');
         $rules[] = new restore_log_rule('uniljournal', 'view all', 'index.php?id={course}', null);
 
         return $rules;
     }
-
 }

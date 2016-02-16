@@ -26,6 +26,7 @@
  */
 
 namespace mod_uniljournal\event;
+
 defined('MOODLE_INTERNAL') || die();
 
 class template_created extends \core\event\base {

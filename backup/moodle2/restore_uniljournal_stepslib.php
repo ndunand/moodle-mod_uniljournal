@@ -24,7 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__).'/../../locallib.php');
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Structure step to restore one uniljournal activity
@@ -35,18 +35,23 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
 
     protected function define_structure() {
 
-        $paths = array();
+        $paths = [];
         $userinfo = $this->get_setting_value('userinfo');
 
         $paths[] = new restore_path_element('uniljournal', '/activity/uniljournal');
         $paths[] = new restore_path_element('uniljournal_themebank', '/activity/uniljournal/themebanks/themebank');
         $paths[] = new restore_path_element('uniljournal_theme', '/activity/uniljournal/themes/theme');
-        $paths[] = new restore_path_element('uniljournal_articlemodel', '/activity/uniljournal/articlemodels/articlemodel');
-        $paths[] = new restore_path_element('uniljournal_articleelement', '/activity/uniljournal/articleelements/articleelement');
+        $paths[] = new restore_path_element('uniljournal_articlemodel',
+                '/activity/uniljournal/articlemodels/articlemodel');
+        $paths[] = new restore_path_element('uniljournal_articleelement',
+                '/activity/uniljournal/articleelements/articleelement');
         if ($userinfo) {
-            $paths[] = new restore_path_element('uniljournal_articleinstance', '/activity/uniljournal/articleinstances/articleinstance');
-            $paths[] = new restore_path_element('uniljournal_aeinstance', '/activity/uniljournal/aeinstances/aeinstance');
-            $paths[] = new restore_path_element('uniljournal_article_comment', '/activity/uniljournal/article_comments/article_comment');
+            $paths[] = new restore_path_element('uniljournal_articleinstance',
+                    '/activity/uniljournal/articleinstances/articleinstance');
+            $paths[] =
+                    new restore_path_element('uniljournal_aeinstance', '/activity/uniljournal/aeinstances/aeinstance');
+            $paths[] = new restore_path_element('uniljournal_article_comment',
+                    '/activity/uniljournal/article_comments/article_comment');
         }
 
         // Return the paths wrapped into standard activity structure
@@ -75,14 +80,14 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
         $data = (object)$data;
         $oldid = $data->id;
 
-        $data->title = $data->title . get_string('restoredon','mod_uniljournal', usergetdate(time()));
+        $data->title = $data->title . get_string('restoredon', 'mod_uniljournal', usergetdate(time()));
 
         switch ($data->contextid) {
             case 10:
                 $data->contextid = context_system::instance()->id;
                 if (!canmanagethemebank($data)) {
                     $mods = get_course_mods($this->course->id);
-                    foreach($mods as $mod) {
+                    foreach ($mods as $mod) {
                         if ($mod->modname == 'uniljournal' && $mod->instance == $this->get_new_parentid('uniljournal')) {
                             $data->contextid = context_module::instance($mod->id)->id;
                             break;
@@ -94,7 +99,7 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
                 $data->contextid = context_coursecat::instance($this->course->category)->id;
                 if (!canmanagethemebank($data)) {
                     $mods = get_course_mods($this->course->id);
-                    foreach($mods as $mod) {
+                    foreach ($mods as $mod) {
                         if ($mod->modname == 'uniljournal' && $mod->instance == $this->get_new_parentid('uniljournal')) {
                             $data->contextid = context_module::instance($mod->id)->id;
                             break;
@@ -107,7 +112,7 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
                 break;
             case 70:
                 $mods = get_course_mods($this->course->id);
-                foreach($mods as $mod) {
+                foreach ($mods as $mod) {
                     if ($mod->modname == 'uniljournal' && $mod->instance == $this->get_new_parentid('uniljournal')) {
                         break;
                     }
@@ -118,7 +123,6 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
                 $data->contextid = context_system::instance()->id;
                 break;
         }
-
 
         $newitemid = $DB->insert_record('uniljournal_themebanks', $data);
         $this->set_mapping('uniljournal_themebank', $oldid, $newitemid);

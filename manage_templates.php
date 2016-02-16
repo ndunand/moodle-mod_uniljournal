@@ -28,24 +28,28 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/lib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
-$id      = optional_param('id', 0, PARAM_INT); // Course_module ID, or
-$n       = optional_param('n', 0, PARAM_INT);  // ... uniljournal instance ID - it should be named as the first character of the module.
-$action  = optional_param('action', 0, PARAM_TEXT);
-$tid     = optional_param('tid', 0, PARAM_INT);
+$id = optional_param('id', 0, PARAM_INT); // Course_module ID, or
+$n = optional_param('n', 0,
+        PARAM_INT);  // ... uniljournal instance ID - it should be named as the first character of the module.
+$action = optional_param('action', 0, PARAM_TEXT);
+$tid = optional_param('tid', 0, PARAM_INT);
 
 if ($id) {
-    $cm         = get_coursemodule_from_id('uniljournal', $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $uniljournal  = $DB->get_record('uniljournal', array('id' => $cm->instance), '*', MUST_EXIST);
-} else if ($n) {
-    $uniljournal  = $DB->get_record('uniljournal', array('id' => $n), '*', MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $uniljournal->course), '*', MUST_EXIST);
-    $cm         = get_coursemodule_from_instance('uniljournal', $uniljournal->id, $course->id, false, MUST_EXIST);
-} else {
-  print_error('id_missing', 'mod_uniljournal');
+    $cm = get_coursemodule_from_id('uniljournal', $id, 0, false, MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $uniljournal = $DB->get_record('uniljournal', ['id' => $cm->instance], '*', MUST_EXIST);
+}
+else if ($n) {
+    $uniljournal = $DB->get_record('uniljournal', ['id' => $n], '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $uniljournal->course], '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('uniljournal', $uniljournal->id, $course->id, false, MUST_EXIST);
+}
+else {
+    print_error('id_missing', 'mod_uniljournal');
 }
 
 require_login($course, true, $cm);
@@ -58,82 +62,85 @@ $amodels = $DB->get_records_sql('
     LEFT JOIN {uniljournal_articleinstances} ai ON ai.articlemodelid = am.id
         WHERE am.uniljournalid = :uniljournalid
      GROUP BY am.id
-     ORDER BY am.sortorder, am.id', array('uniljournalid' => $uniljournal->id));
+     ORDER BY am.sortorder, am.id', ['uniljournalid' => $uniljournal->id]);
 
 if ($action && $tid) {
-   if (!$model = $amodels[$tid]) {
-     print_error('mustexist', 'mod_uniljournal');
-   }
-   
-   if($action == "delete" and $model->articleinstancescount == 0 ) {
-    require_once('edit_template_form.php');
-    $customdata = array();
-    $customdata['course'] = $course;
-    $customdata['cm'] = $cm;
-    $customdata['template'] = $amodels[$tid];
+    if (!$model = $amodels[$tid]) {
+        print_error('mustexist', 'mod_uniljournal');
+    }
 
-    $deleteform = new template_delete_form(new moodle_url('/mod/uniljournal/manage_templates.php', array('id'=> $cm->id, 'tid' => $tid, 'action' => 'delete')), $customdata);
+    if ($action == "delete" and $model->articleinstancescount == 0) {
+        require_once('edit_template_form.php');
+        $customdata = [];
+        $customdata['course'] = $course;
+        $customdata['cm'] = $cm;
+        $customdata['template'] = $amodels[$tid];
 
-    if ($deleteform->is_cancelled()) {
-      unset($deleteform);
-    } elseif ( ($entry = $deleteform->get_data()) && $entry->confirm == 1) {
-      // Delete the record in question
-      $DB->delete_records('uniljournal_articlemodels', array('id' => $tid));
-      $DB->delete_records('uniljournal_articleelements', array('articlemodelid' => $tid));
-      unset($amodels[$tid]);
-      unset($deleteform);
+        $deleteform = new template_delete_form(new moodle_url('/mod/uniljournal/manage_templates.php',
+                ['id' => $cm->id, 'tid' => $tid, 'action' => 'delete']), $customdata);
 
-        // Log the template deletion
-        $event = \mod_uniljournal\event\template_deleted::create(array(
-            'other' => array(
-                'userid' => $USER->id,
-                'templateid' => $tid
-            ),
-            'courseid' => $course->id,
-            'objectid' => $tid,
-            'context' => $context,
-        ));
-        $event->trigger();
+        if ($deleteform->is_cancelled()) {
+            unset($deleteform);
+        }
+        elseif (($entry = $deleteform->get_data()) && $entry->confirm == 1) {
+            // Delete the record in question
+            $DB->delete_records('uniljournal_articlemodels', ['id' => $tid]);
+            $DB->delete_records('uniljournal_articleelements', ['articlemodelid' => $tid]);
+            unset($amodels[$tid]);
+            unset($deleteform);
+
+            // Log the template deletion
+            $event = \mod_uniljournal\event\template_deleted::create(['other' => ['userid'     => $USER->id,
+                                                                                  'templateid' => $tid],
+                                                                      'courseid' => $course->id, 'objectid' => $tid,
+                                                                      'context' => $context,]);
+            $event->trigger();
+        }
     }
-   } elseif(in_array($action, array('hide', 'show'))) {
-    // Manage hide/show status
-    switch($action) {
-      case "hide":  $amodels[$tid]->hidden = true; break;
-      case "show":  $amodels[$tid]->hidden = false; break;
+    elseif (in_array($action, ['hide', 'show'])) {
+        // Manage hide/show status
+        switch ($action) {
+            case "hide":
+                $amodels[$tid]->hidden = true;
+                break;
+            case "show":
+                $amodels[$tid]->hidden = false;
+                break;
+        }
+        $DB->update_record('uniljournal_articlemodels', $amodels[$tid]);
     }
-    $DB->update_record('uniljournal_articlemodels', $amodels[$tid]);
-  } elseif(in_array($action, array('up', 'down'))) {
-    // Manage the re-ordering of templates
-    // Create three arrays, one for the actual keys (origs), one for the next ones (nexts), one for the previous ones (prevs)
-    $origs = array_keys($amodels);
-    $nexts = array_keys($amodels);
-    array_shift($nexts);
-    array_push($nexts, false);
-    $prevs = array_keys($amodels);
-    array_unshift($prevs, false);
-  
-    $ordering = array_flip($origs);
-    if($action == "down" && array_key_exists($ordering[$tid], $nexts) && $nexts[$ordering[$tid]] !== false) {
-      $ordering[$nexts[$ordering[$tid]]]--;
-      $ordering[$tid]++;
-    } elseif($action == "up" && array_key_exists($ordering[$tid], $prevs) && $prevs[$ordering[$tid]] !== false) {
-      $ordering[$prevs[$ordering[$tid]]]++;
-      $ordering[$tid]--;
+    elseif (in_array($action, ['up', 'down'])) {
+        // Manage the re-ordering of templates
+        // Create three arrays, one for the actual keys (origs), one for the next ones (nexts), one for the previous ones (prevs)
+        $origs = array_keys($amodels);
+        $nexts = array_keys($amodels);
+        array_shift($nexts);
+        array_push($nexts, false);
+        $prevs = array_keys($amodels);
+        array_unshift($prevs, false);
+
+        $ordering = array_flip($origs);
+        if ($action == "down" && array_key_exists($ordering[$tid], $nexts) && $nexts[$ordering[$tid]] !== false) {
+            $ordering[$nexts[$ordering[$tid]]]--;
+            $ordering[$tid]++;
+        }
+        elseif ($action == "up" && array_key_exists($ordering[$tid], $prevs) && $prevs[$ordering[$tid]] !== false) {
+            $ordering[$prevs[$ordering[$tid]]]++;
+            $ordering[$tid]--;
+        }
+
+        // On-purpose refresh them all, to set the initial sortorder.
+        foreach ($ordering as $amodelid => $newsortorder) {
+            $amodels[$amodelid]->sortorder = $newsortorder;
+            $DB->update_record('uniljournal_articlemodels', $amodels[$amodelid]);
+        }
+        redirect(new moodle_url('/mod/uniljournal/manage_templates.php', ['id' => $cm->id]));
     }
-    
-    // On-purpose refresh them all, to set the initial sortorder.
-    foreach($ordering as $amodelid => $newsortorder) {
-      $amodels[$amodelid]->sortorder = $newsortorder;
-      $DB->update_record('uniljournal_articlemodels', $amodels[$amodelid]);
-    }
-    redirect(new moodle_url('/mod/uniljournal/manage_templates.php', array('id' => $cm->id)));
-  }
-  
 }
 
 // Print the page header.
 
-$PAGE->set_url('/mod/uniljournal/manage_templates.php', array('id' => $cm->id));
+$PAGE->set_url('/mod/uniljournal/manage_templates.php', ['id' => $cm->id]);
 $PAGE->set_title(format_string($uniljournal->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
@@ -143,75 +150,85 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('articletemplates', 'mod_uniljournal'));
 
 if (isset($deleteform)) {
-  //displays the form
-  $deleteform->display();
+    //displays the form
+    $deleteform->display();
+}
+else {
+    $themebanks = array_filter(uniljournal_get_theme_banks($cm, $course), function ($item) {
+        return ($item->themescount > 0);
+    });
+    $themebankurl = new moodle_url('/mod/uniljournal/manage_themebanks.php', ['id' => $cm->id]);
+    echo html_writer::tag('p', get_string('managethemebanks_hint', 'mod_uniljournal'));
+    //  echo html_writer::link($themebankurl, get_string('managethemebanks', 'mod_uniljournal'));
+    if (count($amodels) > 0) {
+        $table = new html_table();
+        $table->head = [get_string('template', 'mod_uniljournal'), '', get_string('actions'),];
+        require_once('locallib.php');
+        $templdescs = uniljournal_get_template_descriptions($uniljournal->id, false);
 
-} else {
-  if (count($amodels) > 0) {
-    $table = new html_table();
-    $table->head = array(
-        get_string('template', 'mod_uniljournal'),
-        '',
-        get_string('actions'),
-    );
-    require_once('locallib.php');
-    $templdescs = uniljournal_get_template_descriptions($uniljournal->id, false);
-
-    $aiter = 0;
-    foreach($amodels as $amodel) {
-      $aiter++;
-      $row = new html_table_row();
-      if($amodel->hidden) {
-        $row->attributes['class'] = 'dimmed_text';
-      }
-      $script = 'edit_template.php';
-      $args = array('cmid'=> $cm->id, 'id' => $amodel->id);
-      
-      if($amodel->articleinstancescount == 0) {
-        $row->cells[0] = html_writer::link(new moodle_url('/mod/uniljournal/' . $script, $args), $amodel->title);
-      } else {
-        $row->cells[0] = $amodel->title.' ('.get_string('n_articleinstances', 'uniljournal', $amodel->articleinstancescount).')';
-      }
-
-      if(array_key_exists($amodel->id, $templdescs)) {
-        $row->cells[1] = '<ul><li>'.implode($templdescs[$amodel->id],'</li><li>').'</li></ul>';
-      } else {
-        $row->cells[1] = '';
-      }
-
-      $actionarray = array();
-      $actionarray[] = $amodel->hidden ? 'show' : 'hide';
-      if($aiter != 1) $actionarray[] = 'up';
-      if($aiter != count($amodels)) $actionarray[] = 'down';
-      if($amodel->articleinstancescount == 0) {
-        $actionarray[] = 'edit';
-        $actionarray[] = 'delete';
-      }
-      
-      $actions = "";
-      foreach($actionarray as $actcode) {
-        $script = 'manage_templates.php';
-        $args = array('id'=> $cm->id, 'tid' => $amodel->id, 'action' => $actcode);
-        
-        switch($actcode) {
-          case "edit":
+        $aiter = 0;
+        foreach ($amodels as $amodel) {
+            $aiter++;
+            $row = new html_table_row();
+            if ($amodel->hidden) {
+                $row->attributes['class'] = 'dimmed_text';
+            }
             $script = 'edit_template.php';
-            $args = array('cmid'=> $cm->id, 'id' => $amodel->id);
-            break;
+            $args = ['cmid' => $cm->id, 'id' => $amodel->id];
+
+            if ($amodel->articleinstancescount == 0) {
+                $row->cells[0] =
+                        html_writer::link(new moodle_url('/mod/uniljournal/' . $script, $args), $amodel->title);
+            }
+            else {
+                $row->cells[0] = $amodel->title . ' (' . get_string('n_articleinstances', 'uniljournal',
+                                $amodel->articleinstancescount) . ')';
+            }
+
+            if (array_key_exists($amodel->id, $templdescs)) {
+                $row->cells[1] = '<ul><li>' . implode($templdescs[$amodel->id], '</li><li>') . '</li></ul>';
+            }
+            else {
+                $row->cells[1] = '';
+            }
+
+            $actionarray = [];
+            $actionarray[] = $amodel->hidden ? 'show' : 'hide';
+            if ($aiter != 1) {
+                $actionarray[] = 'up';
+            }
+            if ($aiter != count($amodels)) {
+                $actionarray[] = 'down';
+            }
+            if ($amodel->articleinstancescount == 0) {
+                $actionarray[] = 'edit';
+                $actionarray[] = 'delete';
+            }
+
+            $actions = "";
+            foreach ($actionarray as $actcode) {
+                $script = 'manage_templates.php';
+                $args = ['id' => $cm->id, 'tid' => $amodel->id, 'action' => $actcode];
+
+                switch ($actcode) {
+                    case "edit":
+                        $script = 'edit_template.php';
+                        $args = ['cmid' => $cm->id, 'id' => $amodel->id];
+                        break;
+                }
+
+                $url = new moodle_url('/mod/uniljournal/' . $script, $args);
+                $img = html_writer::img($OUTPUT->pix_url('t/' . $actcode), get_string($actcode));
+                $actions .= html_writer::link($url, $img) . "\t";
+            }
+            $row->cells[2] = $actions;
+            $table->data[] = $row;
         }
-
-        $url = new moodle_url('/mod/uniljournal/' . $script, $args);
-        $img = html_writer::img($OUTPUT->pix_url('t/'. $actcode), get_string($actcode));
-        $actions .= html_writer::link($url, $img)."\t";
-      }
-      $row->cells[2] = $actions;
-      $table->data[] = $row;
+        echo html_writer::table($table);
     }
-    echo html_writer::table($table);
-  }
 
-  $url = new moodle_url('/mod/uniljournal/edit_template.php', array('cmid'=> $cm->id));
-  echo html_writer::link($url, get_string('addtemplate', 'mod_uniljournal'));
+    $url = new moodle_url('/mod/uniljournal/edit_template.php', ['cmid' => $cm->id]);
+    echo html_writer::link($url, get_string('addtemplate', 'mod_uniljournal'));
 }
 
 echo $OUTPUT->footer();

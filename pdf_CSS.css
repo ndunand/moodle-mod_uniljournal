@@ -4,12 +4,12 @@
 }
 
 .article-view {
-    margin: 10px 0;
+    /*margin: 10px 0;*/
 }
 
 .article-view-template-title {
     font-style: italic;
-    line-height: 0;
+    /*line-height: 0;*/
 }
 
 .article-view-template-instructions {
@@ -19,19 +19,23 @@
 
 .article-view-title {
     font-size: 24px;
-    line-height: 15px;
+    line-height: 10px;
 }
 
 .article-view-content-subtitle,
 .article-view-attachment-title {
     font-size: 18px;
-    line-height: 5px;
+    line-height: 15px;
 }
 
 .article-view-content {
     vertical-align: top;
     width: 65%;
     display: inline-block;
+}
+
+.article-view-content-text, .article-view-content-text-only {
+
 }
 
 .article-view-attachment {
@@ -73,7 +77,7 @@ tbody {
     display: table-row-group;
 }
 
-td,th {
+td, th {
     display: table-cell;
 }
 
@@ -81,7 +85,8 @@ td,th {
     text-align: center;
 }
 
-.titlepage img {
+.titlepage .logo {
     max-width: 300px;
     max-height: 300px;
 }
+

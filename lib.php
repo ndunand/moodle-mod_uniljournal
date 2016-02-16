@@ -50,10 +50,13 @@ defined('MOODLE_INTERNAL') || die();
  * @return mixed true if the feature is supported, null if unknown
  */
 function uniljournal_supports($feature) {
-    switch($feature) {
-        case FEATURE_MOD_INTRO:               return true;
-        case FEATURE_SHOW_DESCRIPTION:        return true;
-        case FEATURE_BACKUP_MOODLE2:          return true;
+    switch ($feature) {
+        case FEATURE_MOD_INTRO:
+            return true;
+        case FEATURE_SHOW_DESCRIPTION:
+            return true;
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
         default:
             return null;
     }
@@ -77,12 +80,13 @@ function uniljournal_add_instance(stdClass $uniljournal, mod_uniljournal_mod_for
 
     $cmid = $uniljournal->coursemodule;
     $uniljournal->timecreated = time();
-    
+
     $uniljournal->id = $DB->insert_record('uniljournal', $uniljournal);
 
     // we need to use context now, so we need to make sure all needed info is already in db
-    $DB->set_field('course_modules', 'instance', $uniljournal->id, array('id' => $cmid));
+    $DB->set_field('course_modules', 'instance', $uniljournal->id, ['id' => $cmid]);
     uniljournal_set_logo($uniljournal);
+
     return $uniljournal->id;
 }
 
@@ -100,13 +104,13 @@ function uniljournal_add_instance(stdClass $uniljournal, mod_uniljournal_mod_for
 function uniljournal_update_instance(stdClass $uniljournal, mod_uniljournal_mod_form $mform = null) {
     global $DB;
     require_once("locallib.php");
-    
+
     $uniljournal->timemodified = time();
     $uniljournal->id = $uniljournal->instance;
-    
+
     $DB->update_record('uniljournal', $uniljournal);
     uniljournal_set_logo($uniljournal);
-    
+
     return true;
 }
 
@@ -123,37 +127,37 @@ function uniljournal_update_instance(stdClass $uniljournal, mod_uniljournal_mod_
 function uniljournal_delete_instance($id) {
     global $DB;
 
-    if (! $uniljournal = $DB->get_record('uniljournal', array('id' => $id))) {
+    if (!$uniljournal = $DB->get_record('uniljournal', ['id' => $id])) {
         return false;
     }
 
-    $module = $DB->get_record('modules', array('name' => 'uniljournal'));
-    $course_module = $DB->get_record('course_modules', array('instance' => $id, 'module' => $module->id));
+    $module = $DB->get_record('modules', ['name' => 'uniljournal']);
+    $course_module = $DB->get_record('course_modules', ['instance' => $id, 'module' => $module->id]);
 
     $context = context_module::instance($course_module->id);
 
-    $templates = $DB->get_records('uniljournal_articlemodels', array('uniljournalid' => $uniljournal->id));
+    $templates = $DB->get_records('uniljournal_articlemodels', ['uniljournalid' => $uniljournal->id]);
 
-    $theme_banks = $DB->get_records('uniljournal_themebanks', array('contextid' => $context->id));
-    foreach($theme_banks as $theme_bank) {
-        $DB->delete_records('uniljournal_themes', array('themebankid' => $theme_bank->id));
-        $DB->delete_records('uniljournal_themebanks', array('contextid' => $context->id));
+    $theme_banks = $DB->get_records('uniljournal_themebanks', ['contextid' => $context->id]);
+    foreach ($theme_banks as $theme_bank) {
+        $DB->delete_records('uniljournal_themes', ['themebankid' => $theme_bank->id]);
+        $DB->delete_records('uniljournal_themebanks', ['contextid' => $context->id]);
     }
 
     foreach ($templates as $template) {
-        $DB->delete_records('uniljournal_articleelements', array('articlemodelid' => $template->id));
-        $articles = $DB->get_records('uniljournal_articleinstances', array('articlemodelid' => $template->id));
+        $DB->delete_records('uniljournal_articleelements', ['articlemodelid' => $template->id]);
+        $articles = $DB->get_records('uniljournal_articleinstances', ['articlemodelid' => $template->id]);
 
-        foreach($articles as $article) {
-            $DB->delete_records('uniljournal_article_comments', array('articleinstanceid' => $article->id));
-            $DB->delete_records('uniljournal_aeinstances', array('instanceid' => $article->id));
+        foreach ($articles as $article) {
+            $DB->delete_records('uniljournal_article_comments', ['articleinstanceid' => $article->id]);
+            $DB->delete_records('uniljournal_aeinstances', ['instanceid' => $article->id]);
         }
-        $DB->delete_records('uniljournal_articleinstances', array('articlemodelid' => $template->id));
+        $DB->delete_records('uniljournal_articleinstances', ['articlemodelid' => $template->id]);
     }
 
-    $DB->delete_records('uniljournal_articlemodels', array('uniljournalid' => $uniljournal->id));
+    $DB->delete_records('uniljournal_articlemodels', ['uniljournalid' => $uniljournal->id]);
 
-    $DB->delete_records('uniljournal', array('id' => $uniljournal->id));
+    $DB->delete_records('uniljournal', ['id' => $uniljournal->id]);
 
     return true;
 }
@@ -172,6 +176,7 @@ function uniljournal_user_outline($course, $user, $mod, $uniljournal) {
     $return = new stdClass();
     $return->time = 0;
     $return->info = '';
+
     return $return;
 }
 
@@ -215,7 +220,8 @@ function uniljournal_print_recent_activity($course, $viewfullnames, $timestart) 
  * @param int $groupid check for a particular group's activity only, defaults to 0 (all groups)
  * @return void adds items into $activities and increases $index
  */
-function uniljournal_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0) {
+function uniljournal_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0,
+                                             $groupid = 0) {
 }
 
 /**
@@ -234,7 +240,7 @@ function uniljournal_print_recent_mod_activity($activity, $courseid, $detail, $m
  * @return boolean
  * @todo Finish documenting this function
  **/
-function uniljournal_cron () {
+function uniljournal_cron() {
     return true;
 }
 
@@ -245,7 +251,7 @@ function uniljournal_cron () {
  * @return array
  */
 function uniljournal_get_extra_capabilities() {
-    return array('moodle/site:viewfullnames');
+    return ['moodle/site:viewfullnames'];
 }
 
 /**
@@ -267,9 +273,10 @@ function uniljournal_scale_used($uniljournalid, $scaleid) {
     global $DB;
 
     /* @example */
-    if ($scaleid and $DB->record_exists('uniljournal', array('id' => $uniljournalid, 'grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists('uniljournal', ['id' => $uniljournalid, 'grade' => -$scaleid])) {
         return true;
-    } else {
+    }
+    else {
         return false;
     }
 }
@@ -286,9 +293,10 @@ function uniljournal_scale_used_anywhere($scaleid) {
     global $DB;
 
     /* @example */
-    if ($scaleid and $DB->record_exists('uniljournal', array('grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists('uniljournal', ['grade' => -$scaleid])) {
         return true;
-    } else {
+    }
+    else {
         return false;
     }
 }
@@ -309,11 +317,9 @@ function uniljournal_scale_used_anywhere($scaleid) {
  * @return array of [(string)filearea] => (string)description
  */
 function uniljournal_get_file_areas($course, $cm, $context) {
-    return array(
-      "logo" => get_string('logo', 'mod_uniljournal'),
-      "elementinstance" => get_string('elementinstance', 'mod_uniljournal'),
-      "theme" => get_string('themeinstructions', 'mod_uniljournal'),
-      );
+    return ["logo"            => get_string('logo', 'mod_uniljournal'),
+            "elementinstance" => get_string('elementinstance', 'mod_uniljournal'),
+            "theme"           => get_string('themeinstructions', 'mod_uniljournal'),];
 }
 
 /**
@@ -343,25 +349,32 @@ function uniljournal_get_file_info($browser, $areas, $course, $cm, $context, $fi
 
     switch ($filearea) {
         case "logo":
-          $filepath = is_null($filepath) ? '/' : $filepath;
-          $filename = is_null($filename) ? '.' : $filename;
+            $filepath = is_null($filepath) ? '/' : $filepath;
+            $filename = is_null($filename) ? '.' : $filename;
 
-          $urlbase = $CFG->wwwroot.'/pluginfile.php';
-          if (!$storedfile = $fs->get_file($context->id, 'mod_uniljournal', 'logo', 0, $filepath, $filename)) {
-              if ($filepath === '/' and $filename === '.') {
-                  $storedfile = new virtual_root_file($context->id, 'mod_uniljournal', 'logo', 0);
-              } else {
-                  // not found
-                  return null;
-              }
-          }
-          return new file_info_stored($browser, $context, $storedfile, $urlbase, $areas[$filearea], false, true, false, false);
-       case "elementinstance":
-          $urlbase = $CFG->wwwroot.'/pluginfile.php';
-          if (!$storedfile = $fs->get_file($context->id, 'mod_uniljournal', 'elementinstance', $itemid, $filepath, $filename)) {
-              return null;
-          }
-          return new file_info_stored($browser, $context, $storedfile, $urlbase, $areas[$filearea], false, true, false, false);
+            $urlbase = $CFG->wwwroot . '/pluginfile.php';
+            if (!$storedfile = $fs->get_file($context->id, 'mod_uniljournal', 'logo', 0, $filepath, $filename)) {
+                if ($filepath === '/' and $filename === '.') {
+                    $storedfile = new virtual_root_file($context->id, 'mod_uniljournal', 'logo', 0);
+                }
+                else {
+                    // not found
+                    return null;
+                }
+            }
+
+            return new file_info_stored($browser, $context, $storedfile, $urlbase, $areas[$filearea], false, true,
+                    false, false);
+        case "elementinstance":
+            $urlbase = $CFG->wwwroot . '/pluginfile.php';
+            if (!$storedfile =
+                    $fs->get_file($context->id, 'mod_uniljournal', 'elementinstance', $itemid, $filepath, $filename)
+            ) {
+                return null;
+            }
+
+            return new file_info_stored($browser, $context, $storedfile, $urlbase, $areas[$filearea], false, true,
+                    false, false);
     }
 
     return false;
@@ -381,7 +394,7 @@ function uniljournal_get_file_info($browser, $areas, $course, $cm, $context, $fi
  * @param bool $forcedownload whether or not force download
  * @param array $options additional options affecting the file serving
  */
-function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options=array()) {
+function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = []) {
     global $DB, $CFG;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -393,38 +406,42 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
         if ($filearea != 'logo') {
             require_login($course, true, $cm);
         }
-    } else {
+    }
+    else {
         $filearea = 'elementinstance';
     }
 
-    if (!$uniljournal = $DB->get_record('uniljournal', array('id' => $cm->instance))) {
+    if (!$uniljournal = $DB->get_record('uniljournal', ['id' => $cm->instance])) {
         return false;
     }
-    
+
     $fileareas = uniljournal_get_file_areas($course, $cm, $context);
     if (!array_key_exists($filearea, $fileareas)) {
         return false;
     }
 
-    if (count($args) == 0) return false;
-    
+    if (count($args) == 0) {
+        return false;
+    }
+
     if (count($args) == 1) {
-         $filepath = array_shift($args);
-    } else {
-         $itemid = (int)array_shift($args);
-         $filepath = array_shift($args);
+        $filepath = array_shift($args);
+    }
+    else {
+        $itemid = (int)array_shift($args);
+        $filepath = array_shift($args);
     }
 
     $fs = get_file_storage();
     switch ($filearea) {
         case "logo":
-          $itemid = 0;
+            $itemid = 0;
         case "elementinstance":
-          break;
+            break;
         case "theme":
             break;
         default:
-          return false;
+            return false;
     }
 
     $fullpath = "/$context->id/mod_uniljournal/$filearea/$itemid/$filepath";
@@ -460,18 +477,22 @@ function uniljournal_pluginfile($course, $cm, $context, $filearea, array $args, 
  * @param settings_navigation $settingsnav {@link settings_navigation}
  * @param navigation_node $uniljournalnode {@link navigation_node}
  */
-function uniljournal_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $uniljournalnode=null) {
+function uniljournal_extend_settings_navigation(settings_navigation $settingsnav,
+                                                navigation_node $uniljournalnode = null) {
     global $PAGE;
 
     if (has_capability('mod/uniljournal:managetemplates', $PAGE->cm->context)) {
-         $uniljournalnode->add(get_string("managetemplates", "mod_uniljournal"), new moodle_url('/mod/uniljournal/manage_templates.php', array('id'=>$PAGE->cm->id)));
+        $uniljournalnode->add(get_string("managetemplates", "mod_uniljournal"),
+                new moodle_url('/mod/uniljournal/manage_templates.php', ['id' => $PAGE->cm->id]));
     }
 
     if (has_capability('mod/uniljournal:managethemes', $PAGE->cm->context)) {
-        $uniljournalnode->add(get_string("managethemebanks", "mod_uniljournal"), new moodle_url('/mod/uniljournal/manage_themebanks.php', array('id'=>$PAGE->cm->id)));
+        $uniljournalnode->add(get_string("managethemebanks", "mod_uniljournal"),
+                new moodle_url('/mod/uniljournal/manage_themebanks.php', ['id' => $PAGE->cm->id]));
     }
 
     if (has_capability('mod/uniljournal:view', $PAGE->cm->context)) {
-        $uniljournalnode->add(get_string("exportarticles", "mod_uniljournal"), new moodle_url('/mod/uniljournal/export_articles.php', array('id' => $PAGE->cm->id)));
+        $uniljournalnode->add(get_string("exportarticles", "mod_uniljournal"),
+                new moodle_url('/mod/uniljournal/export_articles.php', ['id' => $PAGE->cm->id]));
     }
 }

@@ -26,6 +26,7 @@
  */
 
 namespace mod_uniljournal\event;
+
 defined('MOODLE_INTERNAL') || die();
 
 class article_read extends \core\event\base {
