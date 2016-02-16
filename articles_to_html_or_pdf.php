@@ -120,18 +120,16 @@ foreach ($articleinstances as $articleinstance) {
 if ($pdf) {
     make_cache_directory('tcpdf');
 
-    raise_memory_limit(MEMORY_EXTRA);
-
     define('PDF_IMAGE_SIZE', 60);
 
     //  Create PDF
-    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8');
+    $pdf = new mod_uniljournal_mypdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8');
     $pdf->setFontSubsetting(false);
     $pdf->SetMargins(PDF_MARGIN_LEFT, 20, PDF_MARGIN_RIGHT);
     $pdf->SetAutoPageBreak(true, 20);
 
-    $pdf->setPrintHeader(false);
-    $pdf->setPrintFooter(false);
+    $pdf->setPrintHeader(false); // no headers
+    $pdf->setPrintFooter(false); // no footer on cover page
 
     $pdf->SetFont('times', '', 16);
     $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
@@ -141,6 +139,7 @@ if ($pdf) {
     foreach ($pdf_articles as $pdf_article) {
 
         $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
+        $pdf->setPrintFooter(true); // we want a footer on content pages
 
         if (count($pdf_article[2]) > 0) {
             // attachments (attached assets)
@@ -175,6 +174,7 @@ if ($pdf) {
             $re = '/<' . $strip_node_name . ' class="' . $strip_node_class . '">[^<]*<\/' . $strip_node_name . '>/';
             $article_contents_html = preg_replace($re, '', $article_contents_html);
         }
+        $article_contents_html = preg_replace('/<\w+><\/\w+>/', '', $article_contents_html); // strip empty tags
         $strip_tags = ['span'];
         foreach ($strip_tags as $strip_tag) {
             $article_contents_html = preg_replace('/<\/?' . $strip_tag . '[^>]*>/', '', $article_contents_html);
@@ -188,6 +188,8 @@ if ($pdf) {
     $pdfname .= '_' . time() . '.pdf';
 
     // Table of contents
+    $pdf->endPage();
+    $pdf->setPrintFooter(false); // no footer on TOC page
     $pdf->SetFont('times', '', 16);
     $pdf->addTOCPage();
     $pdf->MultiCell(0, 0, get_string('toc', 'mod_uniljournal'), 0, '', 0, 1, '', '', true, 0);
