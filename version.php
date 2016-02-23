@@ -30,10 +30,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2015032501;
+$plugin->version = 2016022300;
 $plugin->requires = 2014050800; // Moodle 2.7
-$plugin->maturity = MATURITY_BETA;
-$plugin->release = '1.0 BETA for Moodle 2.7-2.8 (Build: 2015022000)';
+$plugin->maturity = MATURITY_STABLE
+$plugin->release = '1.0 for Moodle 2.7-3.0 (Build: 2016022300)';
 $plugin->component = 'mod_uniljournal'; // To check on upgrade, that module sits in correct place.
 $plugin->cron = 0; // Period for cron to check this module (secs).
 
