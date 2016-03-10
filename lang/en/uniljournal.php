@@ -35,17 +35,17 @@ $string['modulenameplural'] = 'UNIL Learning Journals';
 $string['modulename_help'] =
         'The UNIL journal module allows students to create learning journals structured in a structure of articles defined in advance.';
 $string['ujname'] = 'Journal name';
-$string['ujname_help'] = '(TO BE COMPLETED !) This is the name of the journal.';
+$string['ujname_help'] = 'This is the name of the journal, as it will appear in the course page.';
 $string['ujsubtitle'] = 'Subtitle';
-$string['ujsubtitle_help'] = '(TO BE COMPLETED !) This is the subtitle of the journal.';
+$string['ujsubtitle_help'] = 'This is the secondary title of the journal, which will appeat in exported PDF documents.';
 $string['ujdescription'] = 'Description';
-$string['ujdescription_help'] = '(TO BE COMPLETED !) This is the description of the journal.';
+$string['ujdescription_help'] = 'This is the description of the journal.';
 $string['ujlogo'] = 'Coverpage logo';
 $string['ujlogo_help'] =
-        '(TO BE COMPLETED !) The logo will be displayed in its nominal size on the first page of the printable version.';
+        'The logo will be displayed in its nominal size on the first page of the PDF version.';
 $string['ujcomments_allowed'] = 'Activate comments';
 $string['ujcomments_allowed_help'] =
-        '(TO BE COMPLETED !) Activate (or not) the possibility to associate general comments to each article of the journal.';
+        'Activates the availability for teacher and student to associate general comments to each article of the journal.';
 $string['allowedmimegroups'] = 'Allowed file types within Unil journal module';
 $string['allowedmimegroupsdescription'] =
         'Restricts the list of allowed file MIME type groups in the UNIL journal module instances.';
@@ -60,12 +60,12 @@ $string['addtemplate'] = 'Add template';
 $string['template'] = 'Template';
 $string['templatelower'] = 'template';
 $string['template_title'] = 'Template title';
-$string['template_title_help'] = '(TO BE COMPLETED !) This is the title of the template';
+$string['template_title_help'] = 'This is the title of the template, as it will be displayed to users';
 $string['template_freetitle'] = 'Students can freely pick a title';
 $string['template_freetitle_help'] =
-        '(TO BE COMPLETED !) Whether students can freely pick a title outside of theme banks';
+        'Whether students can freely set a title, or is the title fixed by the chosen theme';
 $string['template_instructions'] = 'Instructions';
-$string['template_instructions_help'] = '(TO BE COMPLETED !) These are the template instructions';
+$string['template_instructions_help'] = 'This setting allows to link a theme bank, allowing the student to chose a theme for the article being written';
 $string['template_themebank'] = 'Pick a theme bank for that template';
 $string['template_element'] = 'Template element';
 $string['template_nothemebank'] = 'Don\'t select a theme bank';
@@ -127,22 +127,23 @@ $string['addthemebank'] = 'Add theme bank';
 $string['themebank'] = 'Theme bank';
 $string['themebanklower'] = 'theme bank';
 $string['themebank_title'] = 'Theme bank title';
-$string['themebank_title_help'] = '(TO BE COMPLETED !) This is the title of the theme bank';
+$string['themebank_title_help'] = 'This is the title of the theme bank, as it will appear in the selector.';
 $string['themebank_contextid'] = 'Availability';
 $string['module_context'] = 'This module only';
 $string['course_context'] = 'This course only';
 $string['category_context'] = 'This category only';
 $string['user_context'] = 'This user only';
 $string['system_context'] = 'Everywhere';
-$string['themebank_contextid_help'] = '(TO BE COMPLETED !) This where this bank will be available.';
+$string['themebank_contextid_help'] = 'This is the context where this theme bank will be available.';
 $string['managethemes'] = 'Theme bank "{$a->themebankname}"';
 $string['addtheme'] = 'Add theme ';
 $string['theme'] = 'Theme';
 $string['themelower'] = 'theme';
 $string['theme_title'] = 'Theme title';
-$string['theme_title_help'] = '(TO BE COMPLETED !) This is the title of the theme';
+$string['theme_title_help'] = 'This is the title of the theme, as it will appear to the end users.';
 $string['theme_instructions'] = 'Instructions';
-$string['theme_instructions_help'] = '(TO BE COMPLETED !) These are the theme instructions';
+$string['theme_instructions_help'] =
+        'These are the theme instructions, which will be displayed to users having selected this theme';
 $string['n_articleinstances'] = 'Used in {$a} article(s)';
 $string['articlestate'] = 'State';
 $string['revisions'] = 'Revisions';
