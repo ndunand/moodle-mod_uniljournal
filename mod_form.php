@@ -59,7 +59,11 @@ class mod_uniljournal_mod_form extends moodleform_mod {
         $mform->addRule('subtitle', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('subtitle', 'ujsubtitle', 'uniljournal');
 
-        $this->add_intro_editor(false);
+        if ($CFG->branch >= 29) {
+            $this->standard_intro_elements();
+        } else {
+            $this->add_intro_editor();
+        }
 
         $filemanager_options = [];
         $filemanager_options['accepted_types'] = ['.jpg', '.jpeg', '.png'];
