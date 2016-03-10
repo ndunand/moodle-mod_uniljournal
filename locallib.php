@@ -222,7 +222,7 @@ function uniljournal_get_article_instances($query_args = ['id' => '0'], $status 
         array_push($attributes, 'astatus.maxversion', 'astatus.edituserid', 'astatus.commentuserid',
                 'astatus.commentversion');
         $statusrequest = 'LEFT JOIN (
-              SELECT DISTINCT instanceid as id, version as maxversion, aei.userid as edituserid, c.userid as commentuserid, c.articleinstanceversion as commentversion
+              SELECT DISTINCT instanceid as id, max(version) as maxversion, aei.userid as edituserid, c.userid as commentuserid, c.articleinstanceversion as commentversion
                          FROM {uniljournal_aeinstances} aei
                          LEFT JOIN (
                             SELECT c.* FROM {uniljournal_article_comments} c, {uniljournal_aeinstances} aei
