@@ -33,7 +33,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(dirname(dirname(__FILE__))) . '/lib/pdflib.php');
 
 $cmid = optional_param('cmid', 0, PARAM_INT);  // Course_module ID
-$articleinstanceids = $_POST['articles'];
+$articleinstanceids = required_param_array('articles', PARAM_INT);
 $pdf = optional_param('format', 'html', PARAM_TEXT);
 $pdf = ($pdf == 'pdf') ? true : false;
 
