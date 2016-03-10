@@ -176,7 +176,7 @@ function uniljournal_get_theme_banks($cm, $course) {
 
 function uniljournal_get_article_instances($query_args = ['id' => '0'], $status = false,
                                            $orderby = 'ai.timemodified DESC') {
-    global $DB;
+    global $CFG, $DB;
     $where = [];
     foreach ($query_args as $key => $v) {
         if ($key == 'id') {
@@ -205,7 +205,8 @@ function uniljournal_get_article_instances($query_args = ['id' => '0'], $status 
             throw new \moodle_exception();
         }
         // we have articleinstance.id
-        $where_version = 'WHERE version = (SELECT max(version) FROM mdl_uniljournal_aeinstances WHERE instanceid = '.$query_args['id'].')';
+        $where_version =
+                'WHERE version = (SELECT max(version) FROM ' . $CFG->prefix . 'uniljournal_aeinstances WHERE instanceid = ' . $query_args['id'] . ')';
     }
     else {
         // TODO heavy lifting here, watch out!
