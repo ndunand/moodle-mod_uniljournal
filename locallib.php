@@ -288,6 +288,12 @@ function uniljournal_versiontoggle($articleinstance, $cm, $actualversion, $targe
     $actualversionlink = html_writer::link(new moodle_url('/mod/uniljournal/view_article.php',
             array_merge($args, ['version' => $actualversion])), $actualversion);
 
+    global $DB;
+    $maxversionres = $DB->get_records_sql('SELECT max(version) as maxversion
+                                                          FROM {uniljournal_aeinstances} WHERE instanceid = ' . $articleinstance->id);
+    $maxversion = array_pop($maxversionres)->maxversion;
+    $articleinstance->maxversion = $maxversion;
+
     $maxversionlink = html_writer::link(new moodle_url('/mod/uniljournal/view_article.php',
             array_merge($args, ['version' => $articleinstance->maxversion])), $articleinstance->maxversion);
 
