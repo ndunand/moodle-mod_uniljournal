@@ -290,15 +290,7 @@ function uniljournal_scale_used($uniljournalid, $scaleid) {
  * @return boolean true if the scale is used by any uniljournal instance
  */
 function uniljournal_scale_used_anywhere($scaleid) {
-    global $DB;
-
-    /* @example */
-    if ($scaleid and $DB->record_exists('uniljournal', ['grade' => -$scaleid])) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    return false;
 }
 
 /**
