@@ -87,6 +87,9 @@ function uniljournal_add_instance(stdClass $uniljournal, mod_uniljournal_mod_for
     $DB->set_field('course_modules', 'instance', $uniljournal->id, ['id' => $cmid]);
     uniljournal_set_logo($uniljournal);
 
+    $completiontimeexpected = !empty($uniljournal->completionexpected) ? $uniljournal->completionexpected : null;
+    \core_completion\api::update_completion_date_event($uniljournal->coursemodule, 'uniljournal', $uniljournal->id, $completiontimeexpected);
+
     return $uniljournal->id;
 }
 
@@ -110,6 +113,9 @@ function uniljournal_update_instance(stdClass $uniljournal, mod_uniljournal_mod_
 
     $DB->update_record('uniljournal', $uniljournal);
     uniljournal_set_logo($uniljournal);
+
+    $completiontimeexpected = !empty($uniljournal->completionexpected) ? $uniljournal->completionexpected : null;
+    \core_completion\api::update_completion_date_event($uniljournal->coursemodule, 'uniljournal', $uniljournal->id, $completiontimeexpected);
 
     return true;
 }
@@ -498,3 +504,34 @@ function uniljournal_extend_settings_navigation(settings_navigation $settingsnav
                 new moodle_url('/mod/uniljournal/export_articles.php', ['id' => $PAGE->cm->id]));
     }
 }
+
+/**
+ * This function receives a calendar event and returns the action associated with it, or null if there is none.
+ *
+ * This is used by block_myoverview in order to display the event appropriately. If null is returned then the event
+ * is not displayed on the block.
+ *
+ * @param calendar_event $event
+ * @param \core_calendar\action_factory $factory
+ * @return \core_calendar\local\event\entities\action_interface|null
+ */
+function mod_uniljournal_core_calendar_provide_event_action(calendar_event $event,
+                                                            \core_calendar\action_factory $factory) {
+    $cm = get_fast_modinfo($event->courseid)->instances['uniljournal'][$event->instance];
+
+    $completion = new \completion_info($cm->get_course());
+
+    $completiondata = $completion->get_data($cm, false);
+
+    if ($completiondata->completionstate != COMPLETION_INCOMPLETE) {
+        return null;
+    }
+
+    return $factory->create_instance(
+            get_string('view'),
+            new \moodle_url('/mod/uniljournal/view.php', ['id' => $cm->id]),
+            1,
+            true
+    );
+}
+
