@@ -74,9 +74,15 @@ if ($id) { // if entry is specified
         print_error('invalidentry');
     }
     $authorid = $articleinstance->userid;
-    if ($authorid !== $USER->id && !has_capability('mod/uniljournal:editallarticles', $context)) {
+    $groupid = $articleinstance->groupid;
+    $articleinstance_db = clone $articleinstance;
+    if (!uniljournal_is_my_articleinstance($articleinstance, $USER->id) && !has_capability('mod/uniljournal:editallarticles', $context)) {
         print_error('canteditarticle', 'mod_uniljournal');
     }
+
+    // make sure there's no lock on this article
+    uniljournal_check_article_lock($id, $USER->id);
+    uniljournal_set_article_lock($id, $USER->id);
 
     // Get the existing article elements for edition
     $version = 0;
@@ -145,6 +151,7 @@ if ($mform->is_cancelled()) {
     // is the article existing (or were we creating a new one?)
     if ($id) {
         // existing
+        uniljournal_unset_article_lock($id, $USER->id);
         redirect(new moodle_url('/mod/uniljournal/view_article.php', ['id' => $id, 'cmid' => $cm->id]));
     }
     else {
@@ -165,6 +172,7 @@ else if ($articleinstance = $mform->get_data()) {
         $articleinstance->timecreated = time();
         $authorid = $USER->id;
         $articleinstance->userid = $USER->id; // A new article is always owned by its creator
+        $articleinstance->groupid = uniljournal_get_activegroup();
         $articleinstance->id = $DB->insert_record('uniljournal_articleinstances', $articleinstance);
         // Log the article creation
         $event = \mod_uniljournal\event\article_created::create(['other'    => ['userid'    => $USER->id,
@@ -221,6 +229,7 @@ else if ($articleinstance = $mform->get_data()) {
             }
         }
     }
+    uniljournal_unset_article_lock($id, $USER->id);
     if (has_capability('mod/uniljournal:editallarticles', $context)) {
         redirect(new moodle_url('/mod/uniljournal/view_articles.php', ['id' => $cm->id, 'uid' => $authorid]));
     }
@@ -236,9 +245,22 @@ $PAGE->set_title(format_string(get_string('writearticletempl', 'mod_uniljournal'
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 $PAGE->requires->jquery();
+$PAGE->requires->jquery_plugin('ui');
+$PAGE->requires->jquery_plugin('ui-css');
+$PAGE->requires->js('/mod/uniljournal/edit_article.js');
 
 echo $OUTPUT->header();
-if (isset($authorid) && $authorid !== $USER->id) {
+if (isset($groupid)) {
+    $group = $DB->get_record('groups', ['id' => $groupid]);
+    if ($group) {
+        $groupname = $group->name;
+    }
+    else {
+        $groupname = '(' . get_string('nogroup', 'group') . ')';
+    }
+    echo $OUTPUT->heading(get_string('group') . ': ' . $groupname);
+}
+else if (isset($authorid) && !uniljournal_is_my_articleinstance($articleinstance_db, $USER->id)) {
     $author = $DB->get_record('user', ['id' => $authorid]);
     echo $OUTPUT->heading(fullname($author, has_capability('moodle/site:viewfullnames', $context)));
 }

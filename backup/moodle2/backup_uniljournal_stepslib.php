@@ -57,7 +57,7 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
 
         $articleinstances = new backup_nested_element('articleinstances');
         $articleinstance = new backup_nested_element('articleinstance', ['id'],
-                ['articlemodelid', 'userid', 'timemodified', 'title', 'status', 'themeid']);
+                ['articlemodelid', 'userid', 'groupid', 'timemodified', 'title', 'status', 'themeid']);
 
         $aeinstances = new backup_nested_element('aeinstances');
         $aeinstance = new backup_nested_element('aeinstance', ['id'],
@@ -148,6 +148,7 @@ class backup_uniljournal_activity_structure_step extends backup_activity_structu
 
         // Define id annotations
         $articleinstance->annotate_ids('user', 'userid');
+        $articleinstance->annotate_ids('groups', 'groupid');
         $aeinstance->annotate_ids('user', 'userid');
         $article_comment->annotate_ids('user', 'userid');
 

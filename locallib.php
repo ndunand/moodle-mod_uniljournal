@@ -29,7 +29,10 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+
 require_once("lib.php");
+
+define('UNILJOURNAL_LOCKREQUEST_TTL', 7200); // seconds
 
 function uniljournal_set_logo($data) {
     global $DB;
@@ -70,7 +73,7 @@ function uniljournal_get_elements_array() {
         }
     }
     foreach ($types as $elem) {
-        $options[$elem] = get_string('element_' . $elem, 'uniljournal');
+        $options[$elem] = get_string('element_' . $elem, 'mod_uniljournal');
     }
 
     return $options;
@@ -176,7 +179,7 @@ function uniljournal_get_theme_banks($cm, $course) {
 
 function uniljournal_get_article_instances($query_args = ['id' => '0'], $status = false,
                                            $orderby = 'ai.timemodified DESC') {
-    global $CFG, $DB;
+    global $CFG, $DB, $cm;
     $where = [];
     foreach ($query_args as $key => $v) {
         if ($key == 'id') {
@@ -193,7 +196,7 @@ function uniljournal_get_article_instances($query_args = ['id' => '0'], $status 
     }
 
     $attributes =
-            ['ai.id as id', 'ai.timemodified', 'ai.userid', 'ai.title', 't.id as themeid', 't.title as themetitle',
+            ['ai.id as id', 'ai.timemodified', 'ai.userid', 'ai.groupid', 'ai.title', 't.id as themeid', 't.title as themetitle',
                     't.instructions as themeinstructions', 'ai.status', 'am.id as amid', 'am.title as amtitle',
                     'am.freetitle as freetitle', 'am.instructions as instructions'];
 
@@ -371,6 +374,11 @@ function sendacceptedmessage($from, $to, $articleinstance, $articlelink) {
 function sendtocorrectmessage($from, $to, $articleinstance, $articlelink) {
     $user_name = $to->firstname . ' ' . $to->lastname;
     $author_name = $from->firstname . ' ' . $from->lastname;
+    global $DB, $cm;
+    if ($articleinstance->groupid) {
+        $group = $DB->get_record('groups', ['id' => $articleinstance->groupid]);
+        $author_name = get_string('group') . ' ' . $group->name;
+    }
     $message = get_string('article_tocorrect_message', 'mod_uniljournal',
             ['article' => $articleinstance->title, 'user_name' => $user_name, 'author_name' => $author_name,
              'link'    => $articlelink->__toString()]);
@@ -392,8 +400,8 @@ function sendtocorrectmessage($from, $to, $articleinstance, $articlelink) {
     email_to_user($to, $from, $eventdata->subject, $message, $html_message);
 }
 
-function uniljournal_title_page($cm, $uniljournal, $authorid = 0) {
-    global $DB;
+function uniljournal_title_page($cm, $uniljournal, $authorid = 0, $groupid = 0) {
+    global $DB, $cm;
     $context = context_module::instance($cm->id);
     $logo = uniljournal_get_logo($context);
     $html = '<html><head><style>' . file_get_contents('pdf_CSS.css') . '</style></head><body>';
@@ -408,9 +416,19 @@ function uniljournal_title_page($cm, $uniljournal, $authorid = 0) {
         $logoimg = html_writer::img($url, 'Logo');
         $html .= html_writer::tag('div', $logoimg, ['class' => 'logo']);
     }
-    if ($authorid) {
-        $author = $DB->get_record('user', ['id' => $authorid]);
-        $html .= '<h3>' . fullname($author) . '</h3>';
+    if ($authorid ||$groupid) {
+        if (groups_get_activity_groupmode($cm) != NOGROUPS) {
+            $group = $DB->get_record('groups', ['id' => $groupid]);
+            $html .= '<h3>' . get_string('group') . ': ' . $group->name . '</h3>';
+            $groupmembers = groups_get_members($groupid);
+            foreach ($groupmembers as $groupmember) {
+                $html .= '<h5>' . $groupmember->firstname . ' ' . $groupmember->lastname . '</h5>';
+            }
+        }
+        else {
+            $author = $DB->get_record('user', ['id' => $authorid]);
+            $html .= '<h3>' . fullname($author) . '</h3>';
+        }
     }
     $html .= '<h3>' . date_format_string(time(), '%e %B %Y') . '</h3>';
     $html .= '</div></body></html>';
@@ -418,3 +436,280 @@ function uniljournal_title_page($cm, $uniljournal, $authorid = 0) {
     return $html;
 }
 
+/**
+ * @param $userid
+ *
+ * @return mixed
+ */
+function uniljournal_get_groupids_from_user($userid) {
+    global $course;
+    $usergroups = groups_get_user_groups($course->id, $userid)[0];
+    if (!count($usergroups)) {
+        $usergroups = array(0);
+    }
+    return $usergroups;
+//    $usergroup = array_pop($usergroups);
+//    return $usergroup;
+
+}
+
+
+/**
+ * @param $articleinstanceid
+ *
+ * @return mixed
+ */
+function uniljournal_get_article_lock($articleinstanceid) {
+    global $DB, $cm;
+    if (groups_get_activity_groupmode($cm) == NOGROUPS) {
+        // edit locks only apply when activity is in group mode
+        return false;
+    }
+    $articleinstance = $DB->get_record('uniljournal_articleinstances', ['id' => $articleinstanceid]);
+    return unserialize($articleinstance->editlock);
+}
+
+
+/**
+ * @param $articleinstanceid
+ * @param $byuserid
+ */
+function uniljournal_set_article_lock($articleinstanceid, $byuserid) {
+    global $DB;
+    $articleinstance = $DB->get_record('uniljournal_articleinstances', ['id' => $articleinstanceid]);
+    $currentlock = $articleinstance->editlock ? (unserialize($articleinstance->editlock)) : (false);
+    $passonlock = ($currentlock && isset($currentlock['requestedby'])) ? (['requestedby' => $currentlock['requestedby'], 'requestedtimestamp' => $currentlock['requestedtimestamp']]) : (array());
+    $articleinstance->editlock = serialize(array_merge(['timestamp' => time(), 'userid' => $byuserid], $passonlock));
+    $DB->update_record('uniljournal_articleinstances', $articleinstance);
+}
+
+
+function uniljournal_unset_article_lock($articleinstanceid, $foruserid) {
+    global $CFG, $DB;
+    $articleinstance = $DB->get_record('uniljournal_articleinstances', ['id' => $articleinstanceid]);
+    if (!$articleinstance) {
+        // article does not exist
+        return;
+    }
+    $lock = unserialize($articleinstance->editlock);
+    if ($lock['userid'] != $foruserid) {
+        // not owner of the lock (it was stolen)
+        return;
+    }
+    $requestinguser = isset($lock['requestedby']) ? ($DB->get_record('user', array('id' => (int)$lock['requestedby']))) : (false);
+    if ($requestinguser) {
+        $lockinguser = $DB->get_record('user', array('id' => (int)$lock['userid']));
+        $a = new stdClass();
+        $cm = $DB->get_record_sql('SELECT cm.* 
+                                            FROM {uniljournal_articleinstances} ai
+                                            LEFT JOIN {uniljournal_articlemodels} am ON am.id = ai.articlemodelid
+                                            LEFT JOIN {uniljournal} j ON am.uniljournalid = j.id
+                                            LEFT JOIN {course_modules} cm ON cm.instance = j.id
+                                            LEFT JOIN {modules} m ON m.id = cm.module
+                                        WHERE ai.id = ' . $articleinstanceid . ' AND m.name = \'uniljournal\'');
+        $a->link = $CFG->wwwroot . '/mod/uniljournal/view_article.php?id=' . $articleinstanceid . '&cmid=' . $cm->id;
+        email_to_user($requestinguser, $lockinguser, get_string('article_released', 'mod_uniljournal'), get_string('article_released_message', 'mod_uniljournal', $a), get_string('article_released_html_message', 'mod_uniljournal', $a));
+    }
+    $articleinstance->editlock = null;
+    $DB->update_record('uniljournal_articleinstances', $articleinstance);
+}
+
+
+/**
+ * @param $articleinstanceid
+ *
+ * @return bool
+ */
+function uniljournal_is_article_locked($articleinstanceid, $foruserid) {
+    global $CFG, $DB;
+    $lock = uniljournal_get_article_lock($articleinstanceid);
+    if (!$lock) {
+        // not locked
+        return false;
+    }
+    if ($lock['userid'] == $foruserid) {
+        // locked by me
+        return false;
+    }
+    if (time() - $lock['timestamp'] > $CFG->sessiontimeout) {
+        // other user MAY have left, but we have to further check:
+        $otheruser = $DB->get_record('user', ['id' => $lock['userid']]);
+        if (time() - $otheruser->lastaccess > $CFG->sessiontimeout) {
+            // we can be sure the other user has been logged out:
+            uniljournal_unset_article_lock($articleinstanceid, $otheruser->id);
+            return false;
+        }
+    }
+    return true;
+}
+
+
+/**
+ * @param $articleinstanceid
+ * @param $foruserid
+ *
+ * @return bool|int false or userid
+ */
+function uniljournal_was_article_requested($articleinstanceid) {
+    $lock = uniljournal_get_article_lock($articleinstanceid);
+    if (!$lock) {
+        // not locked
+        return false;
+    }
+    if (!isset($lock['requestedby'])) {
+        // request not valid
+        return false;
+    }
+    if (!isset($lock['requestedtimestamp'])) {
+        // request not valid
+        return false;
+    }
+    if (time() - $lock['requestedtimestamp'] > 2 * UNILJOURNAL_LOCKREQUEST_TTL) {
+        // request not valid anymore, delete it.
+        unset($lock['requestedby']);
+        unset($lock['requestedtimestamp']);
+        global $DB;
+        $articleinstance = $DB->get_record('uniljournal_articleinstances', ['id' => $articleinstanceid]);
+        $articleinstance->editlock = serialize($lock);
+        $DB->update_record('uniljournal_articleinstances', $articleinstance);
+        return false;
+    }
+    return $lock['requestedby'];
+}
+
+
+function uniljournal_can_i_force_editing($articleinstanceid) {
+    global $CFG, $DB, $USER;
+    if (!uniljournal_was_article_requested($articleinstanceid)) {
+        return false;
+    }
+    $lock = uniljournal_get_article_lock($articleinstanceid);
+    if ($lock['requestedby'] != $USER->id) {
+        return false;
+    }
+    if (time() - $lock['requestedtimestamp'] < UNILJOURNAL_LOCKREQUEST_TTL) {
+        return false;
+    }
+    $lockuserid = $lock['userid'];
+    $lockuser = $DB->get_record('user', array('id' => $lockuserid), '*', MUST_EXIST);
+    if (time() - $lockuser->lastaccess < $CFG->sessiontimeout) {
+        return false;
+    }
+    return true;
+}
+
+
+function uniljournal_set_article_requested($articleinstanceid, $foruserid) {
+    global $DB;
+    $lock = uniljournal_get_article_lock($articleinstanceid);
+    if (!$lock) {
+        // not locked
+        return false;
+    }
+    if ($lock['userid'] == $foruserid) {
+        // locked by me
+        return false;
+    }
+    $lock['requestedby'] = $foruserid;
+    $lock['requestedtimestamp'] = time();
+    $articleinstance = $DB->get_record('uniljournal_articleinstances', ['id' => $articleinstanceid]);
+    $articleinstance->editlock = serialize($lock);
+    $DB->update_record('uniljournal_articleinstances', $articleinstance);
+
+}
+
+
+/**
+ * @param $articleinstanceid
+ * @param $foruserid
+ */
+function uniljournal_check_article_lock($articleinstanceid, $foruserid) {
+    uniljournal_cron();
+    global $CFG, $DB, $USER, $amid, $cm, $context;
+    if (!uniljournal_is_article_locked($articleinstanceid, $foruserid)) {
+        return;
+    }
+    // all else fails, so lock is still valid
+    $force = optional_param('f', 0, PARAM_INT);
+    $ask = optional_param('a', 0, PARAM_INT);
+    $lock = uniljournal_get_article_lock($articleinstanceid);
+    $requestedbysomeoneelse = uniljournal_was_article_requested($articleinstanceid) && (uniljournal_was_article_requested($articleinstanceid) != $USER->id);
+    $a = new stdClass();
+    $otheruser = $DB->get_record('user', ['id' => $lock['userid']]);
+    $a->who = fullname($otheruser, has_capability('moodle/site:viewfullnames', $context));
+    $a->when = userdate($lock['timestamp']);
+    if ($force) {
+        // create lock for current user
+        uniljournal_set_article_lock($articleinstanceid, $USER->id);
+        $message = get_string('overriding_editlock', 'mod_uniljournal', $a);
+        redirect(new moodle_url('/mod/uniljournal/edit_article.php', [
+                'id'   => $articleinstanceid,
+                'cmid' => $cm->id,
+                'amid' => $amid
+        ]), $message, null, \core\output\notification::NOTIFY_ERROR);
+    }
+    else if ($ask) {
+        uniljournal_set_article_requested($articleinstanceid, $foruserid);
+        $message = get_string('info_editlockrequested', 'mod_uniljournal', $a);
+        redirect(new moodle_url('/mod/uniljournal/view_article.php', [
+                'id'   => $articleinstanceid,
+                'cmid' => $cm->id,
+                'amid' => $amid,
+                'a'    => 1,
+                'retry' => 1
+        ]), $message, null, \core\output\notification::NOTIFY_WARNING);
+    }
+    else if ($requestedbysomeoneelse) {
+        $message = get_string('info_editlockrequestedbysomeoneelse', 'mod_uniljournal', $a);
+        redirect(new moodle_url('/mod/uniljournal/view_article.php', [
+                'id'   => $articleinstanceid,
+                'cmid' => $cm->id,
+                'amid' => $amid
+        ]), $message, null, \core\output\notification::NOTIFY_WARNING);
+    }
+    else {
+        $a->askurl = $CFG->wwwroot . '/mod/uniljournal/edit_article.php?id=' . $articleinstanceid . '&cmid=' . $cm->id . '&amid=' . $amid . '&a=1&retry=1';
+        $message = get_string('info_editlock', 'mod_uniljournal', $a);
+//        $message .= '<br /><br />';
+//        $message .= html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php', [
+//                'id'   => $articleinstanceid,
+//                'cmid' => $cm->id,
+//                'amid' => $amid,
+//                'f'    => 1
+//        ]), get_string('force_editlock', 'mod_uniljournal'));
+        redirect(new moodle_url('/mod/uniljournal/view_article.php', [
+                'id'   => $articleinstanceid,
+                'cmid' => $cm->id,
+                'amid' => $amid
+        ]), $message, null, \core\output\notification::NOTIFY_INFO);
+    }
+}
+
+
+function uniljournal_is_my_articleinstance($articleinstance, $userid) {
+    global $cm;
+    if (groups_get_activity_groupmode($cm) == NOGROUPS) {
+        return $articleinstance->userid == $userid;
+    }
+    else {
+        $groupids = uniljournal_get_groupids_from_user($userid);
+        return in_array($articleinstance->groupid, $groupids);
+    }
+}
+
+
+function uniljournal_get_activegroup() {
+    global $cm, $USER;
+    $context = context_module::instance($cm->id);
+    $aag = has_capability('moodle/site:accessallgroups', $context);
+    $groupmode = groups_get_activity_groupmode($cm);
+
+    if ($groupmode == VISIBLEGROUPS or $aag) {
+        $allowedgroups = groups_get_all_groups($cm->course, 0, $cm->groupingid); // any group in grouping
+    } else {
+        $allowedgroups = groups_get_all_groups($cm->course, $USER->id, $cm->groupingid); // only assigned groups
+    }
+
+    $activegroup = groups_get_activity_group($cm, true, $allowedgroups);
+    return $activegroup;
+}

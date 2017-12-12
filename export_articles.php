@@ -27,6 +27,7 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/lib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or
+$changegroup = optional_param('group', -1, PARAM_INT);   // choose the current group
 
 if ($id) {
     $cm = get_coursemodule_from_id('uniljournal', $id, 0, false, MUST_EXIST);
@@ -41,7 +42,7 @@ $context = context_module::instance($cm->id);
 require_capability('mod/uniljournal:view', $context);
 
 // Print the page header.
-$PAGE->set_url('/mod/uniljournal/view.php', ['id' => $cm->id]);
+$PAGE->set_url('/mod/uniljournal/export_articles.php', ['id' => $cm->id]);
 $PAGE->set_title(format_string($uniljournal->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
@@ -50,15 +51,28 @@ $PAGE->requires->jquery();
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($uniljournal->name));
 
+if (!has_capability('moodle/site:accessallgroups', $context)) {
+    groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/uniljournal/export_articles.php?id=' . $cm->id);
+}
+
 // Display table of my articles
 require_once('locallib.php');
 if (has_capability('mod/uniljournal:viewallarticles', $context)) {
-    $articleinstances = uniljournal_get_article_instances(['uniljournalid' => $uniljournal->id], true);
+    $articleinstances = uniljournal_get_article_instances(['uniljournalid' => $uniljournal->id], true, 'userid, t.sortorder, am.sortorder, am.id, ai.timecreated ASC');
 }
 else {
-    $articleinstances =
-            uniljournal_get_article_instances(['uniljournalid' => $uniljournal->id, 'userid' => $USER->id], true,
-                    't.sortorder, am.sortorder, ai.timecreated ASC');
+    if (groups_get_activity_groupmode($cm) == NOGROUPS) {
+        $articleinstances = uniljournal_get_article_instances([
+                'uniljournalid' => $uniljournal->id,
+                'userid'        => $USER->id
+        ], true, 't.sortorder, am.sortorder, am.id, ai.timecreated ASC');
+    }
+    else {
+        $articleinstances = uniljournal_get_article_instances([
+                'uniljournalid' => $uniljournal->id,
+                'groupid'        => uniljournal_get_activegroup()
+        ], true, 't.sortorder, am.sortorder, am.id, ai.timecreated ASC');
+    }
 }
 
 // Status modifier forms
@@ -86,12 +100,21 @@ foreach ($articleinstances as $ai) {
 }
 
 if (has_capability('mod/uniljournal:viewallarticles', $context)) {
+    echo html_writer::start_tag('div');
     echo '<select id="selectStudent">';
     echo '<option value="0">' . get_string('all_students', 'mod_uniljournal') . '</option>';
-    foreach ($users as $user) {
-        echo '<option value="' . $user->id . '">' . $user->firstname . ' ' . $user->lastname . '</option>';
+    if (groups_get_activity_groupmode($cm) != NOGROUPS) {
+        foreach (groups_get_all_groups($course->id, 0, $cm->groupingid) as $group) {
+            echo '<option value="' . $group->id . '">' . $group->name . '</option>';
+        }
+    }
+    else {
+        foreach ($users as $user) {
+            echo '<option value="' . $user->id . '">' . $user->firstname . ' ' . $user->lastname . '</option>';
+        }
     }
     echo '</select><br>';
+    echo html_writer::end_tag('div');
 }
 
 echo '<a href="#" id="selectall" data-select="none">' . get_string('selectallornone', 'form') . '</a>';
@@ -119,20 +142,31 @@ if (count($articleinstances) > 0) {
                 html_writer::start_tag('input', ['type' => 'checkbox', 'value' => $ai->id, 'name' => 'articles[]']);
 
         if (has_capability('mod/uniljournal:viewallarticles', $context)) {
-            $ualink = new moodle_url('/mod/uniljournal/view_articles.php', ['id' => $cm->id, 'uid' => $ai->userid]);
-            $row->cells[] = html_writer::link($ualink,
-                    fullname($ai->user, has_capability('moodle/site:viewfullnames', $context)));
+            if (groups_get_activity_groupmode($cm) != NOGROUPS) {
+                $groupid = $ai->groupid;
+                $ualink = new moodle_url('/mod/uniljournal/view_articles.php', ['id' => $cm->id, 'gid' => $groupid]);
+                $groupname = groups_get_group_name($groupid);
+                $row->cells[] = html_writer::link($ualink, $groupname);
+            }
+            else {
+                $ualink = new moodle_url('/mod/uniljournal/view_articles.php', [
+                        'id'  => $cm->id,
+                        'uid' => $ai->userid
+                ]);
+                $row->cells[] = html_writer::link($ualink,
+                        fullname($ai->user, has_capability('moodle/site:viewfullnames', $context)));
+            }
         }
 
         $row->cells[] = html_writer::link(new moodle_url('/mod/uniljournal/view_article.php',
                 ['id' => $ai->id, 'cmid' => $cm->id]), $title);
+        $editlocked = (uniljournal_is_article_locked($ai->id, $USER->id)) ? (' (<strong>' . get_string('editlocked', 'mod_uniljournal') . '</strong>)') : ('');
         $row->cells[] = userdate($ai->timemodified,
-                get_string('strftimedaydatetime', 'langconfig')); //strftime('%c', $ai->timemodified);
+                get_string('strftimedaydatetime', 'langconfig')) . $editlocked; //strftime('%c', $ai->timemodified);
         $row->cells[] = $ai->amtitle;
         $row->cells[] = $ai->themetitle;
 
-        $PAGE->requires->yui_module('moodle-core-formautosubmit', 'M.core.init_formautosubmit',
-                [['selectid' => 'id_status_' . $ai->id, 'nothing' => false]]);
+        $PAGE->requires->js('/mod/uniljournal/javascript.js');
         // Add class to the form, to hint CSS for label hiding
         $statecell = new html_table_cell($smforms[$ai->id]->render());
         $statecell->attributes['class'] = 'state_form';
@@ -213,8 +247,13 @@ echo "<script>
             $('#selectall').data('select', 'none');
             $('.showArticles').prop('disabled', true);
             $('tr[class^=\"student\"]').hide();
+            // individual mode
             $('tr[class^=\"student' + $(this).val() + '\"]').show();
             $('tr[class^=\"student' + $(this).val() + '\"] input[name=\"articles[]\"]').prop('disabled', false);
+            // group mode
+            var thetrs = $('tr[class^=\"student\"] a[href$=\"gid=' + $(this).val() + '\"]').parents('tr');
+            thetrs.show();
+            thetrs.find('input[name=\"articles[]\"]').prop('disabled', false);
         }
     });
 </script>";

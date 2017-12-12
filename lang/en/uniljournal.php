@@ -163,7 +163,30 @@ $string['all_students'] = 'All students';
 $string['logo'] = "Activity logo";
 $string['elementinstance'] = "Elements uploaded";
 $string['themeinstructions'] = "Theme instructions uploaded";
+$string['sessiontimedout'] = 'Your session has timed out. Please copy any unsaved work and log into Moodle again!';
 $string['error_notitle'] = "ERROR: no title set";
+$string['info_editlock'] = 'This article is being edited by {$a->who} ({$a->when}). <a href="{$a->askurl}">Click here</a> to be notified when the article is availble for edition again.';
+$string['info_editlockrequested'] = 'You will be notified by e-mail when the article is freed up.';
+$string['info_editlockrequestedbysomeoneelse'] = 'This article is currently being modified. Please try again later.';
+//$string['force_editlock'] = 'Edit anyway';
+//$string['overriding_editlock'] = 'Warning, you are editing an article that may also being modified by {$a->who} at the same time. Proceed with caution!';
+$string['error_lockstolen'] = '<p>Warning, this article is now being edited by {$a->who}.</p><p><strong>Your modifications have NOT been saved.</strong> Please copy any unsaved work and retry editing this article.</p>';
+$string['error_editlost'] = 'Error! Your modifications could not be saved.';
+$string['error_lockrequested'] = '{$a->who} has tried to modify this article. This user will be notified once you have finished editing it.'; //."\n\n".'Clicking "OK" will save your changes immediately.'."\n".'Clicking "Cancel" will deny {$a->who} access to modify this article.';
+$string['lockrelease'] = 'Save my changes and release this article';
+$string['lockkeep'] = 'OK'; //'Deny user request';
+$string['lockwait'] = 'Keep user waiting ({$a->locktimeremaining} minutes remaining)';
+$string['error_lockrequest_denied'] = 'Your request to edit this article has been denied. Please try again later.';
+$string['editlocked'] = 'being modified now';
+$string['article_released'] = 'article ready for modification';
+$string['article_released_message'] = 'You have requested to be notified when a learning journal article is freed up for modification.
+
+The requested article is now available for you to modify. Click this link to display it.
+
+{$a->link}';
+$string['article_released_html_message'] = '<p>You have requested to be notified when a learning journal article is freed up for modification.</p>
+<p></p>The requested article is not available for you to modify. Click this link to display it.</p>
+<p><a hef="{$a->link}">{$a->link}</a></p>';
 $string['preview'] = "Preview";
 $string['atto_writinginstructions'] =
         '<strong>Notice:</strong> you can use the correction tools in the text editor below; to reveal the correction tools, click on the first button of the palette.';
@@ -286,4 +309,5 @@ $string['mustbeteacher'] = 'You must be a teacher to do this action';
 $string['editarticle'] = 'Edit the current version of this article';
 $string['editarticle_teacher'] = 'Correct the current version of this article';
 $string['canteditarticle'] = 'You cannot edit this article';
+$string['crontask'] = 'UNIL Learning Journal schduled tasks';
 

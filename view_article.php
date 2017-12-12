@@ -34,6 +34,19 @@ require_once(dirname(__FILE__) . '/locallib.php');
 $cmid = optional_param('cmid', 0, PARAM_INT);  // Course_module ID, or
 $id = optional_param('id', 0, PARAM_INT);    // Article instance ID
 $version = optional_param('version', 0, PARAM_INT);    // Article instance ID
+$retry = optional_param('retry', 0, PARAM_INT);
+$denied = optional_param('denied', 0, PARAM_INT);
+
+if ($denied) {
+    redirect(new moodle_url('/mod/uniljournal/view_article.php', [
+            'id'   => $id,
+            'cmid' => $cmid
+    ]), get_string('error_lockrequest_denied', 'mod_uniljournal'), null, \core\output\notification::NOTIFY_ERROR);
+}
+
+if ($retry) {
+    $PAGE->requires->js('/mod/uniljournal/retry_edit_article.js');
+}
 
 if ($cmid and $id) {
     $cm = get_coursemodule_from_id('uniljournal', $cmid, 0, false, MUST_EXIST);
@@ -48,7 +61,7 @@ else {
 
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
-if ($articleinstance->userid == $USER->id) {
+if (uniljournal_is_my_articleinstance($articleinstance, $USER->id)) {
     require_capability('mod/uniljournal:view', $context);
 }
 else {

@@ -38,6 +38,7 @@ $n = optional_param('n', 0,
         PARAM_INT);  // ... uniljournal instance ID - it should be named as the first character of the module.
 $action = optional_param('action', 0, PARAM_TEXT);
 $aid = optional_param('aid', 0, PARAM_INT);
+$changegroup = optional_param('group', -1, PARAM_INT);   // choose the current group
 
 if ($id) {
     $cm = get_coursemodule_from_id('uniljournal', $id, 0, false, MUST_EXIST);
@@ -87,8 +88,19 @@ if (has_capability('mod/uniljournal:createarticle', $context)) {
 
 // Display table of my articles
 require_once('locallib.php');
-$articleinstances =
-        uniljournal_get_article_instances(['uniljournalid' => $uniljournal->id, 'userid' => $USER->id], true);
+
+if (groups_get_activity_groupmode($cm) == NOGROUPS) {
+    $articleinstances = uniljournal_get_article_instances([
+            'uniljournalid' => $uniljournal->id,
+            'userid'        => $USER->id
+    ], true);
+}
+else {
+    $articleinstances = uniljournal_get_article_instances([
+            'uniljournalid' => $uniljournal->id,
+            'groupid'        => uniljournal_get_activegroup()
+    ], true);
+}
 
 // Status modifier forms
 $smforms = [];
@@ -168,6 +180,11 @@ $PAGE->set_context($context);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($uniljournal->name));
 
+// find out current groups mode
+if (!has_capability('moodle/site:accessallgroups', $context)) {
+    groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/uniljournal/view.php?id=' . $cm->id);
+}
+
 if (isset($deleteform)) {
     $deleteform->display();
 }
@@ -191,14 +208,26 @@ else {
         if (count($allarticles) > 0) {
             $userarticles = [];
             $sumuncorrected = 0;
-            foreach ($allarticles as $article) {
+            foreach ($allarticles as &$article) {
+                if (groups_get_activity_groupmode($cm) != NOGROUPS) {
+                   $article->userid = $article->groupid;
+                }
                 if (!array_key_exists($article->userid, $userarticles)) {
                     $a = new stdClass();
                     $a->userid = $article->userid;
                     $a->timemodified = $article->timemodified;
                     $a->narticles = 0;
                     $a->ncorrected = 0;
-                    $a->user = $DB->get_record('user', ['id' => $article->userid]);
+                    if (groups_get_activity_groupmode($cm) != NOGROUPS) {
+                        $a->user = $DB->get_record('groups', ['id' => $article->userid]);
+                        if (!$a->user) {
+//                            continue;
+                            // user not in a group, drop this article
+                        }
+                    }
+                    else {
+                        $a->user = $DB->get_record('user', ['id' => $article->userid]);
+                    }
                     $userarticles[$article->userid] = $a;
                 }
 
@@ -225,9 +254,20 @@ else {
 
             foreach ($userarticles as $ua) {
                 $row = new html_table_row();
-                $ualink = new moodle_url('/mod/uniljournal/view_articles.php', ['id' => $cm->id, 'uid' => $ua->userid]);
-                $row->cells[] = html_writer::link($ualink,
-                        fullname($ua->user, has_capability('moodle/site:viewfullnames', $context)));
+                if (groups_get_activity_groupmode($cm) != NOGROUPS) {
+                    if (!$ua->user) {
+                        $ua->user = new stdClass();
+                        $ua->user->name = '(' . get_string('nogroup', 'group') . ')';
+                        $ua->userid = 0;
+                    }
+                    $ualink = new moodle_url('/mod/uniljournal/view_articles.php', ['id' => $cm->id, 'gid' => $ua->userid]);
+                    $row->cells[] = html_writer::link($ualink, $ua->user->name);
+                }
+                else {
+                    $ualink = new moodle_url('/mod/uniljournal/view_articles.php', ['id' => $cm->id, 'uid' => $ua->userid]);
+                    $row->cells[] = html_writer::link($ualink,
+                            fullname($ua->user, has_capability('moodle/site:viewfullnames', $context)));
+                }
                 $row->cells[] = html_writer::tag('span', $ua->narticles);
                 $row->cells[] = html_writer::tag('span', $ua->ncorrected);
                 $row->cells[] = userdate($ua->timemodified,
@@ -240,7 +280,7 @@ else {
         }
     }
 
-    if (count($articleinstances) > 0) {
+    if (!has_capability('moodle/site:accessallgroups', $context) && count($articleinstances) > 0) {
         $table = new html_table();
         $table->head = [get_string('myarticles', 'uniljournal'), get_string('lastmodified'),
                 get_string('template', 'uniljournal'), get_string('theme', 'uniljournal'),
@@ -256,13 +296,13 @@ else {
 
             $row->cells[] = html_writer::link(new moodle_url('/mod/uniljournal/view_article.php',
                     ['id' => $ai->id, 'cmid' => $cm->id]), $title);
+            $editlocked = (uniljournal_is_article_locked($ai->id, $USER->id)) ? (' (<strong>' . get_string('editlocked', 'mod_uniljournal') . '</strong>)') : ('');
             $row->cells[] = userdate($ai->timemodified,
-                    get_string('strftimedaydatetime', 'langconfig')); //strftime('%c', $ai->timemodified);
+                    get_string('strftimedaydatetime', 'langconfig')) . $editlocked; //strftime('%c', $ai->timemodified);
             $row->cells[] = $ai->amtitle;
             $row->cells[] = $ai->themetitle;
 
-            $PAGE->requires->yui_module('moodle-core-formautosubmit', 'M.core.init_formautosubmit',
-                    [['selectid' => 'id_status_' . $ai->id, 'nothing' => false]]);
+            $PAGE->requires->js('/mod/uniljournal/javascript.js');
             // Add class to the form, to hint CSS for label hiding
             $statecell = new html_table_cell($smforms[$ai->id]->render());
             $statecell->attributes['class'] = 'state_form';
@@ -306,8 +346,7 @@ else {
             //displays the form, with an auto-submitter and no change checker
             $mform->display();
 
-            $PAGE->requires->yui_module('moodle-core-formautosubmit', 'M.core.init_formautosubmit',
-                    [['selectid' => 'id_amid', 'nothing' => false]]);
+            $PAGE->requires->js('/mod/uniljournal/javascript.js');
         }
         else {
             $am = array_pop($articlemodels);

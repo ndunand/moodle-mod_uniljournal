@@ -176,6 +176,7 @@ class restore_uniljournal_activity_structure_step extends restore_activity_struc
 
         $data->articlemodelid = $this->get_mappingid('uniljournal_articlemodel', $data->articlemodelid);
         $data->userid = $this->get_mappingid('user', $data->userid);
+        $data->groupid = $this->get_mappingid('groups', $data->groupid);
         $data->timemodified = $this->apply_date_offset($data->timemodified);
 
         $newitemid = $DB->insert_record('uniljournal_articleinstances', $data);

@@ -49,7 +49,7 @@ else {
 
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
-if ($articleinstance->userid == $USER->id) {
+if (uniljournal_is_my_articleinstance($articleinstance, $USER->id)) {
     require_capability('mod/uniljournal:view', $context);
 }
 else {

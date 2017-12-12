@@ -163,7 +163,30 @@ $string['all_students'] = 'Tous les étudiants';
 $string['logo'] = 'Logo de l\'activité';
 $string['elementinstance'] = "Eléments déposés";
 $string['themeinstructions'] = "Instructions du thème déposées";
+$string['sessiontimedout'] = 'Votre session a échu! Veuillez copier votre travail en cours et vous reconnecter.';
 $string['error_notitle'] = 'Erreur : aucun titre n\'a été défini';
+$string['info_editlock'] = 'Cet article est en cours de modification par {$a->who} ({$a->when}). <a href="{$a->askurl}">Cliquez ici</a> pour recevoir une notification lorsque l\'article sera libéré.';
+$string['info_editlockrequested'] = 'Vous serez notifié par e-mail une fois l\'article libéré.';
+$string['info_editlockrequestedbysomeoneelse'] = 'Cet article est en cours de modification par un autre utilisateur. Veuillez essayer à nouveau plus tard.';
+//$string['force_editlock'] = 'Modifier tout de même';
+//$string['overriding_editlock'] = 'Attention, vous êtes en train de modifier une page qui est peut-être en train d\'être modifiée par {$a->who} en ce moment. Assurez-vous du résultat une fois vos modifications enregistrées !';
+$string['error_lockstolen'] = '<p>Attention, {$a->who} vient de prendre la main en édition sur cet article.</p><p><strong>Vous modifications n\'ont PAS été enregistrées.</strong> Veuillez copier votre travail non enregistré, puis réessayez de modifier cet article.</p>';
+$string['error_editlost'] = 'Erreur ! Vos modifications n\'ont pas pu être enregistrées.';
+$string['error_lockrequested'] = '{$a->who} a essayé de modifier cet article. Cet utilisateur sera informé lorsque vous aurez terminé de travailler dessus.';//."\n\n".'"OK" : enregistrera votre travail immédiatement.'."\n".'"Annuler" : refuser à {$a->who} la modification de cet article.';
+$string['lockrelease'] = 'Enregistrer mes modifications et libérer cet article';
+$string['lockkeep'] = 'OK'; //'Refuser la demande de cet utilisateur';
+$string['lockwait'] = 'Faire attendre ({$a->locktimeremaining} minutes restantes)';
+$string['error_lockrequest_denied'] = 'Votre demande de modification de cet article a été refusée par l\'utilisateur. Veuillez réessayer plus tard.';
+$string['editlocked'] = 'en cours de modification';
+$string['article_released'] = 'article prêt à être modifié';
+$string['article_released_message'] = 'Vous avez demandé a être averti lorsqu\'un article de journal d\'apprentissage sera disponible pour modification.
+
+L\'article demandé est désormais disponible. Cliquez sur ce lien pour l\'afficher.
+
+{$a->link}';
+$string['article_released_html_message'] = '<p>Vous avez demandé a être averti lorsqu\'un article de journal d\'apprentissage sera disponible pour modification.</p>
+<p></p>L\'article demandé est désormais disponible. Cliquez sur ce lien pour l\'afficher.</p>
+<p><a hef="{$a->link}">{$a->link}</a></p>';
 $string['preview'] = "Prévisualiser";
 $string['atto_writinginstructions'] =
         '<strong>Information :</strong> vous pouvez utiliser les outils de correction dans l\'éditeur ci-dessous ; pour faire apparaître ces outils, cliquez sur le premier bouton de la palette d\'outils.';
@@ -286,4 +309,5 @@ $string['mustbeteacher'] = 'Vous n\'avez pas les droits nécessaires pour une te
 $string['editarticle'] = 'Modifier la version actuelle de cet article';
 $string['editarticle_teacher'] = 'Corriger la version actuelle de cet article';
 $string['canteditarticle'] = 'Vous ne pouvez pas modifier cet article';
+$string['crontask'] = 'Journal d\'apprentissage – tâches planifiées';
 

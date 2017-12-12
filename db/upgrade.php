@@ -41,5 +41,33 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool
  */
 function xmldb_uniljournal_upgrade($oldversion) {
+    global $CFG, $DB;
+
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2017011802) {
+        $table = new xmldb_table('uniljournal_articleinstances');
+
+        $newField = $table->add_field('editlock', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+
+        if (!$dbman->field_exists($table, $newField)) {
+            $dbman->add_field($table, $newField);
+        }
+
+        upgrade_mod_savepoint(true, 2017011802, 'uniljournal');
+    }
+
+    if ($oldversion < 2017040101) {
+        $table = new xmldb_table('uniljournal_articleinstances');
+
+        $newField = $table->add_field('groupid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        if (!$dbman->field_exists($table, $newField)) {
+            $dbman->add_field($table, $newField);
+        }
+
+        upgrade_mod_savepoint(true, 2017040101, 'uniljournal');
+    }
+
     return true;
 }

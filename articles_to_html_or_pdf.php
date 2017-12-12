@@ -68,9 +68,10 @@ $pdf_articles = [];
 $count = 1;
 $numarticles = count($articleinstances);
 $authorid = 0;
+$groupid = 0;
 foreach ($articleinstances as $articleinstance) {
 
-    if ($articleinstance->userid == $USER->id) {
+    if (uniljournal_is_my_articleinstance($articleinstance, $USER->id)) {
         require_capability('mod/uniljournal:view', $context);
     }
     else {
@@ -82,6 +83,10 @@ foreach ($articleinstances as $articleinstance) {
     }
     else {
         $authorid = 0;
+    }
+
+    if (!$groupid && groups_get_activity_groupmode($cm) != NOGROUPS) {
+        $groupid = $articleinstance->groupid;
     }
 
     // Get all elements of the model
@@ -133,7 +138,7 @@ if ($pdf) {
 
     $pdf->SetFont('times', '', 16);
     $pdf->AddPage(PDF_PAGE_ORIENTATION, PDF_PAGE_FORMAT, true, false);
-    $pdf->writeHTML(uniljournal_title_page($cm, $uniljournal, $authorid));
+    $pdf->writeHTML(uniljournal_title_page($cm, $uniljournal, $authorid, $groupid));
     $pdf->SetFont('times', '', 12);
 
     foreach ($pdf_articles as $pdf_article) {

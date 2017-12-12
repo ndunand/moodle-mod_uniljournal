@@ -37,6 +37,7 @@ $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or
 $n = optional_param('n', 0,
         PARAM_INT);  // ... uniljournal instance ID - it should be named as the first character of the module.
 $uid = optional_param('uid', 0, PARAM_INT);
+$gid = optional_param('gid', 0, PARAM_INT);
 $action = optional_param('action', 0, PARAM_TEXT);
 $aid = optional_param('aid', 0, PARAM_TEXT);
 
@@ -60,13 +61,6 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/uniljournal:viewallarticles', $context);
 
-if ($uid) {
-    $foreign_user = $DB->get_record('user', ['id' => $uid], '*', MUST_EXIST);
-}
-else {
-    print_error('userdoesnotexist', 'mod_uniljournal');
-}
-
 $event = \mod_uniljournal\event\course_module_viewed::create(['objectid' => $PAGE->cm->instance,
                                                               'context'  => $PAGE->context,]);
 $event->add_record_snapshot('course', $PAGE->course);
@@ -76,8 +70,18 @@ $event->trigger();
 
 // Display table of articles for that user
 require_once('locallib.php');
-$userarticles =
-        uniljournal_get_article_instances(['uniljournalid' => $uniljournal->id, 'userid' => $foreign_user->id], true);
+
+if ($uid) {
+    $userarticles =
+            uniljournal_get_article_instances(['uniljournalid' => $uniljournal->id, 'userid' => $uid], true);
+}
+else if ($gid || $gid === 0) {
+    $userarticles =
+            uniljournal_get_article_instances(['uniljournalid' => $uniljournal->id, 'groupid' => $gid], true);
+}
+else {
+    print_error('userdoesnotexist', 'mod_uniljournal');
+}
 
 $table = new html_table();
 $head = [get_string('name'), get_string('lastmodified'), get_string('revisions', 'uniljournal'),
@@ -135,19 +139,20 @@ if ($action && $aid) {
 }
 
 foreach ($userarticles as $ua) {
+    global $USER;
     $row = new html_table_row();
     $title = uniljournal_articletitle($ua);
     $row->cells[] =
             html_writer::link(new moodle_url('/mod/uniljournal/view_article.php', ['id' => $ua->id, 'cmid' => $cm->id]),
                     $title);
+    $editlocked = (uniljournal_is_article_locked($ua->id, $USER->id)) ? (' (<strong>' . get_string('editlocked', 'mod_uniljournal') . '</strong>)') : ('');
     $row->cells[] = userdate($ua->timemodified,
-            get_string('strftimedaydatetime', 'langconfig')); //strftime('%c', $ua->timemodified);
+            get_string('strftimedaydatetime', 'langconfig')) . $editlocked; //strftime('%c', $ua->timemodified);
     $maxversion = $DB->get_field_select('uniljournal_aeinstances', 'MAX(version) AS maxversion', 'instanceid = :instanceid', array('instanceid' => $ua->id), MUST_EXIST);
     $row->cells[] = $maxversion;
     $corrected = $ua->status == 50;
 
-    $PAGE->requires->yui_module('moodle-core-formautosubmit', 'M.core.init_formautosubmit',
-            [['selectid' => 'id_status_' . $ua->id, 'nothing' => false]]);
+    $PAGE->requires->js('/mod/uniljournal/javascript.js');
     // Add class to the form, to hint CSS for label hiding
     $statecell = new html_table_cell($smforms[$ua->id]->render());
     $statecell->attributes['class'] = 'state_form';
@@ -175,15 +180,33 @@ foreach ($userarticles as $ua) {
 
 // Print the page header.
 $PAGE->set_url('/mod/uniljournal/view_articles.php', ['id' => $cm->id]);
-$PAGE->set_title(format_string($uniljournal->name . ' - ' . fullname($foreign_user,
-                has_capability('moodle/site:viewfullnames', $context))));
+
+if (groups_get_activity_groupmode($cm) != NOGROUPS) {
+    $groupname = groups_get_group_name($gid);
+    $PAGE->set_title(format_string($uniljournal->name . ' - ' . $groupname));
+}
+else {
+    if ($uid) {
+        $foreign_user = $DB->get_record('user', ['id' => $uid], '*', MUST_EXIST);
+    }
+    else {
+        print_error('userdoesnotexist', 'mod_uniljournal');
+    }
+    $PAGE->set_title(format_string($uniljournal->name . ' - ' . fullname($foreign_user,
+                    has_capability('moodle/site:viewfullnames', $context))));
+}
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($uniljournal->name));
 
-echo html_writer::tag('h3', fullname($foreign_user, has_capability('moodle/site:viewfullnames', $context)));
+if (groups_get_activity_groupmode($cm) != NOGROUPS) {
+    echo html_writer::tag('h3', $groupname);
+}
+else {
+    echo html_writer::tag('h3', fullname($foreign_user, has_capability('moodle/site:viewfullnames', $context)));
+}
 if ($sumuncorrected > 0) {
     $a = new stdClass();
     $a->uncorrected = $sumuncorrected;
