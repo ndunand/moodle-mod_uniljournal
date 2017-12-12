@@ -92,7 +92,7 @@ echo $OUTPUT->heading(format_string($articletitle) . " - " . get_string('compare
 echo html_writer::start_div('clearfix');
 echo html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php',
         ['cmid' => $cmid, 'id' => $id, 'amid' => $articleinstance->amid]),
-        html_writer::img($OUTPUT->pix_url('t/edit'), get_string('edit')) . get_string('editarticle', 'uniljournal'));
+        $OUTPUT->pix_icon('t/edit', get_string('edit')) . get_string('editarticle', 'uniljournal'));
 echo html_writer::end_div();
 
 echo '<div class="article clearfix">';

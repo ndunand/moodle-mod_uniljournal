@@ -66,7 +66,7 @@ class mod_uniljournal_renderer extends plugin_renderer_base {
                     $deleteURL = new moodle_url('/mod/uniljournal/add_article_comment.php',
                             ['action'            => 'delete', 'cmid' => $cmid, 'cid' => $comment->id,
                              'articleinstanceid' => $articleinstanceid]);
-                    $output .= '<a href="' . $deleteURL . '" class="delete-comment">' . html_writer::img($OUTPUT->pix_url('t/delete'),
+                    $output .= '<a href="' . $deleteURL . '" class="delete-comment">' . $OUTPUT->pix_icon('t/delete',
                                     get_string('delete')) . '</a>';
                 }
                 $output .= '<h5 for="comment' . $comment->id . '">' . fullname($comment,

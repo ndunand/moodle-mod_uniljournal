@@ -59,7 +59,7 @@ class mod_uniljournal_mod_form extends moodleform_mod {
         $mform->addRule('subtitle', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('subtitle', 'ujsubtitle', 'uniljournal');
 
-        if ($CFG->branch >= 29) {
+        if (method_exists($this, 'standard_intro_elements')) {
             $this->standard_intro_elements();
         } else {
             $this->add_intro_editor();

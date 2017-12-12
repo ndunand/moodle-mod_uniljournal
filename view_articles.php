@@ -168,7 +168,7 @@ foreach ($userarticles as $ua) {
         }
 
         $url = new moodle_url('/mod/uniljournal/' . $script, $args);
-        $img = html_writer::img($OUTPUT->pix_url('t/' . $actcode), get_string($actcode));
+        $img = $OUTPUT->pix_icon('t/' . $actcode, get_string($actcode));
         $actions .= html_writer::link($url, $img) . "\t";
     }
     if (!empty($actions)) {
