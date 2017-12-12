@@ -241,6 +241,16 @@ function uniljournal_print_recent_mod_activity($activity, $courseid, $detail, $m
  * @todo Finish documenting this function
  **/
 function uniljournal_cron() {
+    global $CFG, $DB;
+    list($sql, $params) = $DB->get_in_or_equal(array('editlock'), SQL_PARAMS_QM, 'param', false, null);
+    $lockedarticleinstances = $DB->get_records_sql('SELECT * FROM {uniljournal_articleinstances} ai WHERE editlock ' . $sql, $params);
+    foreach($lockedarticleinstances as $lockedarticleinstance) {
+        $lock = unserialize($lockedarticleinstance->editlock);
+        $lockinguser = $DB->get_record('user', array('id' => (int)$lock['userid']));
+        if (time() - $lockinguser->lastaccess > $CFG->sessiontimeout) {
+            uniljournal_unset_article_lock($lockedarticleinstance->id, $lockinguser->id);
+        }
+    }
     return true;
 }
 
