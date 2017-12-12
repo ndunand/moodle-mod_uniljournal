@@ -329,46 +329,78 @@ function canmanagethemebank($themebank) {
     return true;
 }
 
-function sendcorrectionmessage($from, $to, $articleinstance, $articlelink) {
-    $user_name = $to->firstname . ' ' . $to->lastname;
-    $message = get_string('article_corrected_message', 'mod_uniljournal',
-            ['article' => $articleinstance->title, 'user_name' => $user_name, 'link' => $articlelink->__toString()]);
-    $html_message = get_string('article_corrected_html_message', 'mod_uniljournal',
-            ['article' => $articleinstance->title, 'user_name' => $user_name, 'link' => $articlelink->__toString()]);
-    $eventdata = new stdClass();
-//    $eventdata->component = 'mod_uniljournal';
-//    $eventdata->name = 'correction';
-//    $eventdata->userfrom = $from;
-//    $eventdata->userto = $to;
-    $eventdata->subject = get_string('article_corrected_subject', 'mod_uniljournal');
-//    $eventdata->fullmessage = $message;
-//    $eventdata->fullmessagehtml = $html_message;
-//    $eventdata->smallmessage = $message;
-//    $eventdata->fullmessageformat = FORMAT_PLAIN;
-//    $eventdata->notification = 1;
-//    message_send($eventdata);
-    email_to_user($to, $from, $eventdata->subject, $message, $html_message);
+function sendcorrectionmessage($from, $articleinstance, $articlelink) {
+    global $DB;
+    if ($articleinstance->groupid) {
+        $tos = groups_get_members($articleinstance->groupid);
+    }
+    else {
+        $user = $DB->get_record('user', ['id' => $articleinstance->userid]);
+        $tos = array($user);
+    }
+    foreach ($tos as $to) {
+        $user_name = $to->firstname . ' ' . $to->lastname;
+        $message = get_string('article_corrected_message', 'mod_uniljournal', [
+                        'article'   => $articleinstance->title,
+                        'user_name' => $user_name,
+                        'link'      => $articlelink->__toString()
+                ]);
+        $html_message = get_string('article_corrected_html_message', 'mod_uniljournal', [
+                        'article'   => $articleinstance->title,
+                        'user_name' => $user_name,
+                        'link'      => $articlelink->__toString()
+                ]);
+        $eventdata = new stdClass();
+        //    $eventdata->component = 'mod_uniljournal';
+        //    $eventdata->name = 'correction';
+        //    $eventdata->userfrom = $from;
+        //    $eventdata->userto = $to;
+        $eventdata->subject = get_string('article_corrected_subject', 'mod_uniljournal');
+        //    $eventdata->fullmessage = $message;
+        //    $eventdata->fullmessagehtml = $html_message;
+        //    $eventdata->smallmessage = $message;
+        //    $eventdata->fullmessageformat = FORMAT_PLAIN;
+        //    $eventdata->notification = 1;
+        //    message_send($eventdata);
+        email_to_user($to, $from, $eventdata->subject, $message, $html_message);
+    }
 }
 
-function sendacceptedmessage($from, $to, $articleinstance, $articlelink) {
-    $user_name = $to->firstname . ' ' . $to->lastname;
-    $message = get_string('article_accepted_message', 'mod_uniljournal',
-            ['article' => $articleinstance->title, 'user_name' => $user_name, 'link' => $articlelink->__toString()]);
-    $html_message = get_string('article_accepted_html_message', 'mod_uniljournal',
-            ['article' => $articleinstance->title, 'user_name' => $user_name, 'link' => $articlelink->__toString()]);
-    $eventdata = new stdClass();
-//    $eventdata->component = 'mod_uniljournal';
-//    $eventdata->name = 'accepted';
-//    $eventdata->userfrom = $from;
-//    $eventdata->userto = $to;
-    $eventdata->subject = get_string('article_accepted_subject', 'mod_uniljournal');
-//    $eventdata->fullmessage = $message;
-//    $eventdata->fullmessagehtml = $html_message;
-//    $eventdata->smallmessage = $message;
-//    $eventdata->fullmessageformat = FORMAT_PLAIN;
-//    $eventdata->notification = 1;
-//    message_send($eventdata);
-    email_to_user($to, $from, $eventdata->subject, $message, $html_message);
+function sendacceptedmessage($from, $articleinstance, $articlelink) {
+    global $DB;
+    if ($articleinstance->groupid) {
+        $tos = groups_get_members($articleinstance->groupid);
+    }
+    else {
+        $user = $DB->get_record('user', ['id' => $articleinstance->userid]);
+        $tos = array($user);
+    }
+    foreach ($tos as $to) {
+        $user_name = $to->firstname . ' ' . $to->lastname;
+        $message = get_string('article_accepted_message', 'mod_uniljournal', [
+                        'article'   => $articleinstance->title,
+                        'user_name' => $user_name,
+                        'link'      => $articlelink->__toString()
+                ]);
+        $html_message = get_string('article_accepted_html_message', 'mod_uniljournal', [
+                        'article'   => $articleinstance->title,
+                        'user_name' => $user_name,
+                        'link'      => $articlelink->__toString()
+                ]);
+        $eventdata = new stdClass();
+        //    $eventdata->component = 'mod_uniljournal';
+        //    $eventdata->name = 'accepted';
+        //    $eventdata->userfrom = $from;
+        //    $eventdata->userto = $to;
+        $eventdata->subject = get_string('article_accepted_subject', 'mod_uniljournal');
+        //    $eventdata->fullmessage = $message;
+        //    $eventdata->fullmessagehtml = $html_message;
+        //    $eventdata->smallmessage = $message;
+        //    $eventdata->fullmessageformat = FORMAT_PLAIN;
+        //    $eventdata->notification = 1;
+        //    message_send($eventdata);
+        email_to_user($to, $from, $eventdata->subject, $message, $html_message);
+    }
 }
 
 function sendtocorrectmessage($from, $to, $articleinstance, $articlelink) {

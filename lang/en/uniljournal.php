@@ -118,6 +118,7 @@ $string['uniljournal:createarticle'] = 'Create articles';
 $string['uniljournal:deletearticle'] = 'Delete articles';
 $string['uniljournal:editallarticles'] = 'Edit any article';
 $string['uniljournal:viewallarticles'] = 'View all articles in a module instance';
+$string['uniljournal:getstudentnotifications'] = 'Receive notifications from students';
 $string['articlelower'] = 'article';
 $string['managethemebanks_hint'] =
         'Information: you can use theme banks and link them from your article templates. To do so, choose "Manage theme banks" from the Administration menu.';

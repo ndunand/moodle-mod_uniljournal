@@ -117,6 +117,7 @@ $string['uniljournal:createarticle'] = 'Créer des articles';
 $string['uniljournal:deletearticle'] = 'Supprimer des articles';
 $string['uniljournal:editallarticles'] = 'Modifier n\'importe quel article';
 $string['uniljournal:viewallarticles'] = 'Voir tous les articles d\'une instance de module';
+$string['uniljournal:getstudentnotifications'] = 'Recevoir les notifications des étudiants';
 $string['articlelower'] = 'article';
 $string['managethemebanks_hint'] =
         'Information : vous avez la possibilité d\'utiliser des banques de thèmes, puis de les lier à un modèle d\'article. Pour ce faire, utilisez l\'option "Gérer les banques de thèmes" du menu Administration.';

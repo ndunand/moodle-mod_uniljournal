@@ -62,18 +62,20 @@ class status_change_form extends moodleform {
 
         $mform->disable_form_change_checker();
 
-        $role = $DB->get_record('role', ['shortname' => 'editingteacher']);
         $context = context_course::instance($course->id);
-        $teachers = get_role_users($role->id, $context);
+        $articleinstance = $DB->get_record('uniljournal_articleinstances', ['id' => $currententry->aid], '*', MUST_EXIST);
 
         if ($status == 40) {
             // sent notification to teacher if status is 40
-            $article = $DB->get_record('uniljournal_articleinstances', ['id' => $currententry->aid], '*', MUST_EXIST);
-
+            $teachers = get_users_by_capability($context, 'mod/uniljournal:getstudentnotifications');
             foreach ($teachers as $teacher) {
+                if (!has_capability('mod/uniljournal:getstudentnotifications', $context, $teacher, false)) {
+                    continue;
+                    // see https://tracker.moodle.org/browse/MDL-57027
+                }
                 $articlelink = new moodle_url('/mod/uniljournal/view_article.php',
-                        ['cmid' => $cmid, 'id' => $article->id]);
-                sendtocorrectmessage($USER, $teacher, $article, $articlelink);
+                        ['cmid' => $cmid, 'id' => $articleinstance->id]);
+                sendtocorrectmessage($USER, $teacher, $articleinstance, $articlelink);
             }
         }
         else if ($status == 50) {
@@ -81,26 +83,18 @@ class status_change_form extends moodleform {
             if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
                 print_error('mustbeteacher', 'mod_uniljournal');
             }
-            $article = $DB->get_record('uniljournal_articleinstances', ['id' => $currententry->aid], '*', MUST_EXIST);
-
-            $author = $DB->get_record('user', ['id' => $article->userid]);
-
             $articlelink =
-                    new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $cmid, 'id' => $article->id]);
-            sendcorrectionmessage($USER, $author, $article, $articlelink);
+                    new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $cmid, 'id' => $articleinstance->id]);
+            sendcorrectionmessage($USER, $articleinstance, $articlelink);
         }
         else if ($status == 60) {
             // sent notification to student if status is 60
             if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
                 print_error('mustbeteacher', 'mod_uniljournal');
             }
-            $article = $DB->get_record('uniljournal_articleinstances', ['id' => $currententry->aid], '*', MUST_EXIST);
-
-            $author = $DB->get_record('user', ['id' => $article->userid]);
-
             $articlelink =
-                    new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $cmid, 'id' => $article->id]);
-            sendacceptedmessage($USER, $author, $article, $articlelink);
+                    new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $cmid, 'id' => $articleinstance->id]);
+            sendacceptedmessage($USER, $articleinstance, $articlelink);
         }
 
         $this->set_data($currententry);
