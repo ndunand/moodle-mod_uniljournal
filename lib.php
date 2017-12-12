@@ -33,6 +33,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/mod/uniljournal/locallib.php');
+
 /*
  * Example constant:
  * define('NEWMODULE_ULTIMATE_ANSWER', 42);
@@ -56,6 +58,10 @@ function uniljournal_supports($feature) {
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_BACKUP_MOODLE2:
+            return true;
+        case FEATURE_GROUPS:
+            return true;
+        case FEATURE_GROUPINGS:
             return true;
         default:
             return null;
