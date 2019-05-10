@@ -126,6 +126,7 @@ if ($pdf) {
     make_cache_directory('tcpdf');
 
     define('PDF_IMAGE_SIZE', 60);
+    define('PDF_IMAGES_PER_ROW', 2);
 
     //  Create PDF
     $pdf = new mod_uniljournal_mypdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8');
@@ -148,16 +149,26 @@ if ($pdf) {
 
         if (count($pdf_article[2]) > 0) {
             // attachments (attached assets)
-            $i = 0;
-            $j = 0;
+            $i = 0; // attachment number
+            $j = 0; // image number
+            $jx = 0; // image column number
+            $jy = 0; // image row number
             $imgx = PDF_MARGIN_LEFT;
+            $imgy = PDF_MARGIN_TOP;
             foreach ($pdf_article[2] as $attachment) {
                 if (strpos($attachment['mimetype'], 'image') !== false) {
                     // it's an image: display it
-                    $pdf->Image($attachment['url'], $imgx, PDF_MARGIN_TOP,
+                    $pdf->Image($attachment['url'], $imgx, $imgy,
                             PDF_IMAGE_SIZE * $attachment['width'] / $attachment['height'], PDF_IMAGE_SIZE);
                     $imgx += PDF_IMAGE_SIZE * $attachment['width'] / $attachment['height'] + 10;
                     $j++;
+                    $jx++;
+                    if ($jx == 2) {
+                        $jx = 0;
+                        $jy++;
+                        $imgx = PDF_MARGIN_LEFT;
+                        $imgy += PDF_IMAGE_SIZE + 10;
+                    }
                 }
                 else {
                     // general attachment type: add as annotation
@@ -166,8 +177,16 @@ if ($pdf) {
                     $i++;
                 }
             }
+            if ($jx == 0) {
+                $jy--; // remove extra empty line
+            }
             if ($j > 0) {
                 $pdf->Ln(PDF_IMAGE_SIZE);
+                if ($jy > 0) {
+                    while ($jy--) {
+                        $pdf->Ln(PDF_IMAGE_SIZE + 10);
+                    }
+                }
             }
         }
 
