@@ -101,7 +101,7 @@ echo '<div class="article article-comparison article-comparison-A">';
 echo uniljournal_versiontoggle($articleinstance, $cm, $actualversionA, 'compare.php', 'versionA',
         ['versionB' => $versionB]);
 echo '<div class="article-edit nocomments">';
-echo $articleA;
+echo format_text($articleA);
 echo '</div>';
 echo '</div>';
 
@@ -109,7 +109,7 @@ echo '<div class="article article-comparison article-comparison-B">';
 echo uniljournal_versiontoggle($articleinstance, $cm, $actualversionB, 'compare.php', 'versionB',
         ['versionA' => $versionA]);
 echo '<div class="article-edit nocomments">';
-echo $articleB;
+echo format_text($articleB);
 echo '</div>';
 echo '</div>';
 
