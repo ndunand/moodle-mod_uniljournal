@@ -176,6 +176,7 @@ $PAGE->set_url('/mod/uniljournal/view.php', ['id' => $cm->id]);
 $PAGE->set_title(format_string($uniljournal->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
+$PAGE->requires->jquery();
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($uniljournal->name));

@@ -197,6 +197,7 @@ else {
 }
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
+$PAGE->requires->jquery();
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($uniljournal->name));
