@@ -33,6 +33,14 @@ defined('MOODLE_INTERNAL') || die();
 require_once("lib.php");
 
 define('UNILJOURNAL_LOCKREQUEST_TTL', 7200); // seconds
+define('UNILJOURNAL_STATUS_NONE', 0);
+define('UNILJOURNAL_STATUS_STARTED', 10);
+define('UNILJOURNAL_STATUS_INPROGRESS', 20);
+define('UNILJOURNAL_STATUS_FINISHED', 30);
+define('UNILJOURNAL_STATUS_TOCORRECT', 40);
+define('UNILJOURNAL_STATUS_CORRECTED', 50);
+define('UNILJOURNAL_STATUS_ACCEPTED', 60);
+define('UNILJOURNAL_STATUS_REJECTED', 70);
 
 function uniljournal_set_logo($data) {
     global $DB;
@@ -128,29 +136,75 @@ function uniljournal_get_template_descriptions($uniljournalid, $onlyhidden = tru
 
 function uniljournal_article_status($isTeacher = false, $status) {
     $statuses = [];
-    if (!$isTeacher || ($isTeacher && $status == 0)) {
-        $statuses[0] = '-';
+
+    // Student-usable statuses are only visible if we're the student or if this particular status is set.
+    if (!$isTeacher || ($isTeacher && $status == UNILJOURNAL_STATUS_NONE)) {
+        $statuses[UNILJOURNAL_STATUS_NONE] = '-';
     }
-    if (!$isTeacher || ($isTeacher && $status == 10)) {
-        $statuses[10] = '◯'; // Started
+    if (!$isTeacher || ($isTeacher && $status == UNILJOURNAL_STATUS_STARTED)) {
+        $statuses[UNILJOURNAL_STATUS_STARTED] = '◯'; // Started
     }
-    if (!$isTeacher || ($isTeacher && $status == 20)) {
-        $statuses[20] = '◐'; // In progress
+    if (!$isTeacher || ($isTeacher && $status == UNILJOURNAL_STATUS_INPROGRESS)) {
+        $statuses[UNILJOURNAL_STATUS_INPROGRESS] = '◐'; // In progress
     }
-    if (!$isTeacher || ($isTeacher && $status == 30)) {
-        $statuses[30] = '⬤'; // Finished
+    if (!$isTeacher || ($isTeacher && $status == UNILJOURNAL_STATUS_FINISHED)) {
+        $statuses[UNILJOURNAL_STATUS_FINISHED] = '⬤'; // Finished
     }
-    if (!$isTeacher || ($isTeacher && $status == 40)) {
-        $statuses[40] = get_string('to_correct', 'mod_uniljournal');
+    if (!$isTeacher || ($isTeacher && $status == UNILJOURNAL_STATUS_TOCORRECT)) {
+        $statuses[UNILJOURNAL_STATUS_TOCORRECT] = get_string('status' . UNILJOURNAL_STATUS_TOCORRECT, 'mod_uniljournal');
     }
-    if (($isTeacher && $status == 40) || ($status == 50)) {
-        $statuses[50] = get_string('corrected', 'mod_uniljournal');
+
+    // Should we display "A améliorer" status ?
+    if (
+            ($isTeacher && $status == UNILJOURNAL_STATUS_TOCORRECT)
+            || ($status == UNILJOURNAL_STATUS_CORRECTED)
+            || ($status == UNILJOURNAL_STATUS_ACCEPTED)
+            || ($status == UNILJOURNAL_STATUS_REJECTED)
+    ) {
+        $statuses[UNILJOURNAL_STATUS_CORRECTED] = get_string('status' . UNILJOURNAL_STATUS_CORRECTED, 'mod_uniljournal'); // "A améliorer"
     }
-    if (($isTeacher && $status == 40) || ($isTeacher && $status == 50) || ($status == 60)) {
-        $statuses[60] = get_string('accepted', 'mod_uniljournal');
+    // Should we display "Accepté" status ?
+    if (
+            ($isTeacher && $status == UNILJOURNAL_STATUS_TOCORRECT)
+            || ($isTeacher && $status == UNILJOURNAL_STATUS_CORRECTED)
+            || ($status == UNILJOURNAL_STATUS_ACCEPTED)
+            || ($status == UNILJOURNAL_STATUS_REJECTED)
+    ) {
+        $statuses[UNILJOURNAL_STATUS_ACCEPTED] = get_string('status' . UNILJOURNAL_STATUS_ACCEPTED, 'mod_uniljournal'); // "Accepté"
+    }
+    // Should we display "Refusé" status ?
+    if (
+            ($isTeacher && $status == UNILJOURNAL_STATUS_TOCORRECT)
+            || ($isTeacher && $status == UNILJOURNAL_STATUS_CORRECTED)
+            || ($status == UNILJOURNAL_STATUS_ACCEPTED)
+            || ($status == UNILJOURNAL_STATUS_REJECTED)
+    ) {
+        $statuses[UNILJOURNAL_STATUS_REJECTED] = get_string('status' . UNILJOURNAL_STATUS_REJECTED, 'mod_uniljournal'); // "Refusé"
     }
 
     return $statuses;
+}
+
+function uniljournal_noneditable_statuses() {
+    return array(
+            UNILJOURNAL_STATUS_REJECTED,
+    );
+}
+
+function uniljournal_immutable_statuses() {
+    return array(
+            UNILJOURNAL_STATUS_ACCEPTED,
+            UNILJOURNAL_STATUS_REJECTED,
+    );
+}
+
+function uniljournal_teachermodifiable_statuses() {
+    return array(
+            UNILJOURNAL_STATUS_TOCORRECT,
+            UNILJOURNAL_STATUS_CORRECTED,
+            UNILJOURNAL_STATUS_ACCEPTED,
+            UNILJOURNAL_STATUS_REJECTED,
+    );
 }
 
 function uniljournal_get_theme_banks($cm, $course) {
@@ -403,6 +457,43 @@ function sendacceptedmessage($from, $articleinstance, $articlelink) {
     }
 }
 
+function sendrejectedmessage($from, $articleinstance, $articlelink) {
+    global $DB;
+    if ($articleinstance->groupid) {
+        $tos = groups_get_members($articleinstance->groupid);
+    }
+    else {
+        $user = $DB->get_record('user', ['id' => $articleinstance->userid]);
+        $tos = array($user);
+    }
+    foreach ($tos as $to) {
+        $user_name = $to->firstname . ' ' . $to->lastname;
+        $message = get_string('article_rejected_message', 'mod_uniljournal', [
+                        'article'   => $articleinstance->title,
+                        'user_name' => $user_name,
+                        'link'      => $articlelink->__toString()
+                ]);
+        $html_message = get_string('article_rejected_html_message', 'mod_uniljournal', [
+                        'article'   => $articleinstance->title,
+                        'user_name' => $user_name,
+                        'link'      => $articlelink->__toString()
+                ]);
+        $eventdata = new stdClass();
+        //    $eventdata->component = 'mod_uniljournal';
+        //    $eventdata->name = 'accepted';
+        //    $eventdata->userfrom = $from;
+        //    $eventdata->userto = $to;
+        $eventdata->subject = get_string('article_rejected_subject', 'mod_uniljournal');
+        //    $eventdata->fullmessage = $message;
+        //    $eventdata->fullmessagehtml = $html_message;
+        //    $eventdata->smallmessage = $message;
+        //    $eventdata->fullmessageformat = FORMAT_PLAIN;
+        //    $eventdata->notification = 1;
+        //    message_send($eventdata);
+        email_to_user($to, $from, $eventdata->subject, $message, $html_message);
+    }
+}
+
 function sendtocorrectmessage($from, $to, $articleinstance, $articlelink) {
     $user_name = $to->firstname . ' ' . $to->lastname;
     $author_name = $from->firstname . ' ' . $from->lastname;
@@ -498,6 +589,9 @@ function uniljournal_get_article_lock($articleinstanceid) {
         return false;
     }
     $articleinstance = $DB->get_record('uniljournal_articleinstances', ['id' => $articleinstanceid]);
+    if (!$articleinstance) {
+        return false;
+    }
     return unserialize($articleinstance->editlock);
 }
 

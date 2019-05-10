@@ -80,6 +80,16 @@ if ($id) { // if entry is specified
         print_error('canteditarticle', 'mod_uniljournal');
     }
 
+    if (uniljournal_is_my_articleinstance($articleinstance, $USER->id) && in_array($articleinstance->status, uniljournal_noneditable_statuses()) && !has_capability('mod/uniljournal:editallarticles', $context)) {
+        $a = (object)['status' => get_string('status' . $articleinstance->status, 'mod_uniljournal')];
+        print_error('readonlybecausestatus', 'mod_uniljournal', '', $a);
+    }
+    else if (has_capability('mod/uniljournal:editallarticles', $context) && in_array($articleinstance->status, uniljournal_noneditable_statuses())) {
+        $a = (object)['status' => get_string('status' . $articleinstance->status, 'mod_uniljournal')];
+        \core\notification::add(get_string('readonlyforstudentbecausestatus', 'mod_uniljournal', $a), \core\notification::WARNING);
+    }
+
+
     // make sure there's no lock on this article
     uniljournal_check_article_lock($id, $USER->id);
     uniljournal_set_article_lock($id, $USER->id);

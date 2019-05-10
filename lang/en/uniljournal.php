@@ -254,9 +254,13 @@ $string['theme_deleted_desc'] =
 
 $string['restoredon'] = ' (restored on {$a->mon}/{$a->mday}/{$a->year})';
 
-$string['to_correct'] = 'Finished';
-$string['corrected'] = 'To be improved';
-$string['accepted'] = 'Accepted';
+$string['status40'] = 'Finished';
+$string['status50'] = 'To be improved';
+$string['status60'] = 'Accepted';
+$string['status70'] = 'Rejected';
+
+$string['newstatusemailsenttoauthor'] = 'An e-mail has been sent to inform the author(s) that the status of the article "{$a->articletitle}" has been changed to: {$a->status}';
+$string['newstatusemailsenttoteacher'] = 'An e-mail has been sent to inform the teacher that the status of the article "{$a->articletitle}" has been changed to: {$a->status}';
 
 //Mails
 $string['article_corrected_subject'] = 'Article corrected';
@@ -281,6 +285,18 @@ You can view the article here: {$a->link}
 ';
 $string['article_accepted_html_message'] = '<p>Dear {$a->user_name},</p>
 <p>Your article ({$a->article}) has been accepted.</p>
+<p>You can view the article here: <a href="{$a->link}">{$a->link}</a></p>
+';
+$string['article_rejected_subject'] = 'Article rejected';
+$string['article_rejected_message'] = 'Dear {$a->user_name},
+
+
+Your article ({$a->article}) has been rejected. Please write a new article.
+
+You can view the article here: {$a->link}
+';
+$string['article_rejected_html_message'] = '<p>Dear {$a->user_name},</p>
+<p>Your article ({$a->article}) has been rejected. Please write a new article.</p>
 <p>You can view the article here: <a href="{$a->link}">{$a->link}</a></p>
 ';
 $string['messageprovider:correction'] = 'Correction notification';

@@ -121,17 +121,35 @@ echo '</div>';
 echo '<div class="article-edit ' . ($uniljournal->comments_allowed ? '' : 'nocomments') . '">';
 
 if (has_capability('mod/uniljournal:createarticle', $context) || has_capability('mod/uniljournal:editallarticles',
-                $context)
-) {
+                $context)) {
     $editarticle_label =
             (has_capability('mod/uniljournal:editallarticles', $context)) ? ('editarticle_teacher') : ('editarticle');
-    echo html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php',
-            ['cmid' => $cmid, 'id' => $id, 'amid' => $articleinstance->amid]),
-            $OUTPUT->pix_icon('t/edit', get_string('edit')) . get_string($editarticle_label,
-                    'uniljournal'));
+    if (uniljournal_is_my_articleinstance($articleinstance, $USER->id) && in_array($articleinstance->status, uniljournal_noneditable_statuses())) {
+        $a = (object)['status' => get_string('status' . $articleinstance->status, 'mod_uniljournal')];
+        if (has_capability('mod/uniljournal:editallarticles', $context)) {
+            \core\notification::add(get_string('readonlyforstudentbecausestatus', 'mod_uniljournal', $a),
+                    \core\notification::WARNING);
+            echo html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php', [
+                    'cmid' => $cmid,
+                    'id'   => $id,
+                    'amid' => $articleinstance->amid
+            ]), $OUTPUT->pix_icon('t/edit', get_string('edit')) . get_string($editarticle_label, 'uniljournal'));
+        }
+        else {
+            \core\notification::add(get_string('readonlybecausestatus', 'mod_uniljournal', $a),
+                    \core\notification::WARNING);
+        }
+    }
+    else {
+        echo html_writer::link(new moodle_url('/mod/uniljournal/edit_article.php', [
+                'cmid' => $cmid,
+                'id'   => $id,
+                'amid' => $articleinstance->amid
+        ]), $OUTPUT->pix_icon('t/edit', get_string('edit')) . get_string($editarticle_label, 'uniljournal'));
+    }
 }
 
-echo $article_html;
+echo format_text($article_html);
 
 echo '</div>';
 

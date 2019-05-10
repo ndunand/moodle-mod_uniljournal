@@ -65,8 +65,11 @@ class status_change_form extends moodleform {
         $context = context_course::instance($course->id);
         $articleinstance = $DB->get_record('uniljournal_articleinstances', ['id' => $currententry->aid], '*', MUST_EXIST);
 
-        if ($status == 40) {
-            // sent notification to teacher if status is 40
+        $teachernotificationssent = 0;
+        $authornotificationssent = 0;
+
+        if ($status == UNILJOURNAL_STATUS_TOCORRECT) {
+            // sent notification to teacher if status is UNILJOURNAL_STATUS_TOCORRECT
             $teachers = get_users_by_capability($context, 'mod/uniljournal:getstudentnotifications');
             foreach ($teachers as $teacher) {
                 if (!has_capability('mod/uniljournal:getstudentnotifications', $context, $teacher, false)) {
@@ -76,25 +79,51 @@ class status_change_form extends moodleform {
                 $articlelink = new moodle_url('/mod/uniljournal/view_article.php',
                         ['cmid' => $cmid, 'id' => $articleinstance->id]);
                 sendtocorrectmessage($USER, $teacher, $articleinstance, $articlelink);
+                $teachernotificationssent++;
             }
         }
-        else if ($status == 50) {
-            // sent notification to student if status is 50
+        else if ($status == UNILJOURNAL_STATUS_CORRECTED) {
+            // sent notification to student if status is UNILJOURNAL_STATUS_CORRECTED
             if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
                 print_error('mustbeteacher', 'mod_uniljournal');
             }
             $articlelink =
                     new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $cmid, 'id' => $articleinstance->id]);
             sendcorrectionmessage($USER, $articleinstance, $articlelink);
+            $authornotificationssent++;
         }
-        else if ($status == 60) {
-            // sent notification to student if status is 60
+        else if ($status == UNILJOURNAL_STATUS_ACCEPTED) {
+            // sent notification to student if status is UNILJOURNAL_STATUS_ACCEPTED
             if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
                 print_error('mustbeteacher', 'mod_uniljournal');
             }
             $articlelink =
                     new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $cmid, 'id' => $articleinstance->id]);
             sendacceptedmessage($USER, $articleinstance, $articlelink);
+            $authornotificationssent++;
+        }
+        else if ($status == UNILJOURNAL_STATUS_REJECTED) {
+            // send notification to student if status is UNILJOURNAL_STATUS_REJECTED
+            if (!has_capability('mod/uniljournal:viewallarticles', $context)) {
+                print_error('mustbeteacher', 'mod_uniljournal');
+            }
+            $articlelink =
+                    new moodle_url('/mod/uniljournal/view_article.php', ['cmid' => $cmid, 'id' => $articleinstance->id]);
+            sendrejectedmessage($USER, $articleinstance, $articlelink);
+            $authornotificationssent++;
+        }
+
+        if ($status >= UNILJOURNAL_STATUS_TOCORRECT) {
+            $a = (object)[
+                    'articletitle' => $articleinstance->title,
+                    'status'       => get_string('status' . $status, 'mod_uniljournal')
+            ];
+            if ($teachernotificationssent) {
+                \core\notification::add(get_string('newstatusemailsenttoteacher', 'mod_uniljournal', $a), \core\notification::SUCCESS);
+            }
+            if ($authornotificationssent) {
+                \core\notification::add(get_string('newstatusemailsenttoauthor', 'mod_uniljournal', $a), \core\notification::SUCCESS);
+            }
         }
 
         $this->set_data($currententry);

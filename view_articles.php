@@ -113,9 +113,9 @@ foreach ($userarticles as $ai) {
     $currententry->statuskey = $statuskey;
     $currententry->$statuskey = $ai->status;
     $smforms[$ai->id] = new status_change_form(new moodle_url('/mod/uniljournal/view_articles.php',
-            ['id' => $id, 'uid' => $uid, 'n' => $n, 'aid' => $ai->id, 'action' => 'change_state']),
+            ['id' => $id, 'uid' => $uid, 'gid' => $gid, 'n' => $n, 'aid' => $ai->id, 'action' => 'change_state']),
             ['options' => $uniljournal_statuses, 'currententry' => $currententry,], null, null, null,
-            $ai->status == 40);
+            in_array($ai->status, uniljournal_teachermodifiable_statuses()));
 }
 
 if ($action && $aid) {
@@ -150,7 +150,7 @@ foreach ($userarticles as $ua) {
             get_string('strftimedaydatetime', 'langconfig')) . $editlocked; //strftime('%c', $ua->timemodified);
     $maxversion = $DB->get_field_select('uniljournal_aeinstances', 'MAX(version) AS maxversion', 'instanceid = :instanceid', array('instanceid' => $ua->id), MUST_EXIST);
     $row->cells[] = $maxversion;
-    $corrected = $ua->status == 50;
+    $corrected = $ua->status == UNILJOURNAL_STATUS_CORRECTED;
 
     $PAGE->requires->js('/mod/uniljournal/javascript.js');
     // Add class to the form, to hint CSS for label hiding

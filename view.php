@@ -116,7 +116,7 @@ foreach ($articleinstances as $ai) {
     $smforms[$ai->id] = new status_change_form(new moodle_url('/mod/uniljournal/view.php',
             ['id' => $cm->id, 'aid' => $ai->id, 'action' => 'change_state']),
             ['options' => $uniljournal_statuses, 'currententry' => $currententry,], null, null, null,
-            $ai->status != 60);
+            !in_array($ai->status, uniljournal_immutable_statuses()));
 }
 
 if ($action && $aid) {
@@ -235,7 +235,7 @@ else {
                 $userarticles[$article->userid]->timemodified =
                         max($userarticles[$article->userid]->timemodified, $article->timemodified);
 
-                if ($article->status == 40) {
+                if ($article->status == UNILJOURNAL_STATUS_TOCORRECT) {
                     $userarticles[$article->userid]->ncorrected++;
                     $sumuncorrected++;
                 }
@@ -309,7 +309,9 @@ else {
             $row->cells[] = $statecell;
 
             $actionarray = [];
-            $actionarray[] = 'edit';
+            if (!(uniljournal_is_my_articleinstance($ai, $USER->id) && in_array($ai->status, uniljournal_noneditable_statuses()))) {
+                $actionarray[] = 'edit';
+            }
             if (has_capability('mod/uniljournal:deletearticle', $context)) {
                 $actionarray[] = 'delete';
             }

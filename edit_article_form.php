@@ -158,6 +158,9 @@ class edit_article_form extends moodleform {
                 if (substr($ae->element_type, 11) == 'image') {
                     $attoptions['accepted_types'] = ['.jpg', '.jpeg', '.png'];
                 }
+                else if (substr($ae->element_type, 11) == 'any') {
+                    $attoptions['accepted_types'] = '*';
+                }
                 else {
                     $attoptions['accepted_types'] = substr($ae->element_type, 11);
                 }

@@ -208,9 +208,17 @@ if (count($articleinstances) > 0) {
         $script = 'edit.php';
         require_once('locallib.php');
         $title = uniljournal_articletitle($ai);
-        $row->cells[] =
-                html_writer::start_tag('input', ['type' => 'checkbox', 'value' => $ai->id, 'name' => 'articles[]']);
-
+        if ($ai->status == UNILJOURNAL_STATUS_REJECTED) {
+            // UNILJOURNAL_STATUS_REJECTED means export not allowed.
+            $row->cells[] = '';
+        }
+        else {
+            $row->cells[] = html_writer::start_tag('input', [
+                    'type'  => 'checkbox',
+                    'value' => $ai->id,
+                    'name'  => 'articles[]'
+            ]);
+        }
         if (has_capability('mod/uniljournal:viewallarticles', $context)) {
             if (groups_get_activity_groupmode($cm) != NOGROUPS) {
                 $groupid = $ai->groupid;

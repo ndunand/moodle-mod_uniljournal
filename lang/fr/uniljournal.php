@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['modulename'] = 'Journal d\'apprentissage';
 $string['modulenameplural'] = 'Journaux d\'apprentissage';
 $string['modulename_help'] =
-        'Le module Journal d\'apprentissage permet aux étudiants de créer des journaux structurés selon une structure définie à l\'avance par l\'enseignant.';
+        'Le module Journal d\'apprentissage permet aux étudiants de créer des journaux structurés selon une structure définie à l\'avance par l\'enseignant.<br><br><a href="https://sepia2.unil.ch/eet/notes-moodle/journal-dapprentissage-moodle/" target="_blank" class="btn btn-secondary">Plus d\'informations :<br><em>Espace «enseignement et technologies»</em><br><img src="https://sepia2.unil.ch/eet/wp-content/uploads/Capture-d-----cran-2016-02-26----11.10.15.png" /></a>';
 $string['ujname'] = 'Nom du journal';
 $string['ujname_help'] = 'Le nom du journal, tel qu\'il apparaîtra dans le cours Moodle.';
 $string['ujsubtitle'] = 'Sous-titre';
@@ -254,9 +254,13 @@ $string['theme_deleted_desc'] =
 
 $string['restoredon'] = ' (restauré le {$a->mday}/{$a->mon}/{$a->year})';
 
-$string['to_correct'] = 'Terminé';
-$string['corrected'] = 'A améliorer';
-$string['accepted'] = 'Accepté';
+$string['status40'] = 'Terminé'; // UNILJOURNAL_STATUS_TOCORRECT
+$string['status50'] = 'A améliorer'; // UNILJOURNAL_STATUS_CORRECTED
+$string['status60'] = 'Accepté'; // UNILJOURNAL_STATUS_ACCEPTED
+$string['status70'] = 'Refusé'; // UNILJOURNAL_STATUS_REJECTED
+
+$string['newstatusemailsenttoauthor'] = 'Un e-mail a été envoyé à l\'auteur pour l\'informer que l\'état de l\'article "{$a->articletitle}" a été changé en: {$a->status}';
+$string['newstatusemailsenttoteacher'] = 'Un e-mail a été envoyé à l\'enseignant pour l\'informer que l\'état de l\'article "{$a->articletitle}" a été changé en: {$a->status}';
 
 //Mails
 $string['article_corrected_subject'] = 'Article corrigé';
@@ -281,6 +285,18 @@ Vous pouvez le consulter ici : {$a->link}
 ';
 $string['article_accepted_html_message'] = '<p>Cher/Chère {$a->user_name},</p>
 <p>Votre article ({$a->article}) a été accepté par l\'enseignant-e.</p>
+<p>Vous pouvez le consulter ici : <a href="{$a->link}">{$a->link}</a></p>
+';
+$string['article_rejected_subject'] = 'Article refusé';
+$string['article_rejected_message'] = 'Cher/Chère {$a->user_name},
+
+
+Votre article ({$a->article}) a été refusé par l\'enseifgnant-e. Veuillez rédiger un nouvel article.
+
+Vous pouvez le consulter ici : {$a->link}
+';
+$string['article_rejected_html_message'] = '<p>Cher/Chère {$a->user_name},</p>
+<p>Votre article ({$a->article}) a été refusé par l\'enseignant-e. Veuillez rédiger un nouvel article.</p>
 <p>Vous pouvez le consulter ici : <a href="{$a->link}">{$a->link}</a></p>
 ';
 $string['messageprovider:correction'] = 'Notification de correction';
