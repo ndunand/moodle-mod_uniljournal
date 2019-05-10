@@ -158,7 +158,7 @@ else {
         return ($item->themescount > 0);
     });
     $themebankurl = new moodle_url('/mod/uniljournal/manage_themebanks.php', ['id' => $cm->id]);
-    echo html_writer::tag('p', get_string('managethemebanks_hint', 'mod_uniljournal'));
+    \core\notification::add(get_string('managethemebanks_hint', 'mod_uniljournal'), \core\notification::INFO);
     //  echo html_writer::link($themebankurl, get_string('managethemebanks', 'mod_uniljournal'));
     if (count($amodels) > 0) {
         $table = new html_table();

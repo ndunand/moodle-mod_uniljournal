@@ -358,7 +358,7 @@ else {
                         get_string('addarticletempl', 'mod_uniljournal', $templatesoptions[$am->id]));
             }
             else {
-                echo $OUTPUT->error_text(get_string('notemplates', 'mod_uniljournal'));
+                \core\notification::add(get_string('notemplates', 'mod_uniljournal'), \core\notification::WARNING);
             }
         }
     }
