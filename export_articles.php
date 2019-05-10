@@ -28,6 +28,12 @@ require_once(dirname(__FILE__) . '/lib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course_module ID, or
 $changegroup = optional_param('group', -1, PARAM_INT);   // choose the current group
+$sorting = optional_param('sorting', 'default', PARAM_ALPHANUM);
+//$sortreset = optional_param('sortreset', 0, PARAM_INT);
+$sortdir = optional_param('sortdir', 0, PARAM_INT);
+$sortid = optional_param('sortid', 0, PARAM_INT);
+$sortuserid = optional_param('sortuserid', 0, PARAM_INT);
+$sortgroupid = optional_param('sortgroupid', 0, PARAM_INT);
 
 if ($id) {
     $cm = get_coursemodule_from_id('uniljournal', $id, 0, false, MUST_EXIST);
@@ -41,38 +47,86 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/uniljournal:view', $context);
 
+// Display table of my articles
+if ($sorting == 'default') {
+    $sorting = get_user_preferences('mod_uniljournal_articleinstancesorting', 'thememodel');
+}
+if ($sorting == 'chrono') {
+    $displayorder = 'ai.timecreated ASC';
+}
+else if ($sorting == 'manual') {
+    $displayorder = 'ai.sortorder ASC, ai.timecreated ASC';
+}
+else if ($sorting == 'thememodel') {
+    $displayorder = 't.sortorder, am.sortorder, am.id, ai.timecreated ASC';
+}
+else {
+    $displayorder = 't.sortorder, am.sortorder, am.id, ai.timecreated ASC';
+}
+set_user_preference('mod_uniljournal_articleinstancesorting', $sorting);
+
 // Print the page header.
-$PAGE->set_url('/mod/uniljournal/export_articles.php', ['id' => $cm->id]);
+$PAGE->set_url('/mod/uniljournal/export_articles.php', ['id' => $cm->id, 'sorting' => $sorting]);
 $PAGE->set_title(format_string($uniljournal->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 $PAGE->requires->jquery();
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($uniljournal->name));
-
-if (!has_capability('moodle/site:accessallgroups', $context)) {
-    groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/uniljournal/export_articles.php?id=' . $cm->id);
-}
-
-// Display table of my articles
 require_once('locallib.php');
 if (has_capability('mod/uniljournal:viewallarticles', $context)) {
-    $articleinstances = uniljournal_get_article_instances(['uniljournalid' => $uniljournal->id], true, 'userid, t.sortorder, am.sortorder, am.id, ai.timecreated ASC');
+    $articleinstances = uniljournal_get_article_instances(['uniljournalid' => $uniljournal->id], true, 'userid, ' . $displayorder);
 }
 else {
     if (groups_get_activity_groupmode($cm) == NOGROUPS) {
         $articleinstances = uniljournal_get_article_instances([
                 'uniljournalid' => $uniljournal->id,
                 'userid'        => $USER->id
-        ], true, 't.sortorder, am.sortorder, am.id, ai.timecreated ASC');
+        ], true, $displayorder);
     }
     else {
         $articleinstances = uniljournal_get_article_instances([
                 'uniljournalid' => $uniljournal->id,
                 'groupid'        => uniljournal_get_activegroup()
-        ], true, 't.sortorder, am.sortorder, am.id, ai.timecreated ASC');
+        ], true, $displayorder);
     }
+}
+
+//if ($sortreset) {
+//    foreach ($articleinstances as $articleinstance) {
+//        $tmp_ai = new stdClass();
+//        $tmp_ai->id = $articleinstance->id;
+//        $tmp_ai->sortorder = null;
+//        $DB->update_record('uniljournal_articleinstances', $tmp_ai);
+//    }
+//    redirect(new moodle_url('/mod/uniljournal/export_articles.php', ['id' => $cm->id, 'sorting' => 'manual']));
+//}
+
+if ($sortid && ($sortuserid || $sortgroupid)) {
+    $sortorder = 0;
+    $sortdir = ($sortdir > 0) ? (15) : (-15);
+    foreach ($articleinstances as $articleinstance) {
+        if ($articleinstance->userid != $sortuserid && $articleinstance->groupid != $sortgroupid) {
+            continue;
+        }
+        $tmp_ai = new stdClass();
+        $tmp_ai->id = $articleinstance->id;
+        $sortorder += 10;
+        if ($articleinstance->id == $sortid) {
+            $tmp_ai->sortorder = $sortorder + $sortdir;
+        }
+        else {
+            $tmp_ai->sortorder = $sortorder;
+        }
+        $DB->update_record('uniljournal_articleinstances', $tmp_ai);
+    }
+    redirect(new moodle_url('/mod/uniljournal/export_articles.php', ['id' => $cm->id, 'sorting' => 'manual', 'selectusr' => ($sortuserid + $sortgroupid)]));
+}
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($uniljournal->name));
+
+if (!has_capability('moodle/site:accessallgroups', $context)) {
+    groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/uniljournal/export_articles.php?id=' . $cm->id);
 }
 
 // Status modifier forms
@@ -98,6 +152,22 @@ foreach ($articleinstances as $ai) {
         }
     }
 }
+
+echo html_writer::start_tag('div', ['id' => 'selectSortingDiv']);
+print_string('sortby');
+echo '&nbsp;:&nbsp';
+echo html_writer::start_tag('select', ['id' => 'selectSorting']);
+foreach (['thememodel', 'chrono', 'manual'] as $sortitem) {
+    $sortitemselected = ($sortitem == $sorting) ? (['selected' => 'selected']) : ([]);
+    $sortitemattrs = array_merge($sortitemselected, ['value' => $sortitem]);
+    echo html_writer::tag('option', get_string('sortby' . $sortitem, 'mod_uniljournal'), $sortitemattrs);
+}
+echo html_writer::end_tag('select');
+//if ($sorting == 'manual') {
+//    echo '&nbsp';
+//    echo html_writer::tag('button', get_string('reset'), ['id' => 'selectSortingReset']);
+//}
+echo html_writer::end_div();
 
 if (has_capability('mod/uniljournal:viewallarticles', $context)) {
     echo html_writer::start_tag('div');
@@ -174,6 +244,10 @@ if (count($articleinstances) > 0) {
 
         $actionarray = [];
         $actionarray[] = 'edit';
+        if ($sorting == 'manual') {
+            $actionarray[] = 'up';
+            $actionarray[] = 'down';
+        }
         if (has_capability('mod/uniljournal:deletearticle', $context)) {
             $actionarray[] = 'delete';
         }
@@ -186,6 +260,21 @@ if (count($articleinstances) > 0) {
             if ($actcode == 'edit') {
                 $script = 'edit_article.php';
                 $args = ['cmid' => $cm->id, 'id' => $ai->id, 'amid' => $ai->amid];
+            }
+
+            if ($actcode == 'up' || $actcode == 'down') {
+                $script = 'export_articles.php';
+                $args = [
+                        'id'          => $cm->id,
+                        'sorting'     => 'manual',
+                        'sortid'      => $ai->id,
+                        'sortdir'     => -1,
+                        'sortuserid'  => $ai->userid,
+                        'sortgroupid' => $ai->groupid
+                ];
+            }
+            if ($actcode == 'down') {
+                $args['sortdir'] = 1;
             }
 
             $url = new moodle_url('/mod/uniljournal/' . $script, $args);

@@ -311,4 +311,9 @@ $string['editarticle'] = 'Edit the current version of this article';
 $string['editarticle_teacher'] = 'Correct the current version of this article';
 $string['canteditarticle'] = 'You cannot edit this article';
 $string['crontask'] = 'UNIL Learning Journal schduled tasks';
+$string['sortbythememodel'] = 'theme and model order';
+$string['sortbychrono'] = 'chronologically';
+$string['sortbymanual'] = 'manually';
+$string['readonlybecausestatus'] = 'You can not modify this article because its status is: {$a->status}';
+$string['readonlyforstudentbecausestatus'] = 'You can modify this article, but the author can\'t because the article status is: {$a->status}';
 

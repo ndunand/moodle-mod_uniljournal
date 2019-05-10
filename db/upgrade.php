@@ -69,5 +69,17 @@ function xmldb_uniljournal_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017040101, 'uniljournal');
     }
 
+    if ($oldversion < 2018032900) {
+        $table = new xmldb_table('uniljournal_articleinstances');
+
+        $newField = $table->add_field('sortorder', XMLDB_TYPE_INTEGER, '10', null, false, null, null);
+
+        if (!$dbman->field_exists($table, $newField)) {
+            $dbman->add_field($table, $newField);
+        }
+
+        upgrade_mod_savepoint(true, 2018032900, 'uniljournal');
+    }
+
     return true;
 }

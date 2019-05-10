@@ -196,7 +196,7 @@ function uniljournal_get_article_instances($query_args = ['id' => '0'], $status 
     }
 
     $attributes =
-            ['ai.id as id', 'ai.timemodified', 'ai.userid', 'ai.groupid', 'ai.title', 't.id as themeid', 't.title as themetitle',
+            ['ai.id as id', 'ai.timemodified', 'ai.userid', 'ai.groupid', 'ai.title', 'ai.sortorder as sortorder', 't.id as themeid', 't.title as themetitle',
                     't.instructions as themeinstructions', 'ai.status', 'am.id as amid', 'am.title as amtitle',
                     'am.freetitle as freetitle', 'am.instructions as instructions'];
 
