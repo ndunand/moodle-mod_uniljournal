@@ -70,11 +70,11 @@ else {
 
 foreach ($uniljournals as $uniljournal) {
     if (!$uniljournal->visible) {
-        $link = html_writer::link(new moodle_url('/mod/uniljournal.php', ['id' => $uniljournal->coursemodule]),
+        $link = html_writer::link(new moodle_url('/mod/uniljournal/view.php', ['id' => $uniljournal->coursemodule]),
                 format_string($uniljournal->name, true), ['class' => 'dimmed']);
     }
     else {
-        $link = html_writer::link(new moodle_url('/mod/uniljournal.php', ['id' => $uniljournal->coursemodule]),
+        $link = html_writer::link(new moodle_url('/mod/uniljournal/view.php', ['id' => $uniljournal->coursemodule]),
                 format_string($uniljournal->name, true));
     }
 
